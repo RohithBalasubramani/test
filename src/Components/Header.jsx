@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { NotificationsOutlined, Search } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
+import AlertPanel from "./Alert";
 
 const TopbarContainer = styled.div`
   display: flex;
@@ -23,6 +24,8 @@ const TopbarContainer = styled.div`
   background-color: #ffffff;
   padding-top: 0.7vh;
   padding-bottom: 0.7vh;
+  width: 98vw;
+  padding-right: 3vw;
 `;
 
 const InputContainer = styled.div`
@@ -179,50 +182,57 @@ const Header = () => {
   };
 
   return (
-    <TopbarContainer>
-      <SearchBarContainer>
-        <Logo>Therion</Logo>
-        <InputContainer>
-          <Search />
-          <SearchInput type="text" placeholder="Search Module, Panel , Etc" />
-        </InputContainer>
-      </SearchBarContainer>
-      <TabsContainer>
-        <Tabs sx={{ marginTop: "0.7vh" }} value={value} onChange={handleChange}>
-          <Tab label="Dashboard" value={"/"} />
-          <Tab label="PEPPL(P1)" value={"/peppl_p1"} />
-          <Tab label="PEPPL(P2)" value={"/peppl_p2"} />
-          <Tab label="PEPPL(P3)" value={"/peppl_p3"} />
-          <Tab label="HT" value={"/"} />
-          <Tab label="Inverters" value={"/"} />
-          <Tab label="Reports" value={"/"} />
-          <Tab label="Comparisions" value={"/"} />
-        </Tabs>
-      </TabsContainer>
-      <TopbarMenu>
-        <TopbarItem>
-          <Badge
-            badgeContent={3}
-            sx={{
-              "& .MuiBadge-badge": {
-                backgroundColor: "#5630BC", // Custom secondary color
-                color: "white", // Color of the text in the badge
-              },
-            }}
+    <>
+      <TopbarContainer>
+        <SearchBarContainer>
+          <Logo>Therion</Logo>
+          <InputContainer>
+            <Search />
+            <SearchInput type="text" placeholder="Search Module, Panel , Etc" />
+          </InputContainer>
+        </SearchBarContainer>
+        <TabsContainer>
+          <Tabs
+            sx={{ marginTop: "0.7vh" }}
+            value={value}
+            onChange={handleChange}
           >
-            <AlertsButton onClick={handleAlertButtonClick}>
-              <NotificationsOutlined fontSize="small" />
-              Alerts
-            </AlertsButton>
-          </Badge>
-        </TopbarItem>
-        <TopbarItem>
-          <IconButton>
-            <UserAvatar>DN</UserAvatar>
-          </IconButton>
-        </TopbarItem>
-      </TopbarMenu>
-    </TopbarContainer>
+            <Tab label="Dashboard" value={"/"} />
+            <Tab label="PEPPL(P1)" value={"/peppl_p1"} />
+            <Tab label="PEPPL(P2)" value={"/peppl_p2"} />
+            <Tab label="PEPPL(P3)" value={"/peppl_p3"} />
+            <Tab label="HT" value={"/"} />
+            <Tab label="Inverters" value={"/"} />
+            <Tab label="Reports" value={"/"} />
+            <Tab label="Comparisions" value={"/"} />
+          </Tabs>
+        </TabsContainer>
+        <TopbarMenu>
+          <TopbarItem>
+            <Badge
+              badgeContent={3}
+              sx={{
+                "& .MuiBadge-badge": {
+                  backgroundColor: "#5630BC", // Custom secondary color
+                  color: "white", // Color of the text in the badge
+                },
+              }}
+            >
+              <AlertsButton onClick={handleAlertButtonClick}>
+                <NotificationsOutlined fontSize="small" />
+                Alerts
+              </AlertsButton>
+            </Badge>
+          </TopbarItem>
+          <TopbarItem>
+            <IconButton>
+              <UserAvatar>DN</UserAvatar>
+            </IconButton>
+          </TopbarItem>
+        </TopbarMenu>
+      </TopbarContainer>
+      <AlertPanel isOpen={isAlertPanelOpen} onClose={handleAlertButtonClick} />
+    </>
   );
 };
 

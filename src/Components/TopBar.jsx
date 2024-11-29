@@ -15,7 +15,7 @@ const TopBar = () => {
     <div className="overview-tabs">
       <Tabs value={value} onChange={handleChange}>
         <Tab value={"/peppl_p1"} label={"overview"} />
-        <Tab value={"/peppl_p1/amf1a"} label={"AMF-1A"} />
+        <Tab value={"/peppl_p1/amf1a/overview1a"} label={"AMF-1A"} />
         <Tab value={"/peppl_p1/amf1b"} label={"AMF-1B"} />
         <Tab value={"/peppl_p1/PCC_Panel_1"} label={"pcc 1"} />
         <Tab value={"/peppl_p1/PCC_Panel_2"} label={"Pcc 2"} />

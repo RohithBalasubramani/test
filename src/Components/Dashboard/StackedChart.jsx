@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import dayjs from "dayjs";
-import TimeBar from "./TRFF/TimePeriod"; // Ensure this path is correct
+import TimeBar from "../TRFF/TimePeriod"; // Ensure this path is correct
 import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
-//import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
-import "./StackedBarDGEB.css"; // Import the CSS file
+import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
+import BarChartLoad from "./ChartLoading";
+import "./StackedBarDGEB.css"; // Import the CSS file for styling
 
-const CostChart = ({
+const StackedBarChart = ({
   data,
   startDate,
   setStartDate,
@@ -18,6 +19,7 @@ const CostChart = ({
   dateRange,
   setDateRange,
   backgroundColors = [], // Add backgroundColors prop
+  fields = [], // Pass fields as a prop
 }) => {
   const [chartData, setChartData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -28,25 +30,22 @@ const CostChart = ({
       try {
         const resampledData = data["resampled data"];
 
-        // Define the keys to include manually and their custom labels
-        const kwKeys = [
-          { key: "EBS10Reading_kw", label: "EB Supply" },
-          { key: "DG1S12Reading_kw", label: "Diesel Generator 1" },
-          { key: "DG2S3Reading_kw", label: "Diesel Generator 2" },
-        ];
-
         // Generate x-axis labels based on selected time period
         const xAxisLabels = generateXAxisLabels(resampledData);
 
-        const datasets = [
-          {
-            label: "Cost",
-            data: resampledData.map(
-              (item) => (item["app_energy_export"] || 0) * 10
-            ), // Multiply kW by 10 to get cost
-            backgroundColor: "#4E46B4",
-          },
-        ];
+        const datasets = fields
+          .map((entry, index) => ({
+            label: entry.label,
+            data: resampledData.map((item) => item[entry.key] || 0),
+            backgroundColor:
+              backgroundColors[index] ||
+              `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
+                Math.random() * 255
+              )}, ${Math.floor(Math.random() * 255)}, 0.6)`,
+          }))
+          .filter((dataset) =>
+            dataset.data.some((value) => value !== null && value !== 0)
+          ); // Filter out datasets with only null or zero values
 
         setChartData({
           labels: xAxisLabels,
@@ -62,7 +61,7 @@ const CostChart = ({
       setLoading(false);
       setError("No resampled data available");
     }
-  }, [data, timeperiod, backgroundColors]);
+  }, [data, timeperiod, backgroundColors, fields]);
 
   // Function to generate x-axis labels based on timeperiod
   const generateXAxisLabels = (resampledData) => {
@@ -104,7 +103,11 @@ const CostChart = ({
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <BarChartLoad />
+      </div>
+    );
   }
 
   if (error) {
@@ -116,23 +119,23 @@ const CostChart = ({
       <div className="card shadow mb-4">
         <div className="card-body">
           <div className="row">
-            <div className="title">Energy Cost by Source (Rs)</div>
+            <div className="title">Energy Consumption by Feeders</div>
             <div className="controls">
               <TimeBar
                 setStartDate={setStartDate}
                 setEndDate={setEndDate}
                 dateRange={dateRange}
                 setDateRange={setDateRange}
-                setTimeperiod={setTimeperiod} // Pass setTimeperiod to TimeBar
-                startDate={startDate} // Pass startDate
-                endDate={endDate} // Pass endDate
+                setTimeperiod={setTimeperiod}
+                startDate={startDate}
+                endDate={endDate}
               />
-              {/* <DateRangeSelector
+              <DateRangeSelector
                 startDate={startDate}
                 setStartDate={setStartDate}
                 endDate={endDate}
                 setEndDate={setEndDate}
-              /> */}
+              />
             </div>
           </div>
           <div className="row">
@@ -149,12 +152,13 @@ const CostChart = ({
                 data={chartData}
                 options={{
                   responsive: true,
-                  maintainAspectRatio: false,
+                  maintainAspectRatio: false, // Allow full width and height to be controlled by CSS
+
                   plugins: {
                     legend: {
                       display: true,
-                      position: "bottom", // Position legend at the bottom
-                      align: "start", // Align legends to the start of the container
+                      position: "bottom",
+                      align: "start",
                       labels: {
                         boxWidth: 15,
                         boxHeight: 15,
@@ -168,22 +172,18 @@ const CostChart = ({
                       },
                     },
                   },
-                  // scales: {
-                  //   x: {
-                  //     stacked: true,
-                  //     grid: {
-                  //       color: "rgba(0, 0, 0, 0.05)", // Light gray color with 5% opacity
-                  //       borderDash: [8, 4], // Dotted line style
-                  //     },
-                  //   },
-                  //   y: {
-                  //     stacked: true,
-                  //     title: {
-                  //       display: true,
-                  //       text: "Cost (Rs)",
-                  //     },
-                  //   },
-                  // },
+                  scales: {
+                    x: {
+                      stacked: true,
+                      grid: {
+                        color: "rgba(0, 0, 0, 0.05)",
+                        borderDash: [8, 4],
+                      },
+                    },
+                    y: {
+                      stacked: true,
+                    },
+                  },
                 }}
               />
             </div>
@@ -196,4 +196,4 @@ const CostChart = ({
   );
 };
 
-export default CostChart;
+export default StackedBarChart;

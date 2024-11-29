@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import dayjs from "dayjs";
-import TimeBar from "./TRFF/TimePeriod"; // Ensure this path is correct
-import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
+import TimeBar from "../TRFF/TimePeriod"; // Ensure this path is correct
+import ToggleButtons from "../Togglesampling"; // Import the ToggleButtons component
 //import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
-import "./StackedBarDGEB.css"; // Import the CSS file
+import "../StackedBarDGEB.css"; // Import the CSS file
 
 const CostChart = ({
   data,
+  firstFeeder,
+  secondFeeder,
+  secondFeederData,
   startDate,
   setStartDate,
   endDate,
@@ -25,9 +28,10 @@ const CostChart = ({
 
   useEffect(() => {
     if (data && data["resampled data"]) {
+      setError(null);
       try {
         const resampledData = data["resampled data"];
-
+        const feeder2ResampledData = secondFeederData["resampled data"];
         // Define the keys to include manually and their custom labels
         const kwKeys = [
           { key: "EBS10Reading_kw", label: "EB Supply" },
@@ -40,11 +44,18 @@ const CostChart = ({
 
         const datasets = [
           {
-            label: "Cost",
+            label: `${firstFeeder.toUpperCase()} Cost`,
             data: resampledData.map(
               (item) => (item["app_energy_export"] || 0) * 10
             ), // Multiply kW by 10 to get cost
             backgroundColor: "#4E46B4",
+          },
+          {
+            label: `${secondFeeder.toUpperCase()} Cost`,
+            data: feeder2ResampledData.map(
+              (item) => (item["app_energy_export"] || 0) * 10
+            ), // Multiply kW by 10 to get cost
+            backgroundColor: "#1e13b5",
           },
         ];
 

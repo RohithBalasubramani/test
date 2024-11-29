@@ -52,9 +52,11 @@ const StackedBarDGEB = ({
           {
             label: "Energy",
             data: resampledData.map((item) => item["app_energy_export"]),
-            backgroundColor: resampledData.map((item) => {return item["app_energy_export"] > 1400 ? '#C72F08': '#4E46B4'})
-          }
-        ]
+            backgroundColor: resampledData.map((item) => {
+              return item["app_energy_export"] > 1400 ? "#C72F08" : "#4E46B4";
+            }),
+          },
+        ];
 
         setChartData({
           labels: xAxisLabels,

@@ -1,30 +1,30 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
-//import Weatherbg from "../../Assets/weatherbg.png";
+import Weatherbg from "../../Assets/weatherbg.png";
 import DescriptionIcon from "@mui/icons-material/Description";
 
 const WeatherWidgetContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2vh;
-  height: 38vh;
+  height: 100%;
   width: 100%;
 `;
 
-// const WeatherHeader = styled.div`
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   background-color: #ffffff;
-//   padding: 16px;
-//   padding-top: 4vh;
-//   padding-bottom: 4vh;
-//   border-radius: var(--paddings-gaps-p-4, 16px);
-//   background-image: url(${Weatherbg});
-//   background-size: cover;
-//   flex: 2;
-// `;
+const WeatherHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 16px;
+  padding-top: 4vh;
+  padding-bottom: 4vh;
+  border-radius: var(--paddings-gaps-p-4, 16px);
+  background-image: url(${Weatherbg});
+  background-size: cover;
+  flex: 2;
+`;
 
 const WeatherMain = styled.div`
   color: var(--Gray---Typography-800, #1b2533);
@@ -82,12 +82,6 @@ const AlertsContainer = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: 24px; /* 150% */
-  overflow-y: auto;
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 `;
 
 const AlertItem = styled.div`
@@ -95,8 +89,6 @@ const AlertItem = styled.div`
   align-items: center;
   padding: 10px;
   border-bottom: 1px solid #eee;
-  width: 95%;
-  justify-content: center;
   &:last-child {
     border-bottom: none;
   }
@@ -177,30 +169,16 @@ const WeatherWidget = () => {
 
   return (
     <WeatherWidgetContainer>
-      {/* <WeatherHeader>
+      <WeatherHeader>
         <WeatherMain>{current.temp.toFixed(1)}°C</WeatherMain>
         <div>
           <Name>M square Tech</Name>
           <Address>23 July 2024</Address>
         </div>
-      </WeatherHeader> */}
+      </WeatherHeader>
 
       <AlertsContainer>
         <div>Alerts</div>
-        <AlertItem>
-          <AlertIcon />
-          <AlertText>
-            <Date>July 15, 2024</Date>
-            <div>A new Monthly report is ready to Download!</div>
-          </AlertText>
-        </AlertItem>
-        <AlertItem>
-          <AlertIcon />
-          <AlertText>
-            <Date>July 15, 2024</Date>
-            <div>A new Monthly report is ready to Download!</div>
-          </AlertText>
-        </AlertItem>
         <AlertItem>
           <AlertIcon />
           <AlertText>

@@ -1,40 +1,13 @@
-// {
-//   "amf-1a": {
-//     "overview": {
-//       "apiurls": []
-//     },
-//     "dg-1": {},
-//     "tf-1": {},
-//     "apfc-1": {},
-//     "og-1": {},
-//     "cell pcc panel-1 incomer": {
-//       "overview": {},
-//       "ups": {
-//         "ups-1a": {},
-//         "ups-1b": {}
-//       },
-//       "og cell lt panel-1": {
-//         "overview": {},
-//         "cell lt panel-1 incomer": {
-//           "overview": {}
-//         }
-//       },
-//       "og cell tool pdb-1": {
-//         "overview": {},
-//         "cell tool pdb-1 incomer": {
-//           "overview": {}
-//         }
-//       },
-//       "chiller-2": {}
-//     }
-//   }
-// }
-
 const sideBarTreeArray = {
   amf1a: [
     {
-      id: "overview_amf1a",
+      id: "overview1a",
       label: "Overview",
+      apis: [
+        "http://14.96.26.26:8080/api/p1_amfs_generator1/",
+        "http://14.96.26.26:8080/api/p1_amfs_outgoing1/",
+        "http://14.96.26.26:8080/api/p1_amfs_apfc1/",
+      ],
     },
     {
       id: "dg_1",
@@ -56,6 +29,10 @@ const sideBarTreeArray = {
       id: "cell_pcc_panel_1_incomer",
       label: "Cell Pcc Panel-1 Incomer",
       children: [
+        {
+          id: "PCC1Overview",
+          label: "PCC Panel 1 Overview",
+        },
         {
           id: "ups",
           label: "UPS",
@@ -96,8 +73,13 @@ const sideBarTreeArray = {
   ],
   amf1b: [
     {
-      id: "overview_amf1b",
+      id: "",
       label: "Overview",
+      apis: [
+        "http://14.96.26.26:8080/api/p1_amfs_generator1/",
+        "http://14.96.26.26:8080/api/p1_amfs_outgoing1/",
+        "http://14.96.26.26:8080/api/p1_amfs_apfc1/",
+      ],
     },
     {
       id: "dg-2",
@@ -160,19 +142,26 @@ const sideBarTreeArray = {
 };
 
 const apiUrls = {
-  overview_amf1a: {
-
+  overview1a: {
+    apiUrl: [
+      {
+        p1_amfs_Solar: "http://14.96.26.26:8080/api/p1_amfs_outgoing1/",
+        p1_amfs_transformer2:
+          "http://14.96.26.26:8080/api/p1_amfs_transformer2/",
+        p1_amfs_generator2: "http://14.96.26.26:8080/api/p1_amfs_generator2/",
+      },
+    ],
   },
   dg_1: {
     realTimePower: [
       "https://www.therion.co.in/api/ebs10reading/",
-      "https://www.therion.co.in/api/dg2s3reading/", 
-      "https://www.therion.co.in/api/dg1s12reading/"
+      "https://www.therion.co.in/api/dg2s3reading/",
+      "https://www.therion.co.in/api/dg1s12reading/",
     ],
     realTimeCurrent: [
       "https://www.therion.co.in/api/ebs10reading/",
       "https://www.therion.co.in/api/dg1s12reading/",
-      "https://www.therion.co.in/api/dg2s3reading/"
+      "https://www.therion.co.in/api/dg2s3reading/",
     ],
     realTimeVoltage: [
       "https://www.therion.co.in/api/ebs10reading/",
@@ -181,11 +170,11 @@ const apiUrls = {
       "https://www.therion.co.in/api/ebs10reading/",
       "https://www.therion.co.in/api/dg1s12reading/",
       "https://www.therion.co.in/api/dg2s3reading/",
-    ]
+    ],
   },
   ups_2c: {
-    apiUrl: "http://14.96.26.26:8080/api/p1_ups2_incomer2c/"
-  }
-}
+    apiUrl: "http://14.96.26.26:8080/api/p1_ups2_incomer2c/",
+  },
+};
 
-export default {sideBarTreeArray , apiUrls};
+export default { sideBarTreeArray, apiUrls };

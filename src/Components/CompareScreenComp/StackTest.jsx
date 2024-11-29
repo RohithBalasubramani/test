@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import dayjs from "dayjs";
-import TimeBar from "./TRFF/TimePeriod"; // Ensure this path is correct
-import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
+import TimeBar from "../TRFF/TimePeriod"; // Ensure this path is correct
+import ToggleButtons from "../Togglesampling"; // Import the ToggleButtons component
 //import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
-import "./StackedBarDGEB.css"; // Import the CSS file
+import "../StackedBarDGEB.css"; // Import the CSS file
 
-const CostChart = ({
+const StackedBarDGEB = ({
   data,
+  firstFeeder,
+  secondFeeder,
+  secondFeederData,
   startDate,
   setStartDate,
   endDate,
@@ -24,10 +27,16 @@ const CostChart = ({
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (data && data["resampled data"]) {
+    if (
+      data &&
+      data["resampled data"] &&
+      secondFeederData &&
+      secondFeederData["resampled data"]
+    ) {
+      setError(null);
       try {
         const resampledData = data["resampled data"];
-
+        const feeder2ResampledData = secondFeederData["resampled data"];
         // Define the keys to include manually and their custom labels
         const kwKeys = [
           { key: "EBS10Reading_kw", label: "EB Supply" },
@@ -38,13 +47,30 @@ const CostChart = ({
         // Generate x-axis labels based on selected time period
         const xAxisLabels = generateXAxisLabels(resampledData);
 
+        // const datasets = kwKeys.map((entry, index) => ({
+        //   label: entry.label,
+        //   data: resampledData.map((item) => item[entry.key] || 0),
+        //   backgroundColor:
+        //     backgroundColors[index] ||
+        //     `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
+        //       Math.random() * 255
+        //     )}, ${Math.floor(Math.random() * 255)}, 0.6)`,
+        // }));
+
         const datasets = [
           {
-            label: "Cost",
-            data: resampledData.map(
-              (item) => (item["app_energy_export"] || 0) * 10
-            ), // Multiply kW by 10 to get cost
-            backgroundColor: "#4E46B4",
+            label: `${firstFeeder.toUpperCase()} Energy`,
+            data: resampledData.map((item) => item["app_energy_export"]),
+            backgroundColor: resampledData.map((item) => {
+              return item["app_energy_export"] > 1400 ? "#C72F08" : "#4E46B4";
+            }),
+          },
+          {
+            label: `${secondFeeder.toUpperCase()} Energy`,
+            data: feeder2ResampledData.map((item) => item["app_energy_export"]),
+            backgroundColor: resampledData.map((item) => {
+              return item["app_energy_export"] > 1400 ? "#C72F08" : "#1e13b5";
+            }),
           },
         ];
 
@@ -62,7 +88,7 @@ const CostChart = ({
       setLoading(false);
       setError("No resampled data available");
     }
-  }, [data, timeperiod, backgroundColors]);
+  }, [data, timeperiod, backgroundColors, secondFeederData]);
 
   // Function to generate x-axis labels based on timeperiod
   const generateXAxisLabels = (resampledData) => {
@@ -116,7 +142,7 @@ const CostChart = ({
       <div className="card shadow mb-4">
         <div className="card-body">
           <div className="row">
-            <div className="title">Energy Cost by Source (Rs)</div>
+            <div className="title">Energy Consumption by Source</div>
             <div className="controls">
               <TimeBar
                 setStartDate={setStartDate}
@@ -148,8 +174,8 @@ const CostChart = ({
               <Bar
                 data={chartData}
                 options={{
-                  responsive: true,
                   maintainAspectRatio: false,
+                  responsive: true,
                   plugins: {
                     legend: {
                       display: true,
@@ -178,10 +204,6 @@ const CostChart = ({
                   //   },
                   //   y: {
                   //     stacked: true,
-                  //     title: {
-                  //       display: true,
-                  //       text: "Cost (Rs)",
-                  //     },
                   //   },
                   // },
                 }}
@@ -196,4 +218,4 @@ const CostChart = ({
   );
 };
 
-export default CostChart;
+export default StackedBarDGEB;

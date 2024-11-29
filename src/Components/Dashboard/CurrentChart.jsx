@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
 import "./realtimestyle.css"; // Import the shared CSS file
-import sidbarInfo from "../sidbarInfo";
 
-const RealTimeCurrentChart = ({ apiKey }) => {
+const RealTimeCurrentChart = () => {
   const [data, setData] = useState([]);
   const [powerStatus, setPowerStatus] = useState("Loading...");
 
@@ -16,34 +15,38 @@ const RealTimeCurrentChart = ({ apiKey }) => {
       resample_period: "T", // per minute
     };
     try {
-      const response = await axios.get(sidbarInfo.apiUrls[apiKey]?.apiUrl);
+      const [ebResponse, dg1Response, dg2Response] = await Promise.all([
+        axios.get("https://www.therion.co.in/api/ebs10reading/", { params }),
+        axios.get("https://www.therion.co.in/api/dg1s12reading/", { params }),
+        axios.get("https://www.therion.co.in/api/dg2s3reading/", { params }),
+      ]);
 
-      const timestamp = response.data["recent data"]["timestamp"];
-      const avgCurrent = response.data["recent data"]["avg_current"];
-      const rCurrent = response.data["recent data"]["r_current"];
-      const yCurrent = response.data["recent data"]["y_current"];
-      const bCurrent = response.data["recent data"]["b_current"];
+      const ebRecent = ebResponse.data["recent data"];
+      const dg1Recent = dg1Response.data["recent data"];
+      const dg2Recent = dg2Response.data["recent data"];
 
-      updateChartData(timestamp, avgCurrent, rCurrent, yCurrent, bCurrent);
-      //updatePowerStatus(ebRecent, dg1Recent, dg2Recent);
+      updateChartData(ebRecent, dg1Recent, dg2Recent);
+      updatePowerStatus(ebRecent, dg1Recent, dg2Recent);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  const updateChartData = (
-    timestamp,
-    avgCurrent,
-    rCurrent,
-    yCurrent,
-    bCurrent
-  ) => {
+  const updateChartData = (ebRecent, dg1Recent, dg2Recent) => {
     const newEntry = {
-      time: timestamp,
-      avgCurrent: avgCurrent,
-      rCurrent: rCurrent,
-      yCurrent: yCurrent,
-      bCurrent: bCurrent,
+      time: ebRecent.timestamp || dg1Recent.timestamp || dg2Recent.timestamp,
+      ebKw: ebRecent.kw,
+      ebR: ebRecent.phase_1_current,
+      ebY: ebRecent.phase_2_current,
+      ebB: ebRecent.phase_3_current,
+      dg1Kw: dg1Recent.kw,
+      dg1R: dg1Recent.phase_1_current,
+      dg1Y: dg1Recent.phase_2_current,
+      dg1B: dg1Recent.phase_3_current,
+      dg2Kw: dg2Recent.kw,
+      dg2R: dg2Recent.phase_1_current,
+      dg2Y: dg2Recent.phase_2_current,
+      dg2B: dg2Recent.phase_3_current,
     };
 
     setData((prevData) => {
@@ -79,46 +82,38 @@ const RealTimeCurrentChart = ({ apiKey }) => {
   };
 
   useEffect(() => {
-    setData([]);
     const interval = setInterval(() => {
       fetchData();
     }, 5000); // polling every 5 seconds
 
     return () => clearInterval(interval);
-  }, [apiKey]);
+  }, []);
 
-  // const activeData = data
-  //   .filter(
-  //     (item) =>
-  //       item.ebR > 0 ||
-  //       item.ebY > 0 ||
-  //       item.ebB > 0 ||
-  //       item.dg1R > 0 ||
-  //       item.dg1Y > 0 ||
-  //       item.dg1B > 0 ||
-  //       item.dg2R > 0 ||
-  //       item.dg2Y > 0 ||
-  //       item.dg2B > 0
-  //   )
-  //   .slice(-15);
+  const activeData = data
+    .filter(
+      (item) =>
+        item.ebR > 0 ||
+        item.ebY > 0 ||
+        item.ebB > 0 ||
+        item.dg1R > 0 ||
+        item.dg1Y > 0 ||
+        item.dg1B > 0 ||
+        item.dg2R > 0 ||
+        item.dg2Y > 0 ||
+        item.dg2B > 0
+    )
+    .slice(-15);
 
-  const labels = data.map((item) => item.time);
+  const labels = activeData.map((item) => item.time);
 
   const currentChartData = {
     labels,
     datasets: [
       {
-        label: "Avg Current",
-        data: data.map((item) => item.avgCurrent),
-        borderColor: "#6036D4",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
-      },
-      {
-        label: "R Current",
-        data: data.map((item) => item.rCurrent),
+        label: "Phase R Current",
+        data: activeData.map((item) =>
+          item.ebR > 0 ? item.ebR : item.dg1R > 0 ? item.dg1R : item.dg2R
+        ),
         borderColor: "#D33030",
         borderWidth: 2,
         pointRadius: 0,
@@ -126,8 +121,10 @@ const RealTimeCurrentChart = ({ apiKey }) => {
         tension: 0.4, // Smooth line
       },
       {
-        label: "Y Current",
-        data: data.map((item) => item.yCurrent),
+        label: "Phase Y Current",
+        data: activeData.map((item) =>
+          item.ebY > 0 ? item.ebY : item.dg1Y > 0 ? item.dg1Y : item.dg2Y
+        ),
         borderColor: "#FFB319",
         borderWidth: 2,
         pointRadius: 0,
@@ -135,8 +132,10 @@ const RealTimeCurrentChart = ({ apiKey }) => {
         tension: 0.4, // Smooth line
       },
       {
-        label: "B Current",
-        data: data.map((item) => item.bCurrent),
+        label: "Phase B Current",
+        data: activeData.map((item) =>
+          item.ebB > 0 ? item.ebB : item.dg1B > 0 ? item.dg1B : item.dg2B
+        ),
         borderColor: "#017EF3",
         borderWidth: 2,
         pointRadius: 0,
@@ -180,10 +179,6 @@ const RealTimeCurrentChart = ({ apiKey }) => {
         <div className="title">Current</div>
         <div className="legend-container-two">
           <div className="legend-item">
-            <span className="legend-color-box v1" style={{backgroundColor: '#6036D4'}}/>
-            <span>Avg Current</span>
-          </div>
-          <div className="legend-item">
             <span className="legend-color-box v1" />
             <span>R phase</span>
           </div>
@@ -202,26 +197,15 @@ const RealTimeCurrentChart = ({ apiKey }) => {
       </div>
       <div className="value-cont">
         <div className="value-heading">Current</div>
-        <div className="current-value">Recent Value</div>
-        <div className="legend-container" style= {{ marginTop: '0px', justifyItems: "start", justifyContent: "center"}}>
-        <div className="legend-item-two">
-            <div className="value-name">
-              <span className="legend-color-box v1" style={{backgroundColor: '#6036D4'}} /> Avg Current
-            </div>
-            <div className="value">
-              {data.length > 0
-                ? data[data.length - 1].avgCurrent.toFixed(2)
-                : "0.00"}{" "}
-              <span className="value-span">A</span>
-            </div>
-          </div>
+        <div className="current-value">Current Value</div>
+        <div className="legend-container">
           <div className="legend-item-two">
             <div className="value-name">
               <span className="legend-color-box v1" /> R phase
             </div>
             <div className="value">
-              {data.length > 0
-                ? data[data.length - 1].rCurrent.toFixed(2)
+              {activeData.length > 0
+                ? activeData[activeData.length - 1].ebR.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">A</span>
             </div>
@@ -231,8 +215,8 @@ const RealTimeCurrentChart = ({ apiKey }) => {
               <span className="legend-color-box v2" />Y phase
             </div>
             <div className="value">
-              {data.length > 0
-                ? data[data.length - 1].yCurrent.toFixed(2)
+              {activeData.length > 0
+                ? activeData[activeData.length - 1].ebY.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">A</span>
             </div>
@@ -242,8 +226,8 @@ const RealTimeCurrentChart = ({ apiKey }) => {
               <span className="legend-color-box v3" />B phase
             </div>
             <div className="value">
-              {data.length > 0
-                ? data[data.length - 1].bCurrent.toFixed(2)
+              {activeData.length > 0
+                ? activeData[activeData.length - 1].ebB.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">A</span>
             </div>

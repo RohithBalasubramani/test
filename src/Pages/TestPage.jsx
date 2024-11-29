@@ -3,14 +3,8 @@ import Sidebar from "../Components/Sidebar";
 import styled from "styled-components";
 import { Outlet, useNavigate } from "react-router-dom";
 import DashHeader from "../Components/DashHeader";
-import AMFgauge from "../Components/AmfGauge";
-import KPI from "../Components/KPI";
-import PowerFactorGauge from "../Components/PowerFactor";
-import WeatherWidget from "../Components/Weather";
-import RealTimeCurrentChart from "../Components/CurrentChart";
-import RealTimeVoltageChart from "../Components/VoltageChart";
 import BottomTimeSeries from "../Components/TimeseriesDash";
-import RealTimeChart from "../Components/Composite";
+import ParentRealTimeComponent from "../Components/RealTime/Realtime";
 //import "../Components/emstemp.css"
 
 const Container = styled.div`
@@ -53,7 +47,7 @@ const TestPage = () => {
         <Sidebar handleItemId={handleItemIdChange} />
       </SidebarComp>
       <OutLetContainer>
-        <DashHeader apikey={key}/>
+        <DashHeader apikey={key} />
         <div className="emstit">
           <span className="emstitle">Real - Time Consumption</span>
           <span className="emsspan">Status: Running EB power</span>
@@ -62,9 +56,10 @@ const TestPage = () => {
           className="realtimeflex"
           style={{ gap: "10px", display: "flex" }}
         >
-          <RealTimeChart apiKey={key} />
+          {/* <RealTimeChart apiKey={key} />
           <RealTimeCurrentChart apiKey={key} />
-          <RealTimeVoltageChart apiKey={key} />
+          <RealTimeVoltageChart apiKey={key} /> */}
+          <ParentRealTimeComponent apiKey={key} />
         </ChartContainer>
         <div className="emstit">
           <span className="emstitle">Energy Consumption History</span>
