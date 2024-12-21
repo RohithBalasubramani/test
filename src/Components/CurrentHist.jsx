@@ -6,6 +6,7 @@ import TimeBar from "./TRFF/TimePeriod"; // Ensure this path is correct
 import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
 //import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
 import "./StackedBarDGEB.css"; // Import the CSS file
+import DateRangeSelector from "./Dashboard/Daterangeselector";
 
 const CurrentHistorical = ({
   data,
@@ -39,49 +40,48 @@ const CurrentHistorical = ({
         const xAxisLabels = generateXAxisLabels(resampledData);
 
         const datasets = [
-            {
-              label: "Avg Current",
-              data: resampledData.map((item) => item["avg_current"]),
-              borderColor: "#6036D4",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              tension: 0.4, // Smooth line
-            },
-            {
-              label: "R Current",
-              data: resampledData.map((item) => item["r_current"]),
-              borderColor: "#D33030",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              tension: 0.4, // Smooth line
-            },
-            {
-              label: "Y Current",
-              data: resampledData.map((item) => item["y_current"]),
-              borderColor: "#FFB319",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              tension: 0.4, // Smooth line
-            },
-            {
-              label: "B Current",
-              data: resampledData.map((item) => item["b_current"]),
-              borderColor: "#017EF3",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              tension: 0.4, // Smooth line
-            },
-          ]
+          {
+            label: "Avg Current",
+            data: resampledData.map((item) => item["avg_current"]),
+            borderColor: "#6036D4",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.4, // Smooth line
+          },
+          {
+            label: "R Current",
+            data: resampledData.map((item) => item["r_current"]),
+            borderColor: "#D33030",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.4, // Smooth line
+          },
+          {
+            label: "Y Current",
+            data: resampledData.map((item) => item["y_current"]),
+            borderColor: "#FFB319",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.4, // Smooth line
+          },
+          {
+            label: "B Current",
+            data: resampledData.map((item) => item["b_current"]),
+            borderColor: "#017EF3",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.4, // Smooth line
+          },
+        ];
 
         setChartData({
           labels: xAxisLabels,
           datasets: datasets,
         });
-
       } catch (error) {
         console.error("Error processing data", error);
         setError(error.message);
@@ -184,12 +184,12 @@ const CurrentHistorical = ({
                 startDate={startDate} // Pass startDate
                 endDate={endDate} // Pass endDate
               />
-              {/* <DateRangeSelector
+              <DateRangeSelector
                 startDate={startDate}
                 setStartDate={setStartDate}
                 endDate={endDate}
                 setEndDate={setEndDate}
-              /> */}
+              />
             </div>
           </div>
           <div className="row">
@@ -202,10 +202,7 @@ const CurrentHistorical = ({
 
           {chartData && chartData.labels && chartData.labels.length > 0 ? (
             <div className="chart-size">
-              <Line
-                data={chartData}
-                options={options}
-              />
+              <Line data={chartData} options={options} />
             </div>
           ) : (
             <div>No data available for the selected range.</div>

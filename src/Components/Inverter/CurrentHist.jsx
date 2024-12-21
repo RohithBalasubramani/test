@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import "chart.js/auto";
 import dayjs from "dayjs";
-import TimeBar from "./TRFF/TimePeriod"; // Ensure this path is correct
-import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
-//import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
-import "./StackedBarDGEB.css"; // Import the CSS file
-import DateRangeSelector from "./Dashboard/Daterangeselector";
+import TimeBar from "../TRFF/TimePeriod"; // Ensure this path is correct
+import ToggleButtons from "../Togglesampling"; // Import the ToggleButtons component
+import DateRangeSelector from "../Daterangeselector"; // Import the DateRangeSelector component
+import "../StackedBarDGEB.css"; // Import the CSS file
+import testData from "../../testdata.json"
 
-const StackedBarDGEB = ({
+const CurrentHistorical = ({
   data,
   startDate,
   setStartDate,
@@ -25,9 +25,9 @@ const StackedBarDGEB = ({
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (data && data["resampled data"]) {
+    if (testData && testData["resampled data"]) {
       try {
-        const resampledData = data["resampled data"];
+        const resampledData = testData["resampled data"];
 
         // Define the keys to include manually and their custom labels
         const kwKeys = [
@@ -39,30 +39,32 @@ const StackedBarDGEB = ({
         // Generate x-axis labels based on selected time period
         const xAxisLabels = generateXAxisLabels(resampledData);
 
-        // const datasets = kwKeys.map((entry, index) => ({
-        //   label: entry.label,
-        //   data: resampledData.map((item) => item[entry.key] || 0),
-        //   backgroundColor:
-        //     backgroundColors[index] ||
-        //     `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
-        //       Math.random() * 255
-        //     )}, ${Math.floor(Math.random() * 255)}, 0.6)`,
-        // }));
-
         const datasets = [
-          {
-            label: "Energy",
-            data: resampledData.map((item) => item["app_energy_export"]),
-            backgroundColor: resampledData.map((item) => {
-              return item["app_energy_export"] > 1400 ? "#C72F08" : "#4E46B4";
-            }),
-          },
-        ];
+            {
+              label: "Current",
+              data: resampledData.map((item) => item["r_current"]),
+              borderColor: "#6036D4",
+              borderWidth: 2,
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              tension: 0.4, // Smooth line
+            },
+            {
+              label: "DC Current",
+              data: resampledData.map((item) => item["dc_current"]),
+              borderColor: "#D33030",
+              borderWidth: 2,
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              tension: 0.4, // Smooth line
+            },
+          ]
 
         setChartData({
           labels: xAxisLabels,
           datasets: datasets,
         });
+
       } catch (error) {
         console.error("Error processing data", error);
         setError(error.message);
@@ -122,12 +124,39 @@ const StackedBarDGEB = ({
     return <div>{error}</div>;
   }
 
+  const options = {
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        grid: {
+          color: "rgba(0, 0, 0, 0.05)",
+          borderDash: [5, 5],
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Volatage (V)",
+        },
+        grid: {
+          color: "rgba(0, 0, 0, 0.05)",
+          borderDash: [5, 5],
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: true, // Hide default legend
+      },
+    },
+  };
+
   return (
     <div className="stacked-bar-container">
       <div className="card shadow mb-4">
         <div className="card-body">
           <div className="row">
-            <div className="title">Energy Consumption by Source</div>
+            <div className="title">Current</div>
             <div className="controls">
               <TimeBar
                 setStartDate={setStartDate}
@@ -156,42 +185,9 @@ const StackedBarDGEB = ({
 
           {chartData && chartData.labels && chartData.labels.length > 0 ? (
             <div className="chart-size">
-              <Bar
+              <Line
                 data={chartData}
-                options={{
-                  maintainAspectRatio: false,
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      display: true,
-                      position: "bottom", // Position legend at the bottom
-                      align: "start", // Align legends to the start of the container
-                      labels: {
-                        boxWidth: 15,
-                        boxHeight: 15,
-                        padding: 20,
-                        font: {
-                          size: 14,
-                          family: "DM Sans",
-                        },
-                        usePointStyle: true,
-                        color: "#333",
-                      },
-                    },
-                  },
-                  // scales: {
-                  //   x: {
-                  //     stacked: true,
-                  //     grid: {
-                  //       color: "rgba(0, 0, 0, 0.05)", // Light gray color with 5% opacity
-                  //       borderDash: [8, 4], // Dotted line style
-                  //     },
-                  //   },
-                  //   y: {
-                  //     stacked: true,
-                  //   },
-                  // },
-                }}
+                options={options}
               />
             </div>
           ) : (
@@ -203,4 +199,4 @@ const StackedBarDGEB = ({
   );
 };
 
-export default StackedBarDGEB;
+export default CurrentHistorical;

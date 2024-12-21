@@ -1,7 +1,8 @@
+// Sidebar.js
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import SidebarTree from "./SidebarTree";
-import SideBarInfo from "../sidbarInfo";
+import { sideBarTreeArray } from "../sidebarInfo2"; // Correct named import
 import { useLocation } from "react-router-dom";
 
 const Container = styled.div`
@@ -28,28 +29,36 @@ const Paragraph = styled.p`
   line-height: 16px; /* 133.333% */
 `;
 
-const Sidebar = ({handleItemId}) => {
-  const [key, setKey] = useState("")
-  const [topBarSelection,  setTopBarSelection] = useState("")
-  const location = useLocation()
+const Sidebar = ({ handleItemId }) => {
+  const [key, setKey] = useState("");
+  const [topBarSelection, setTopBarSelection] = useState("");
+  const location = useLocation();
 
   useEffect(() => {
-    setTopBarSelection(location.pathname.split('/')[2])
-  },[location])
+    const pathSegments = location.pathname.split("/");
+    // Ensure that the path has at least 3 segments
+    if (pathSegments.length >= 3) {
+      setTopBarSelection(pathSegments[2]);
+    } else {
+      setTopBarSelection(""); // Reset if not enough segments
+    }
+  }, [location]);
 
   const handleItemIdChange = (itemId) => {
-    handleItemId(itemId)
-  }
+    handleItemId(itemId, topBarSelection);
+  };
 
   return (
     <Container>
-      {topBarSelection &&
+      {topBarSelection && sideBarTreeArray[topBarSelection] ? ( // Add check for existence
         <SidebarTree
-          treeArray={SideBarInfo.sideBarTreeArray[topBarSelection]}
+          treeArray={sideBarTreeArray[topBarSelection]}
           topBarSelection={topBarSelection}
           handleItemIdChange={handleItemIdChange}
         />
-      }
+      ) : (
+        <Paragraph>No Data Available for the Selected Section</Paragraph> // Fallback UI
+      )}
     </Container>
   );
 };

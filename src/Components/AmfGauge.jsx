@@ -10,7 +10,9 @@ import { Link } from "react-router-dom";
 // Styled components for layout and styling
 const Container = styled.div`
   display: flex;
-  justify-content:center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1vh;
 `;
 
 const Top = styled.div`
@@ -41,7 +43,7 @@ const Title = styled.div`
   color: #333;
 `;
 
-const AMFgauge = () => {
+const AMFgauge = ({ kpidata }) => {
   const [ebUsage, setEbUsage] = useState(0);
   const [dgUsage, setDgUsage] = useState(0);
   const [ebTot, setEbtot] = useState(0);
@@ -118,6 +120,23 @@ const AMFgauge = () => {
               <span> kWh </span>
             </div>
           </GaugeCont>
+        </div>
+      </div>
+
+      <div className="kpi-cont">
+        <div className="kpi-top">
+          <div className="kpi-tit">Peak Voltage</div>
+          <div style={{ display: "inline" }}>
+            <span className="kpi-val"> {1} </span>
+            <span className="kpi-units"> A </span>
+          </div>
+        </div>
+        <div className="kpi-bot">
+          <span className="percentage-cont">
+            <ArrowUpward sx={{ fontSize: "14px" }} />
+            25%
+          </span>
+          <span className="percentage-span">More than last month</span>
         </div>
       </div>
 

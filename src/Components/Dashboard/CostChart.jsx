@@ -17,7 +17,7 @@ const CostChart = ({
   setTimeperiod,
   dateRange,
   setDateRange,
-  backgroundColors = [], // Add backgroundColors prop
+  backgroundColors = [],
   fields = [
     { key: "P1_AMFS_Transformer1", label: "Transformer 1" },
     { key: "P1_AMFS_Generator1", label: "Generator 1" },
@@ -32,35 +32,79 @@ const CostChart = ({
     if (data && data["resampled data"]) {
       try {
         const resampledData = data["resampled data"];
+        console.log("Original Resampled Data:", resampledData);
 
-        // Generate x-axis labels based on selected time period
-        const xAxisLabels = generateXAxisLabels(resampledData);
+        // Normalize keys in resampled data
+        const normalizedResampledData = resampledData.map((item) => {
+          const normalizedItem = {};
+          Object.keys(item).forEach((key) => {
+            normalizedItem[key.toLowerCase()] = item[key];
+          });
+          return normalizedItem;
+        });
 
-        const datasets = fields.map((field, index) => ({
-          label: field.label,
-          data: resampledData.map((item) => (item[field.key] || 0) * 10), // Multiply kW by 10 to get cost
-          backgroundColor:
-            backgroundColors[index] ||
-            `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
-              Math.random() * 255
-            )}, ${Math.floor(Math.random() * 255)}, 0.6)`,
+        // Normalize keys in fields
+        const normalizedFields = fields.map((field) => ({
+          ...field,
+          key: field.key.toLowerCase(),
         }));
+
+        console.log("Normalized Fields:", normalizedFields);
+        console.log("Normalized Resampled Data:", normalizedResampledData);
+
+        // Validate fields
+        const invalidFields = normalizedFields.filter(
+          (field) =>
+            !normalizedResampledData.some(
+              (item) => item[field.key] !== undefined
+            )
+        );
+
+        if (invalidFields.length > 0) {
+          console.error(
+            "Invalid fields detected:",
+            invalidFields.map((field) => field.key)
+          );
+        }
+
+        // Generate x-axis labels
+        const xAxisLabels = generateXAxisLabels(normalizedResampledData);
+
+        // Map datasets
+        const datasets = normalizedFields.map((field, index) => {
+          const dataPoints = normalizedResampledData.map(
+            (item) => (item[field.key] || 0) * 10 // Multiply kW by 10 for cost
+          );
+
+          console.log(`Data for ${field.label}:`, dataPoints);
+
+          return {
+            label: field.label,
+            data: dataPoints,
+            backgroundColor:
+              backgroundColors[index] ||
+              `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
+                Math.random() * 255
+              )}, ${Math.floor(Math.random() * 255)}, 0.6)`,
+          };
+        });
 
         setChartData({
           labels: xAxisLabels,
           datasets: datasets,
         });
       } catch (error) {
-        console.error("Error processing data", error);
-        setError(error.message);
+        console.error("Error processing data:", error);
+        setError(error.message || "Error processing data.");
       } finally {
         setLoading(false);
       }
     } else {
+      console.error("No resampled data available.");
       setLoading(false);
-      setError("No resampled data available");
+      setError("No resampled data available.");
     }
-  }, [data, timeperiod, backgroundColors, fields]);
+  }, [data, fields, backgroundColors, timeperiod]);
 
   // Function to generate x-axis labels based on timeperiod
   const generateXAxisLabels = (resampledData) => {
@@ -76,7 +120,7 @@ const CostChart = ({
           dayjs(item.timestamp).format("MMM D, YYYY")
         );
       case "W": // Weekly
-        return resampledData.map((item, index) => {
+        return resampledData.map((item) => {
           const weekNumber = dayjs(item.timestamp).week();
           return `Week ${weekNumber} - ${dayjs(item.timestamp).format("MMM")}`;
         });
@@ -106,7 +150,7 @@ const CostChart = ({
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <div style={{ color: "red" }}>Error: {error}</div>;
   }
 
   return (
@@ -121,9 +165,9 @@ const CostChart = ({
                 setEndDate={setEndDate}
                 dateRange={dateRange}
                 setDateRange={setDateRange}
-                setTimeperiod={setTimeperiod} // Pass setTimeperiod to TimeBar
-                startDate={startDate} // Pass startDate
-                endDate={endDate} // Pass endDate
+                setTimeperiod={setTimeperiod}
+                startDate={startDate}
+                endDate={endDate}
               />
               <DateRangeSelector
                 startDate={startDate}
@@ -151,8 +195,7 @@ const CostChart = ({
                   plugins: {
                     legend: {
                       display: true,
-                      position: "bottom", // Position legend at the bottom
-                      align: "start", // Align legends to the start of the container
+                      position: "bottom",
                       labels: {
                         boxWidth: 15,
                         boxHeight: 15,
@@ -167,13 +210,7 @@ const CostChart = ({
                     },
                   },
                   scales: {
-                    x: {
-                      stacked: true,
-                      grid: {
-                        color: "rgba(0, 0, 0, 0.05)", // Light gray color with 5% opacity
-                        borderDash: [8, 4], // Dotted line style
-                      },
-                    },
+                    x: { stacked: true },
                     y: {
                       stacked: true,
                       title: {

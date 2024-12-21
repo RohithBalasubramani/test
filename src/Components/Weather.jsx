@@ -8,7 +8,7 @@ const WeatherWidgetContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2vh;
-  height: 38vh;
+  height: auto;
   width: 100%;
 `;
 

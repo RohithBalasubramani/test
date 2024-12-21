@@ -6,6 +6,7 @@ import TimeBar from "./TRFF/TimePeriod"; // Ensure this path is correct
 import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
 //import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
 import "./StackedBarDGEB.css"; // Import the CSS file
+import DateRangeSelector from "./Dashboard/Daterangeselector";
 
 const VoltageHistorical = ({
   data,
@@ -39,79 +40,66 @@ const VoltageHistorical = ({
         const xAxisLabels = generateXAxisLabels(resampledData);
 
         const datasets = [
-            {
-              label: "Vr Voltage",
-              data: resampledData.map((item) =>
-                item["r_phase_voltage"]
-              ),
-              borderColor: "#D33030",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              tension: 0.4, // Smooth line
-            },
-            {
-              label: "Vy Voltage",
-              data: resampledData.map((item) =>
-                item["y_phase_voltage"]
-              ),
-              borderColor: "#FFB319",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              tension: 0.4, // Smooth line
-            },
-            {
-              label: "Vb Voltage",
-              data: resampledData.map((item) =>
-                item["b_phase_voltage"]
-              ),
-              borderColor: "#017EF3",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              tension: 0.4, // Smooth line
-            },
-            {
-              label: "Vry Voltage",
-              data: resampledData.map((item) =>
-                item["ry_voltage"]
-              ),
-              borderColor: "#DC8006",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              tension: 0.4, // Smooth line
-            },
-            {
-              label: "Vyb Voltage",
-              data: resampledData.map((item) =>
-                item["yb_voltage"]
-              ),
-              borderColor: "#16896B",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              tension: 0.4, // Smooth line
-            },
-            {
-              label: "Vbr Voltage",
-              data: resampledData.map((item) =>
-                item["br_voltage"]
-              ),
-              borderColor: "#6036D4",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              tension: 0.4, // Smooth line
-            },
-        ]
+          {
+            label: "Vr Voltage",
+            data: resampledData.map((item) => item["r_phase_voltage"]),
+            borderColor: "#D33030",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.4, // Smooth line
+          },
+          {
+            label: "Vy Voltage",
+            data: resampledData.map((item) => item["y_phase_voltage"]),
+            borderColor: "#FFB319",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.4, // Smooth line
+          },
+          {
+            label: "Vb Voltage",
+            data: resampledData.map((item) => item["b_phase_voltage"]),
+            borderColor: "#017EF3",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.4, // Smooth line
+          },
+          {
+            label: "Vry Voltage",
+            data: resampledData.map((item) => item["ry_voltage"]),
+            borderColor: "#DC8006",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.4, // Smooth line
+          },
+          {
+            label: "Vyb Voltage",
+            data: resampledData.map((item) => item["yb_voltage"]),
+            borderColor: "#16896B",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.4, // Smooth line
+          },
+          {
+            label: "Vbr Voltage",
+            data: resampledData.map((item) => item["br_voltage"]),
+            borderColor: "#6036D4",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.4, // Smooth line
+          },
+        ];
 
         setChartData({
           labels: xAxisLabels,
           datasets: datasets,
         });
-
       } catch (error) {
         console.error("Error processing data", error);
         setError(error.message);
@@ -214,12 +202,12 @@ const VoltageHistorical = ({
                 startDate={startDate} // Pass startDate
                 endDate={endDate} // Pass endDate
               />
-              {/* <DateRangeSelector
+              <DateRangeSelector
                 startDate={startDate}
                 setStartDate={setStartDate}
                 endDate={endDate}
                 setEndDate={setEndDate}
-              /> */}
+              />
             </div>
           </div>
           <div className="row">
@@ -232,10 +220,7 @@ const VoltageHistorical = ({
 
           {chartData && chartData.labels && chartData.labels.length > 0 ? (
             <div className="chart-size">
-              <Line
-                data={chartData}
-                options={options}
-              />
+              <Line data={chartData} options={options} />
             </div>
           ) : (
             <div>No data available for the selected range.</div>

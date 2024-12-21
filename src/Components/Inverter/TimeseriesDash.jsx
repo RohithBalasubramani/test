@@ -4,27 +4,27 @@ import {
   LocalizationProvider,
   MobileDateTimePicker,
 } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import TimeBar from "./TRFF/TimePeriod"; // Ensure this path is correct
-import DonutChart from "./DonutDash";
-import StackedBarChart from "./StackedChart";
-import PowerOutageChart from "./Powercuts";
+// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import TimeBar from "./TRFF/TimePeriod"; // Ensure this path is correct
+// import DonutChart from "./DonutDash";
+// import StackedBarChart from "./StackedChart";
+// import PowerOutageChart from "./Powercuts";
 import StackedBarDGEB from "./StackTest";
-import MySankeyChart from "./Sankee";
-import EnergyComp from "./EnergyPage";
-import WeatherWidget from "./Weather";
+// import MySankeyChart from "./Sankee";
+// import EnergyComp from "./EnergyPage";
+// import WeatherWidget from "./Weather";
 import dayjs from "dayjs";
-import VerticalChart from "./BarchartVertical";
-import CostChart from "./CostChart";
-import CombinedChart from "./Combine";
+// import VerticalChart from "./BarchartVertical";
+// import CostChart from "./CostChart";
+// import CombinedChart from "./Combine";
 import DataTable from "./TableDGEB";
 import VoltageHistorical from "./VoltageHist";
 import CurrentHistorical from "./CurrentHist";
 import PowerfactorAndFreqHistorical from "./PowerFactorAndFreqHist";
-import sidbarInfo from "../sidbarInfo";
-import { sideBarTreeArray } from "../sidebarInfo2";
+import sidbarInfo from "../../sidbarInfo";
+import testData from "../../testdata.json"
 
-const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
+const BottomTimeSeries = ({apikey}) => {
   // Initialize state with default values
   const [startDate, setStartDate] = useState(dayjs().startOf("day"));
   const [endDate, setEndDate] = useState(dayjs());
@@ -35,42 +35,12 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
   // Function to fetch data
   const fetchData = async (start, end, period) => {
     try {
-      if (apiKey && topBar) {
-        let apiEndpointsArray = undefined;
-        if (parentName && !parentName2) {
-          apiEndpointsArray = sideBarTreeArray[topBar].find(
-            (arr) => arr.id === parentName
-          );
-          apiEndpointsArray = apiEndpointsArray.children.find(
-            (arr) => arr.id === apiKey
-          );
-        } else if (parentName && parentName2) {
-          apiEndpointsArray = sideBarTreeArray[topBar].find(
-            (arr) => arr.id === parentName
-          );
-          apiEndpointsArray = apiEndpointsArray.children.find(
-            (arr) => arr.id === parentName2
-          );
-          apiEndpointsArray = apiEndpointsArray.children.find(
-            (arr) => arr.id === apiKey
-          );
-        } else if (!parentName && !parentName2) {
-          apiEndpointsArray = sideBarTreeArray[topBar].find(
-            (arr) => arr.id === apiKey
-          );
-        }
-        if (apiEndpointsArray) {
-          const apiEndPoint = apiEndpointsArray.apis[0];
-          if (apiEndPoint) {
-            const response = await fetch(
-              `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
-            );
-            const result = await response.json();
-            setData(result);
-            console.log("datatimedash", result);
-          }
-        }
-      }
+      const response = await fetch(
+        `${sidbarInfo.apiUrls[apikey].apiUrl}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+      );
+      const result = await response.json();
+      setData(result);
+      console.log("datatimedash", result);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -78,11 +48,11 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
 
   // Fetch data on initial render and whenever startDate, endDate, or timeperiod changes
   useEffect(() => {
-    setData(null);
-    if (startDate && endDate) {
+    setData(null)
+    if (startDate && endDate && sidbarInfo.apiUrls[apikey]) {
       fetchData(startDate, endDate, timeperiod);
     }
-  }, [startDate, endDate, timeperiod, apiKey]);
+  }, [startDate, endDate, timeperiod, apikey]);
 
   // Handle time period change
   const handleChange = (event, newAlignment) => {
@@ -162,7 +132,7 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
               setDateRange={setDateRange}
               backgroundColors={bgsource}
             />
-            <CostChart
+            {/* <CostChart
               data={data}
               startDate={startDate}
               setStartDate={setStartDate}
@@ -173,7 +143,7 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
               dateRange={dateRange}
               setDateRange={setDateRange}
               backgroundColors={bgsource}
-            />
+            /> */}
             <VoltageHistorical
               data={data}
               startDate={startDate}
@@ -186,7 +156,7 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
               setDateRange={setDateRange}
               backgroundColors={bgsource}
             />
-            <CurrentHistorical
+            <CurrentHistorical 
               data={data}
               startDate={startDate}
               setStartDate={setStartDate}
@@ -297,13 +267,13 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
           /> */}
 
           <div style={{ marginTop: "5vh" }}>
-            {data && (
+            {testData && (
               <DataTable
-                tablesData={data["resampled data"]} // Pass the correct data subset
+                tablesData={testData["resampled data"]} // Pass the correct data subset
                 orderBy=""
                 order="asc"
                 handleRequestSort={() => {}}
-                sortedData={data["resampled data"]} // Ensure sorted data is correct
+                sortedData={testData["resampled data"]} // Ensure sorted data is correct
                 rowsPerPage={10}
                 handleChangePage={() => {}}
                 handleChangeRowsPerPage={() => {}}

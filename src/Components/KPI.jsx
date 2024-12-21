@@ -25,7 +25,7 @@ const KPI = ({ data }) => {
     todayConsumption: 0,
     energyCost: 0,
     peakCurrent: 0,
-    peakPower: 0
+    peakPower: 0,
   });
 
   console.log("KPI data", data);
@@ -42,10 +42,14 @@ const KPI = ({ data }) => {
       //   (today.DG1S12Reading_kwh || 0) +
       //   (today.DG2S3Reading_kwh || 0);
 
-      const powerArray = resampled.map((item) => Math.max(item["b_ac_power"], item["y_ac_power"], item["r_ac_power"]))
-      const currentArray = resampled.map((item) => Math.max(item["r_current"], item["y_current"], item["b_current"]))
-      const peakCurrent = Math.max(...currentArray)
-      const peakPower = Math.max(...powerArray)
+      const powerArray = resampled.map((item) =>
+        Math.max(item["b_ac_power"], item["y_ac_power"], item["r_ac_power"])
+      );
+      const currentArray = resampled.map((item) =>
+        Math.max(item["r_current"], item["y_current"], item["b_current"])
+      );
+      const peakCurrent = Math.max(...currentArray);
+      const peakPower = Math.max(...powerArray);
 
       // Calculate today's consumption from today data
       // const todayConsumption =
@@ -67,8 +71,8 @@ const KPI = ({ data }) => {
       setKpiData({
         efficiency,
         pendingAlerts,
-        peakCurrent:peakCurrent,
-        peakPower:peakPower
+        peakCurrent: peakCurrent,
+        peakPower: peakPower,
       });
     }
   }, [data]);
@@ -104,10 +108,7 @@ const KPI = ({ data }) => {
           <div className="kpi-top">
             <div className="kpi-tit">Peak Power</div>
             <div style={{ display: "inline" }}>
-              <span className="kpi-val">
-                {" "}
-                {kpiData.peakPower.toFixed(2)}{" "}
-              </span>
+              <span className="kpi-val"> {kpiData.peakPower.toFixed(2)} </span>
               <span className="kpi-units"> kWh </span>
             </div>
           </div>

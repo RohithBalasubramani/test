@@ -43,65 +43,103 @@ const HorizontalChart = ({
     { key: "P1_AMFS_Outgoing2", label: "Outgoing 2" },
     { key: "P1_AMFS_APFC2", label: "APFC 2" },
     { key: "P1_AMFS_Transformer3", label: "Transformer 3" },
-  ], // Specify fields dynamically
+  ],
 }) => {
   const [chartData, setChartData] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (data && data["resampled data"]) {
-      const resampledData = data["resampled data"];
+      try {
+        const resampledData = data["resampled data"];
+        console.log("Original Resampled Data:", resampledData);
 
-      // Sum up the values for each field from resampled data
-      let values = fields.map((field) => ({
-        label: field.label,
-        value: resampledData.reduce(
-          (sum, item) => sum + (item[field.key] || 0),
-          0
-        ),
-        key: field.key,
-      }));
+        // Normalize resampled data keys
+        const normalizedResampledData = resampledData.map((item) => {
+          const normalizedItem = {};
+          Object.keys(item).forEach((key) => {
+            normalizedItem[key.toLowerCase()] = item[key];
+          });
+          return normalizedItem;
+        });
 
-      // Sort values in descending order
-      values.sort((a, b) => b.value - a.value);
+        // Normalize fields
+        const normalizedFields = fields.map((field) => ({
+          ...field,
+          key: field.key.toLowerCase(),
+        }));
 
-      const labels = values.map((item) => item.label);
-      const sortedValues = values.map((item) => item.value);
-      const links = values.map((item) => `/details/${item.key}`); // Generate dynamic links
+        console.log("Normalized Fields:", normalizedFields);
+        console.log("Normalized Resampled Data:", normalizedResampledData);
 
-      // Update chart data
-      setChartData({
-        labels,
-        datasets: [
-          {
-            label: "Energy Sources (KWh)", // Legend label
-            data: sortedValues, // Sorted data
-            backgroundColor: backgroundColors.length
-              ? backgroundColors
-              : [
-                  "#FF6384",
-                  "#36A2EB",
-                  "#FFCE56",
-                  "#4BC0C0",
-                  "#9966FF",
-                  "#FF9F40",
-                  "#FFCD56",
-                  "#C9CBCF",
-                ],
-            hoverBackgroundColor: [
-              "#FF6384",
-              "#36A2EB",
-              "#FFCE56",
-              "#4BC0C0",
-              "#9966FF",
-              "#FF9F40",
-              "#FFCD56",
-              "#C9CBCF",
-            ],
-            links, // Add links to the dataset for navigation
-          },
-        ],
-      });
+        // Validate fields against normalized resampled data
+        const invalidFields = normalizedFields.filter(
+          (field) =>
+            !normalizedResampledData.some(
+              (item) => item[field.key] !== undefined
+            )
+        );
+
+        if (invalidFields.length > 0) {
+          console.error(
+            "Invalid fields detected:",
+            invalidFields.map((field) => field.key)
+          );
+        }
+
+        // Sum up the values for each field
+        const values = normalizedFields.map((field) => ({
+          label: field.label,
+          value: normalizedResampledData.reduce(
+            (sum, item) => sum + (item[field.key] || 0),
+            0
+          ),
+          key: field.key,
+        }));
+
+        // Sort values in descending order
+        values.sort((a, b) => b.value - a.value);
+
+        const labels = values.map((item) => item.label);
+        const sortedValues = values.map((item) => item.value);
+        const links = values.map((item) => `/details/${item.key}`);
+
+        // Update chart data
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: "Energy Sources (KWh)",
+              data: sortedValues,
+              backgroundColor: backgroundColors.length
+                ? backgroundColors
+                : [
+                    "#FF6384",
+                    "#36A2EB",
+                    "#FFCE56",
+                    "#4BC0C0",
+                    "#9966FF",
+                    "#FF9F40",
+                    "#FFCD56",
+                    "#C9CBCF",
+                  ],
+              hoverBackgroundColor: [
+                "#FF6384",
+                "#36A2EB",
+                "#FFCE56",
+                "#4BC0C0",
+                "#9966FF",
+                "#FF9F40",
+                "#FFCD56",
+                "#C9CBCF",
+              ],
+              links,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error processing chart data:", error);
+      }
     } else {
       console.error("No resampled data available");
     }
@@ -114,13 +152,13 @@ const HorizontalChart = ({
   // Chart.js options for horizontal bar chart
   const options = {
     responsive: true,
-    maintainAspectRatio: false, // Allow full width and height to be controlled by CSS
-    indexAxis: "y", // Set the axis to horizontal
+    maintainAspectRatio: false,
+    indexAxis: "y", // Horizontal bar chart
     plugins: {
       legend: {
         display: true,
-        position: "bottom", // Position the legend at the bottom
-        align: "center", // Align the legend items
+        position: "bottom",
+        align: "center",
         labels: {
           generateLabels: (chart) => {
             return chart.data.labels.map((label, i) => ({
@@ -128,15 +166,15 @@ const HorizontalChart = ({
               fillStyle: chart.data.datasets[0].backgroundColor[i],
             }));
           },
-          boxWidth: 15, // Box size for legend color
+          boxWidth: 15,
           boxHeight: 15,
-          padding: 20, // Padding between legend items
+          padding: 20,
           font: {
-            size: 14, // Font size for legend text
+            size: 14,
             family: "DM Sans",
           },
-          usePointStyle: true, // Use point style for legends
-          color: "#333", // Text color for legend
+          usePointStyle: true,
+          color: "#333",
         },
       },
       tooltip: {
@@ -144,7 +182,7 @@ const HorizontalChart = ({
           label: function (context) {
             const label = context.label || "";
             const value = context.raw || 0;
-            return `${label}: ${value.toFixed(2)} KWh`; // Display value in KWh with 2 decimal places
+            return `${label}: ${value.toFixed(2)} KWh`;
           },
         },
       },
@@ -163,11 +201,11 @@ const HorizontalChart = ({
         },
         ticks: {
           callback: function (value) {
-            return value.toFixed(2) + " KWh"; // Format x-axis labels to display in KWh
+            return value.toFixed(2) + " KWh";
           },
         },
         grid: {
-          color: "rgba(0, 0, 0, 0.05)", // Set grid line opacity to 5%
+          color: "rgba(0, 0, 0, 0.05)",
         },
       },
       y: {
@@ -181,7 +219,7 @@ const HorizontalChart = ({
           color: "#666",
         },
         grid: {
-          display: false, // Optional: Hide grid lines for y-axis
+          display: false,
         },
       },
     },

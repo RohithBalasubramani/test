@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
-import "./realtimestyle.css";
+import "./RealTimeStyle.css";
 
 const RealTimeCurrentChart = ({ rawData }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    if (rawData && rawData["recent data"]) {
+    if (rawData) {
       const { timestamp, avg_current, r_current, y_current, b_current } =
-        rawData["recent data"];
+        rawData;
 
       const newEntry = {
         time: timestamp,

@@ -11,7 +11,7 @@ import {
   Legend,
   registerables,
 } from "chart.js";
-import "./realtimestyle.css";
+import "./RealTimeStyle.css";
 import "chartjs-adapter-date-fns";
 
 ChartJS.register(
@@ -30,7 +30,7 @@ const RealTimeChart = ({ rawData }) => {
 
   // Update chart data when rawData changes
   useEffect(() => {
-    if (rawData && rawData["recent data"]) {
+    if (rawData) {
       const {
         timestamp,
         b_ac_power,
@@ -42,7 +42,7 @@ const RealTimeChart = ({ rawData }) => {
         b_reactive_power,
         r_reactive_power,
         y_reactive_power,
-      } = rawData["recent data"];
+      } = rawData;
 
       const newEntry = {
         time: timestamp,

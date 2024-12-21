@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../Components/Sidebar";
 import styled from "styled-components";
-import { Outlet, useNavigate } from "react-router-dom";
+import { useLocation, Outlet } from "react-router-dom";
 import DashHeader from "../Components/DashHeader";
 import BottomTimeSeries from "../Components/TimeseriesDash";
 import ParentRealTimeComponent from "../Components/RealTime/Realtime";
-//import "../Components/emstemp.css"
 
 const Container = styled.div`
   display: flex;
@@ -33,12 +32,22 @@ const ChartContainer = styled.div`
   gap: 3vh;
 `;
 
-const TestPage = () => {
-  const [key, setKey] = useState("");
+const TestPage = ({ apikey, sectionName, parentName, parentName2 }) => {
+  const location = useLocation();
+  const [key, setKey] = useState(apikey || "");
+  const [topBar, setTopBar] = useState(sectionName || "");
 
-  const handleItemIdChange = (itemId) => {
+  useEffect(() => {
+    if (!apikey) {
+      const pathSegments = location.pathname.split("/");
+      const derivedKey = pathSegments[pathSegments.length - 1] || "";
+      setKey(derivedKey);
+    }
+  }, [location, apikey]);
+
+  const handleItemIdChange = (itemId, topBarSelection) => {
     setKey(itemId);
-    console.log(itemId);
+    console.log("Selected Item ID:", itemId);
   };
 
   return (
@@ -47,7 +56,12 @@ const TestPage = () => {
         <Sidebar handleItemId={handleItemIdChange} />
       </SidebarComp>
       <OutLetContainer>
-        <DashHeader apikey={key} />
+        <DashHeader
+          apikey={key}
+          topBar={topBar}
+          parentName={parentName}
+          parentName2={parentName2}
+        />
         <div className="emstit">
           <span className="emstitle">Real - Time Consumption</span>
           <span className="emsspan">Status: Running EB power</span>
@@ -56,10 +70,12 @@ const TestPage = () => {
           className="realtimeflex"
           style={{ gap: "10px", display: "flex" }}
         >
-          {/* <RealTimeChart apiKey={key} />
-          <RealTimeCurrentChart apiKey={key} />
-          <RealTimeVoltageChart apiKey={key} /> */}
-          <ParentRealTimeComponent apiKey={key} />
+          <ParentRealTimeComponent
+            apiKey={key}
+            topBar={topBar}
+            parentName={parentName}
+            parentName2={parentName2}
+          />
         </ChartContainer>
         <div className="emstit">
           <span className="emstitle">Energy Consumption History</span>
@@ -69,7 +85,12 @@ const TestPage = () => {
           </span>
         </div>
         <div style={{ width: "80vw" }}>
-          <BottomTimeSeries apikey={key} />
+          <BottomTimeSeries
+            apiKey={key}
+            topBar={topBar}
+            parentName={parentName}
+            parentName2={parentName2}
+          />
         </div>
         <Outlet />
       </OutLetContainer>

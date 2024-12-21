@@ -3,10 +3,10 @@ import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import dayjs from "dayjs";
 import TimeBar from "../TRFF/TimePeriod"; // Ensure this path is correct
-import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
-import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
+import ToggleButtons from "./Togglesampling";
+import DateRangeSelector from "./Daterangeselector";
 import BarChartLoad from "./ChartLoading";
-import "./StackedBarDGEB.css"; // Import the CSS file for styling
+import "./StackedBarDGEB.css";
 
 const StackedBarChart = ({
   data,
@@ -18,8 +18,8 @@ const StackedBarChart = ({
   setTimeperiod,
   dateRange,
   setDateRange,
-  backgroundColors = [], // Add backgroundColors prop
-  fields = [], // Pass fields as a prop
+  backgroundColors = [],
+  fields = [],
 }) => {
   const [chartData, setChartData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -29,14 +29,49 @@ const StackedBarChart = ({
     if (data && data["resampled data"]) {
       try {
         const resampledData = data["resampled data"];
+        console.log("Original Resampled Data:", resampledData);
 
-        // Generate x-axis labels based on selected time period
-        const xAxisLabels = generateXAxisLabels(resampledData);
+        // 🔄 Normalize resampled data keys
+        const normalizedResampledData = resampledData.map((item) => {
+          const normalizedItem = {};
+          Object.keys(item).forEach((key) => {
+            normalizedItem[key.toLowerCase()] = item[key];
+          });
+          return normalizedItem;
+        });
 
-        const datasets = fields
+        // 🔄 Normalize fields keys
+        const normalizedFields = fields.map((field) => ({
+          ...field,
+          key: field.key.toLowerCase(),
+        }));
+
+        console.log("Normalized Fields:", normalizedFields);
+        console.log("Normalized Resampled Data:", normalizedResampledData);
+
+        // ✅ Validate fields against normalized resampled data
+        const invalidFields = normalizedFields.filter(
+          (field) =>
+            !normalizedResampledData.some(
+              (item) => item[field.key] !== undefined
+            )
+        );
+
+        if (invalidFields.length > 0) {
+          console.error(
+            "Invalid fields detected:",
+            invalidFields.map((field) => field.key)
+          );
+        }
+
+        // 📊 Generate x-axis labels
+        const xAxisLabels = generateXAxisLabels(normalizedResampledData);
+
+        // 📊 Generate datasets
+        const datasets = normalizedFields
           .map((entry, index) => ({
             label: entry.label,
-            data: resampledData.map((item) => item[entry.key] || 0),
+            data: normalizedResampledData.map((item) => item[entry.key] || 0),
             backgroundColor:
               backgroundColors[index] ||
               `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
@@ -45,14 +80,14 @@ const StackedBarChart = ({
           }))
           .filter((dataset) =>
             dataset.data.some((value) => value !== null && value !== 0)
-          ); // Filter out datasets with only null or zero values
+          );
 
         setChartData({
           labels: xAxisLabels,
           datasets: datasets,
         });
       } catch (error) {
-        console.error("Error processing data", error);
+        console.error("Error processing data:", error);
         setError(error.message);
       } finally {
         setLoading(false);
@@ -63,7 +98,7 @@ const StackedBarChart = ({
     }
   }, [data, timeperiod, backgroundColors, fields]);
 
-  // Function to generate x-axis labels based on timeperiod
+  // 📅 Function to generate x-axis labels
   const generateXAxisLabels = (resampledData) => {
     if (!resampledData || resampledData.length === 0) return [];
 
@@ -77,7 +112,7 @@ const StackedBarChart = ({
           dayjs(item.timestamp).format("MMM D, YYYY")
         );
       case "W": // Weekly
-        return resampledData.map((item, index) => {
+        return resampledData.map((item) => {
           const weekNumber = dayjs(item.timestamp).week();
           return `Week ${weekNumber} - ${dayjs(item.timestamp).format("MMM")}`;
         });
@@ -102,6 +137,7 @@ const StackedBarChart = ({
     }
   };
 
+  // 🕒 Loading state
   if (loading) {
     return (
       <div>
@@ -110,10 +146,12 @@ const StackedBarChart = ({
     );
   }
 
+  // 🚨 Error state
   if (error) {
     return <div>{error}</div>;
   }
 
+  // 📊 Render chart
   return (
     <div className="stacked-bar-container">
       <div className="card shadow mb-4">
@@ -152,8 +190,7 @@ const StackedBarChart = ({
                 data={chartData}
                 options={{
                   responsive: true,
-                  maintainAspectRatio: false, // Allow full width and height to be controlled by CSS
-
+                  maintainAspectRatio: false,
                   plugins: {
                     legend: {
                       display: true,

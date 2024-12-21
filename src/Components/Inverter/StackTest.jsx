@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import dayjs from "dayjs";
-import TimeBar from "./TRFF/TimePeriod"; // Ensure this path is correct
-import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
-//import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
-import "./StackedBarDGEB.css"; // Import the CSS file
-import DateRangeSelector from "./Dashboard/Daterangeselector";
+import TimeBar from "../TRFF/TimePeriod"; // Ensure this path is correct
+import ToggleButtons from "../Togglesampling"; // Import the ToggleButtons component
+import DateRangeSelector from "../Daterangeselector"; // Import the DateRangeSelector component
+import "../StackedBarDGEB.css"; // Import the CSS file
+import testData from "../../testdata.json"
 
 const StackedBarDGEB = ({
   data,
@@ -25,39 +25,65 @@ const StackedBarDGEB = ({
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (data && data["resampled data"]) {
+    if (testData && testData["resampled data"]) {
       try {
-        const resampledData = data["resampled data"];
+        const resampledData = testData["resampled data"];
 
         // Define the keys to include manually and their custom labels
         const kwKeys = [
-          { key: "EBS10Reading_kw", label: "EB Supply" },
-          { key: "DG1S12Reading_kw", label: "Diesel Generator 1" },
-          { key: "DG2S3Reading_kw", label: "Diesel Generator 2" },
+          { key: "ac_power", label: "AC Power" },
+          { key: "r_ac_power", label: "R AC Power" },
+          { key: "y_ac_power", label: "Y AC Power" },
+          { key: "b_ac_power", label: "B AC Power" },
+          { key: "dc_power", label: "DC Power" },
+          { key: "peak_power", label: "Peak Power" },
         ];
 
         // Generate x-axis labels based on selected time period
         const xAxisLabels = generateXAxisLabels(resampledData);
 
-        // const datasets = kwKeys.map((entry, index) => ({
-        //   label: entry.label,
-        //   data: resampledData.map((item) => item[entry.key] || 0),
-        //   backgroundColor:
-        //     backgroundColors[index] ||
-        //     `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
-        //       Math.random() * 255
-        //     )}, ${Math.floor(Math.random() * 255)}, 0.6)`,
-        // }));
+        const datasets = kwKeys.map((entry, index) => ({
+          label: entry.label,
+          data: resampledData.map((item) => item[entry.key] || 0),
+          backgroundColor:
+            backgroundColors[index] ||
+            `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
+              Math.random() * 255
+            )}, ${Math.floor(Math.random() * 255)}, 0.6)`,
+        }));
 
-        const datasets = [
-          {
-            label: "Energy",
-            data: resampledData.map((item) => item["app_energy_export"]),
-            backgroundColor: resampledData.map((item) => {
-              return item["app_energy_export"] > 1400 ? "#C72F08" : "#4E46B4";
-            }),
-          },
-        ];
+        // const datasets = [
+        //   {
+        //     label: "AC Power",
+        //     data: resampledData.map((item) => item["ac_power"]),
+        //     backgroundColor: resampledData.map((item) => {return item["ac_power"] > 1400 ? '#C72F08': '#4E46B4'})
+        //   },
+        //   {
+        //     label: "R AC Power",
+        //     data: resampledData.map((item) => item["r_ac_power"]),
+        //     backgroundColor: resampledData.map((item) => {return item["r_ac_power"] > 1400 ? '#C72F08': '#4E46B4'})
+        //   },
+        //   {
+        //     label: "Y AC Power",
+        //     data: resampledData.map((item) => item["y_ac_power"]),
+        //     backgroundColor: resampledData.map((item) => {return item["y_ac_power"] > 1400 ? '#C72F08': '#4E46B4'})
+        //   },
+        //   {
+        //     label: "B AC Power",
+        //     data: resampledData.map((item) => item["b_ac_power"]),
+        //     backgroundColor: resampledData.map((item) => {return item["b_ac_power"] > 1400 ? '#C72F08': '#4E46B4'})
+        //   },
+        //   {
+        //     label: "DC Power",
+        //     data: resampledData.map((item) => item["dc_power"]),
+        //     backgroundColor: resampledData.map((item) => {return item["dc_power"] > 1400 ? '#C72F08': '#4E46B4'})
+        //   },
+        //   {
+        //     label: "Peak Power",
+        //     data: resampledData.map((item) => item["peak_power"]),
+        //     backgroundColor: resampledData.map((item) => {return item["peak_power"] > 1400 ? '#C72F08': '#4E46B4'})
+        //   }
+        // ]
 
         setChartData({
           labels: xAxisLabels,
@@ -179,18 +205,18 @@ const StackedBarDGEB = ({
                       },
                     },
                   },
-                  // scales: {
-                  //   x: {
-                  //     stacked: true,
-                  //     grid: {
-                  //       color: "rgba(0, 0, 0, 0.05)", // Light gray color with 5% opacity
-                  //       borderDash: [8, 4], // Dotted line style
-                  //     },
-                  //   },
-                  //   y: {
-                  //     stacked: true,
-                  //   },
-                  // },
+                  scales: {
+                    x: {
+                      stacked: true,
+                      grid: {
+                        color: "rgba(0, 0, 0, 0.05)", // Light gray color with 5% opacity
+                        borderDash: [8, 4], // Dotted line style
+                      },
+                    },
+                    y: {
+                      stacked: true,
+                    },
+                  },
                 }}
               />
             </div>

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
 import TimeBar from "./TRFF/TimePeriod";
 import ToggleButtons from "./Togglesampling";
-//import DateRangeSelector from "./Daterangeselector";
 import "./StackedBarDGEB.css";
 
 const MySankeyChart = ({
@@ -36,9 +35,13 @@ const MySankeyChart = ({
         ];
 
   useEffect(() => {
+    console.log("⏳ Initial Data Received:", data);
+
     if (data && data["recent data"]) {
       try {
         const item = data["recent data"];
+        console.log("🔄 Processing recent data:", item);
+
         const nodes = [
           "APFCS11Reading",
           "DG1S12Reading",
@@ -55,9 +58,9 @@ const MySankeyChart = ({
           "SpareS7Reading",
           "ThirdFifthFloorKotakReading",
         ];
+        console.log("🟦 Nodes:", nodes);
 
         const links = [];
-
         const addLink = (source, target, value, colorIndex) => {
           links.push({
             source: nodes.indexOf(source),
@@ -93,118 +96,52 @@ const MySankeyChart = ({
             5
           );
         }
-        if (item.Utility1st2ndFS2Reading_kwh_eb > 0) {
-          addLink(
-            "Bus Bar",
-            "Utility1st2ndFS2Reading",
-            item.Utility1st2ndFS2Reading_kwh_eb / 1000,
-            6
-          );
-        }
-        if (item.SpareStation3Reading_kwh_eb > 0) {
-          addLink(
-            "Bus Bar",
-            "SpareStation3Reading",
-            item.SpareStation3Reading_kwh_eb / 1000,
-            7
-          );
-        }
-        if (item.ThirdFloorZohoS4Reading_kwh_eb > 0) {
-          addLink(
-            "Bus Bar",
-            "ThirdFloorZohoS4Reading",
-            item.ThirdFloorZohoS4Reading_kwh_eb / 1000,
-            8
-          );
-        }
-        if (item.SixthFloorS5Reading_kwh_eb > 0) {
-          addLink(
-            "Bus Bar",
-            "SixthFloorS5Reading",
-            item.SixthFloorS5Reading_kwh_eb / 1000,
-            9
-          );
-        }
-        if (item.SpareS6Reading_kwh_eb > 0) {
-          addLink(
-            "Bus Bar",
-            "SpareS6Reading",
-            item.SpareS6Reading_kwh_eb / 1000,
-            10
-          );
-        }
-        if (item.SpareS7Reading_kwh_eb > 0) {
-          addLink(
-            "Bus Bar",
-            "SpareS7Reading",
-            item.SpareS7Reading_kwh_eb / 1000,
-            11
-          );
-        }
-        if (item.ThirdFifthFloorKotakReading_kwh_eb > 0) {
-          addLink(
-            "Bus Bar",
-            "ThirdFifthFloorKotakReading",
-            item.ThirdFifthFloorKotakReading_kwh_eb / 1000,
-            12
-          );
-        }
+
+        console.log("🔗 Links after processing:", links);
 
         setPlotData([
           {
             type: "sankey",
             orientation: "h",
-            borderRadius: "8px",
             node: {
               pad: 20,
               thickness: 30,
               line: {
                 color: "rgba(86, 48, 188, 0.8)",
                 width: 1,
-                borderRadius: "8px",
               },
               label: nodes,
-              color: "rgba(86, 48, 188, 0.8)", // Duller node color
-              hovertemplate:
-                "Node: %{label}<br>Total Flow: %{value}<extra></extra>", // Detailed tooltip for nodes
-              customdata: nodes.map(() => ({
-                borderRadius: "10px", // Custom property for CSS
-              })),
+              color: "rgba(86, 48, 188, 0.8)",
             },
             link: {
               source: links.map((link) => link.source),
               target: links.map((link) => link.target),
               value: links.map((link) => link.value),
               color: links.map((link) => link.color),
-              hovertemplate:
-                "Flow: %{value}<br>From: %{source.label} to %{target.label}<extra></extra>", // Detailed tooltip for links
-              line: {
-                color: "#ccc",
-                width: 0.5,
-                curvature: 0.5, // Added curvature for smooth links
-              },
-              opacity: 0.8, // Duller opacity for links
             },
           },
         ]);
+
+        console.log("✅ PlotData Prepared:", plotData);
       } catch (error) {
-        console.error("Error processing data", error);
+        console.error("❌ Error processing Sankey data:", error);
         setError(error.message);
       } finally {
         setLoading(false);
       }
     } else {
+      console.warn("⚠️ No recent data available");
       setLoading(false);
       setError("No recent data available");
     }
-  }, [data]); // Make sure backgroundColors is static to avoid unnecessary re-renders
+  }, [data]); // Ensure dependencies are managed properly
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <div>Error: {error}</div>;
   }
 
   return (
@@ -219,16 +156,10 @@ const MySankeyChart = ({
                 setEndDate={setEndDate}
                 dateRange={dateRange}
                 setDateRange={setDateRange}
-                setTimeperiod={setTimeperiod} // Pass setTimeperiod to TimeBar
-                startDate={startDate} // Pass startDate
-                endDate={endDate} // Pass endDate
-              />
-              {/* <DateRangeSelector
+                setTimeperiod={setTimeperiod}
                 startDate={startDate}
-                setStartDate={setStartDate}
                 endDate={endDate}
-                setEndDate={setEndDate}
-              /> */}
+              />
             </div>
           </div>
           <div className="row">
@@ -243,22 +174,26 @@ const MySankeyChart = ({
             data={plotData}
             layout={{
               title: {
+                text: "Sankey Energy Flow",
                 font: {
                   size: 24,
-                  color: "#ffffff", // Title font color
+                  color: "#ffffff",
                 },
               },
               font: {
                 size: 14,
-                color: "#ffffff", // General font color
+                color: "#ffffff",
               },
-
-              margin: { l: 10, r: 10, t: 40, b: 40 }, // Adjusted margins
+              margin: { l: 10, r: 10, t: 40, b: 40 },
             }}
             config={{
-              displayModeBar: false, // Hides the toolbar
+              displayModeBar: false,
             }}
-            style={{ width: "100%", height: "100%", borderRadius: "8px" }}
+            style={{
+              width: "100%",
+              height: "500px",
+              borderRadius: "8px",
+            }}
           />
         </div>
       </div>

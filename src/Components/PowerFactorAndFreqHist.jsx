@@ -6,6 +6,7 @@ import TimeBar from "./TRFF/TimePeriod"; // Ensure this path is correct
 import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
 //import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
 import "./StackedBarDGEB.css"; // Import the CSS file
+import DateRangeSelector from "./Dashboard/Daterangeselector";
 
 const PowerfactorAndFreqHistorical = ({
   data,
@@ -39,38 +40,32 @@ const PowerfactorAndFreqHistorical = ({
         const xAxisLabels = generateXAxisLabels(resampledData);
 
         const datasets = [
-            {
-              label: "Powerfactor",
-              data: resampledData.map((item) =>
-                item["avg_power_factor"]
-              ),
-              borderColor: "#D33030",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              tension: 0.4, // Smooth line
-              yAxisID: 'y'
-            },
-            {
-              label: "Frequency",
-              data: resampledData.map((item) =>
-                item["frequency"]
-              ),
-              borderColor: "#FFB319",
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 0,
-              tension: 0.4, // Smooth line
-              yAxisID: 'y1'
-            },
-            
-        ]
+          {
+            label: "Powerfactor",
+            data: resampledData.map((item) => item["avg_power_factor"]),
+            borderColor: "#D33030",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.4, // Smooth line
+            yAxisID: "y",
+          },
+          {
+            label: "Frequency",
+            data: resampledData.map((item) => item["frequency"]),
+            borderColor: "#FFB319",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.4, // Smooth line
+            yAxisID: "y1",
+          },
+        ];
 
         setChartData({
           labels: xAxisLabels,
           datasets: datasets,
         });
-
       } catch (error) {
         console.error("Error processing data", error);
         setError(error.message);
@@ -148,7 +143,7 @@ const PowerfactorAndFreqHistorical = ({
           color: "rgba(0, 0, 0, 0.05)",
           borderDash: [5, 5],
         },
-        position: 'left'
+        position: "left",
       },
       y1: {
         title: {
@@ -159,7 +154,7 @@ const PowerfactorAndFreqHistorical = ({
           color: "rgba(0, 0, 0, 0.05)",
           borderDash: [5, 5],
         },
-        position: 'right'
+        position: "right",
       },
     },
     plugins: {
@@ -185,12 +180,12 @@ const PowerfactorAndFreqHistorical = ({
                 startDate={startDate} // Pass startDate
                 endDate={endDate} // Pass endDate
               />
-              {/* <DateRangeSelector
+              <DateRangeSelector
                 startDate={startDate}
                 setStartDate={setStartDate}
                 endDate={endDate}
                 setEndDate={setEndDate}
-              /> */}
+              />
             </div>
           </div>
           <div className="row">
@@ -203,10 +198,7 @@ const PowerfactorAndFreqHistorical = ({
 
           {chartData && chartData.labels && chartData.labels.length > 0 ? (
             <div className="chart-size">
-              <Line
-                data={chartData}
-                options={options}
-              />
+              <Line data={chartData} options={options} />
             </div>
           ) : (
             <div>No data available for the selected range.</div>

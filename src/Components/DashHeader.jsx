@@ -11,7 +11,9 @@ import KPI from "./KPI";
 import AMFgauge from "./AmfGauge";
 import WeatherWidget from "./Weather";
 import ReportModal from "./Reports";
-import "./emstemp.css"
+import "./emstemp.css";
+import DateRangeSelector from "./Dashboard/Daterangeselector";
+import { sideBarTreeArray } from "../sidebarInfo2";
 
 const DashboardHeader = styled.div`
   display: flex;
@@ -50,7 +52,7 @@ const StyledButtons = styled(Button)`
   align-items: center;
   gap: 8px;
 `;
-const DashHeader = ({ apikey }) => {
+const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
   const [startDate, setStartDate] = useState(dayjs().startOf("day"));
   const [endDate, setEndDate] = useState(dayjs());
   const [timeperiod, setTimeperiod] = useState("H");
@@ -117,16 +119,43 @@ const DashHeader = ({ apikey }) => {
 
   const fetchData = async (start, end, period) => {
     try {
-      const response = await fetch(
-        `${
-          sidbarInfo.apiUrls[apikey].apiUrl
-        }?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
-      );
-      const result = await response.json();
-      setData(result);
-      const transformedData = transformData(result["resampled data"]); // Fixed transformation
-      setReportData(transformedData);
-      console.log("datatimedash", result);
+      if (apikey && topBar) {
+        let apiEndpointsArray = undefined;
+        if (parentName && !parentName2) {
+          apiEndpointsArray = sideBarTreeArray[topBar].find(
+            (arr) => arr.id === parentName
+          );
+          apiEndpointsArray = apiEndpointsArray.children.find(
+            (arr) => arr.id === apikey
+          );
+        } else if (parentName && parentName2) {
+          apiEndpointsArray = sideBarTreeArray[topBar].find(
+            (arr) => arr.id === parentName
+          );
+          apiEndpointsArray = apiEndpointsArray.children.find(
+            (arr) => arr.id === parentName2
+          );
+          apiEndpointsArray = apiEndpointsArray.children.find(
+            (arr) => arr.id === apikey
+          );
+        } else if (!parentName && !parentName2) {
+          apiEndpointsArray = sideBarTreeArray[topBar].find(
+            (arr) => arr.id === apikey
+          );
+        }
+        if (apiEndpointsArray) {
+          const apiEndPoint = apiEndpointsArray.apis[0];
+          if (apiEndPoint) {
+            const response = await fetch(
+              `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+            );
+            const result = await response.json();
+            setData(result);
+            const transformedData = transformData(result["resampled data"]); // Fixed transformation
+            setReportData(transformedData);
+          }
+        }
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -146,13 +175,13 @@ const DashHeader = ({ apikey }) => {
   };
 
   useEffect(() => {
-    if (startDate && endDate && sidbarInfo.apiUrls[apikey]) {
+    if (startDate && endDate) {
       fetchData(startDate, endDate, timeperiod);
     }
   }, [startDate, endDate, timeperiod, apikey]);
 
   return (
-    <div style={{ marginBottom: '4vh' }}>
+    <div style={{ marginBottom: "4vh" }}>
       <DashboardHeader>
         <DashboardTitle>{apikey.toUpperCase()}</DashboardTitle>
         <TimeBar
@@ -163,6 +192,12 @@ const DashHeader = ({ apikey }) => {
           setTimeperiod={setTimeperiod} // Pass setTimeperiod to TimeBar
           startDate={startDate} // Pass startDate
           endDate={endDate} // Pass endDate
+        />
+        <DateRangeSelector
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
         />
         <button onClick={handleGenerateReportClick} className="emsbutton">
           <i className="emsbuttonicon">
@@ -175,8 +210,18 @@ const DashHeader = ({ apikey }) => {
         <AMFgauge />
         <KPI data={data} />
         <div>
-          <PowerFactorGauge apikey={apikey} />
-          <FrequencyComponent apikey={apikey} />
+          <PowerFactorGauge
+            apikey={apikey}
+            topBar={topBar}
+            parentName={parentName}
+            parentName2={parentName2}
+          />
+          <FrequencyComponent
+            apikey={apikey}
+            topBar={topBar}
+            parentName={parentName}
+            parentName2={parentName2}
+          />
         </div>
         <WeatherWidget />
       </KPIContainer>

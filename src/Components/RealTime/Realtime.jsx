@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import sidbarInfo from "../../sidbarInfo";
+import { sideBarTreeArray } from "../../sidebarInfo2";
 import RealTimeVoltageChart from "./VoltageChart";
 import RealTimeChart from "./Composite";
 import RealTimeCurrentChart from "./CurrentChart";
@@ -12,15 +12,49 @@ const Container = styled.div`
   gap: 16px;
 `;
 
-const ParentRealTimeComponent = ({ apiKey }) => {
+const ParentRealTimeComponent = ({
+  apiKey,
+  topBar,
+  parentName,
+  parentName2,
+}) => {
   const [rawData, setRawData] = useState(null);
   const [error, setError] = useState(null);
 
   const fetchData = async () => {
     try {
-      if (sidbarInfo.apiUrls[apiKey]?.apiUrl) {
-        const response = await axios.get(sidbarInfo.apiUrls[apiKey]?.apiUrl);
-        setRawData(response.data);
+      if (apiKey && topBar) {
+        let apiEndpointsArray = undefined;
+        if (parentName && !parentName2) {
+          apiEndpointsArray = sideBarTreeArray[topBar].find(
+            (arr) => arr.id === parentName
+          );
+          apiEndpointsArray = apiEndpointsArray.children.find(
+            (arr) => arr.id === apiKey
+          );
+        } else if (parentName && parentName2) {
+          apiEndpointsArray = sideBarTreeArray[topBar].find(
+            (arr) => arr.id === parentName
+          );
+          apiEndpointsArray = apiEndpointsArray.children.find(
+            (arr) => arr.id === parentName2
+          );
+          apiEndpointsArray = apiEndpointsArray.children.find(
+            (arr) => arr.id === apiKey
+          );
+          console.log("data", rawData);
+        } else if (!parentName && !parentName2) {
+          apiEndpointsArray = sideBarTreeArray[topBar].find(
+            (arr) => arr.id === apiKey
+          );
+        }
+        if (apiEndpointsArray) {
+          const apiEndpoints = apiEndpointsArray.apis[0];
+          if (apiEndpoints) {
+            const response = await axios.get(apiEndpoints);
+            setRawData(response.data);
+          }
+        }
       }
     } catch (err) {
       console.error("Error fetching data:", err);

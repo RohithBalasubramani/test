@@ -24,7 +24,7 @@ const TopbarContainer = styled.div`
   background-color: #ffffff;
   padding-top: 0.7vh;
   padding-bottom: 0.7vh;
-  width: 98vw;
+  width: auto;
   padding-right: 3vw;
 `;
 

@@ -40,60 +40,101 @@ const DonutChart = ({
     { key: "P1_AMFS_Outgoing2", label: "Outgoing 2" },
     { key: "P1_AMFS_APFC2", label: "APFC 2" },
     { key: "P1_AMFS_Transformer3", label: "Transformer 3" },
-  ], // Specify fields dynamically
+  ],
 }) => {
   const [chartData, setChartData] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (data && data["resampled data"]) {
-      const resampledData = data["resampled data"];
+      try {
+        const resampledData = data["resampled data"];
+        console.log("Original Resampled Data:", resampledData);
 
-      // Calculate sum of values for each field
-      const values = fields.map((field) =>
-        resampledData.reduce((sum, item) => sum + (item[field.key] || 0), 0)
-      );
+        // Normalize resampled data keys
+        const normalizedResampledData = resampledData.map((item) => {
+          const normalizedItem = {};
+          Object.keys(item).forEach((key) => {
+            normalizedItem[key.toLowerCase()] = item[key];
+          });
+          return normalizedItem;
+        });
 
-      const total = values.reduce((sum, value) => sum + value, 0); // Calculate total for percentages
+        // Normalize fields
+        const normalizedFields = fields.map((field) => ({
+          ...field,
+          key: field.key.toLowerCase(),
+        }));
 
-      const labels = fields.map(
-        (field, index) =>
-          `${field.label} (${((values[index] / total) * 100).toFixed(2)}%)` // Add percentage to labels
-      );
-      const links = fields.map((field) => `/details/${field.key}`);
+        console.log("Normalized Fields:", normalizedFields);
+        console.log("Normalized Resampled Data:", normalizedResampledData);
 
-      // Update chart data
-      setChartData({
-        labels,
-        datasets: [
-          {
-            data: values,
-            backgroundColor: backgroundColors.length
-              ? backgroundColors
-              : [
-                  "#FF6384",
-                  "#36A2EB",
-                  "#FFCE56",
-                  "#4BC0C0",
-                  "#9966FF",
-                  "#FF9F40",
-                  "#FFCD56",
-                  "#C9CBCF",
-                ],
-            hoverBackgroundColor: [
-              "#FF6384",
-              "#36A2EB",
-              "#FFCE56",
-              "#4BC0C0",
-              "#9966FF",
-              "#FF9F40",
-              "#FFCD56",
-              "#C9CBCF",
-            ],
-            links, // Add links to the dataset for navigation
-          },
-        ],
-      });
+        // Validate fields against normalized resampled data
+        const invalidFields = normalizedFields.filter(
+          (field) =>
+            !normalizedResampledData.some(
+              (item) => item[field.key] !== undefined
+            )
+        );
+
+        if (invalidFields.length > 0) {
+          console.error(
+            "Invalid fields detected:",
+            invalidFields.map((field) => field.key)
+          );
+        }
+
+        // Calculate sum of values for each field
+        const values = normalizedFields.map((field) =>
+          normalizedResampledData.reduce(
+            (sum, item) => sum + (item[field.key] || 0),
+            0
+          )
+        );
+
+        const total = values.reduce((sum, value) => sum + value, 0); // Calculate total for percentages
+
+        const labels = normalizedFields.map(
+          (field, index) =>
+            `${field.label} (${((values[index] / total) * 100).toFixed(2)}%)`
+        );
+        const links = normalizedFields.map((field) => `/details/${field.key}`);
+
+        // Update chart data
+        setChartData({
+          labels,
+          datasets: [
+            {
+              data: values,
+              backgroundColor: backgroundColors.length
+                ? backgroundColors
+                : [
+                    "#FF6384",
+                    "#36A2EB",
+                    "#FFCE56",
+                    "#4BC0C0",
+                    "#9966FF",
+                    "#FF9F40",
+                    "#FFCD56",
+                    "#C9CBCF",
+                  ],
+              hoverBackgroundColor: [
+                "#FF6384",
+                "#36A2EB",
+                "#FFCE56",
+                "#4BC0C0",
+                "#9966FF",
+                "#FF9F40",
+                "#FFCD56",
+                "#C9CBCF",
+              ],
+              links, // Add links to the dataset for navigation
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error processing chart data:", error);
+      }
     } else {
       console.error("No resampled data available");
     }
@@ -110,18 +151,18 @@ const DonutChart = ({
     plugins: {
       legend: {
         display: true,
-        position: "bottom", // Position the legend at the bottom
-        align: "center", // Align the legend items
+        position: "bottom",
+        align: "center",
         labels: {
-          boxWidth: 15, // Box size for legend color
+          boxWidth: 15,
           boxHeight: 15,
-          padding: 20, // Padding between legend items
+          padding: 20,
           font: {
-            size: 14, // Font size for legend text
-            family: "DM Sans", // Font family for legend text
+            size: 14,
+            family: "DM Sans",
           },
-          usePointStyle: true, // Use point style for legends
-          color: "#333", // Text color for legend
+          usePointStyle: true,
+          color: "#333",
         },
       },
       tooltip: {
@@ -133,8 +174,8 @@ const DonutChart = ({
               (sum, currentValue) => sum + currentValue,
               0
             );
-            const percentage = total ? ((value / total) * 100).toFixed(2) : 0; // Calculate percentage
-            return `${label}: ${value.toFixed(2)} kWh (${percentage}%)`; // Display value with percentage
+            const percentage = total ? ((value / total) * 100).toFixed(2) : 0;
+            return `${label}: ${value.toFixed(2)} kWh (${percentage}%)`;
           },
         },
       },

@@ -1,4 +1,4 @@
-const sideBarTreeArray = {
+export const sideBarTreeArray = {
   amf1a: [
     {
       id: "overview1a",
@@ -152,26 +152,7 @@ const apiUrls = {
       },
     ],
   },
-  dg_1: {
-    realTimePower: [
-      "https://www.therion.co.in/api/ebs10reading/",
-      "https://www.therion.co.in/api/dg2s3reading/",
-      "https://www.therion.co.in/api/dg1s12reading/",
-    ],
-    realTimeCurrent: [
-      "https://www.therion.co.in/api/ebs10reading/",
-      "https://www.therion.co.in/api/dg1s12reading/",
-      "https://www.therion.co.in/api/dg2s3reading/",
-    ],
-    realTimeVoltage: [
-      "https://www.therion.co.in/api/ebs10reading/",
-      "https://www.therion.co.in/api/dg1s12reading/",
-      "https://www.therion.co.in/api/dg2s3reading/",
-      "https://www.therion.co.in/api/ebs10reading/",
-      "https://www.therion.co.in/api/dg1s12reading/",
-      "https://www.therion.co.in/api/dg2s3reading/",
-    ],
-  },
+
   ups_2c: {
     apiUrl: "http://14.96.26.26:8080/api/p1_ups2_incomer2c/",
   },

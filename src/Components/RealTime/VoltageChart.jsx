@@ -11,7 +11,7 @@ import {
   Legend,
   registerables,
 } from "chart.js";
-import "./realtimestyle.css";
+import "./RealTimeStyle.css";
 import "chartjs-adapter-date-fns";
 
 ChartJS.register(
@@ -27,10 +27,11 @@ ChartJS.register(
 
 const VoltageChart = ({ rawData }) => {
   const [data, setData] = useState([]);
+  console.log("raw data", rawData);
 
   // Update chart data when rawData changes
   useEffect(() => {
-    if (rawData && rawData["recent data"]) {
+    if (rawData) {
       const {
         timestamp,
         r_phase_voltage,
@@ -39,7 +40,7 @@ const VoltageChart = ({ rawData }) => {
         ry_voltage,
         yb_voltage,
         br_voltage,
-      } = rawData["recent data"];
+      } = rawData;
 
       const newEntry = {
         time: timestamp,

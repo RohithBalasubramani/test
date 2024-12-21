@@ -5,7 +5,8 @@ import TimeBar from "../TRFF/TimePeriod";
 import AMFgaugeStacked from "./AmfGaugeStacked";
 import KPI from "../KPI";
 import WeatherWidget from "../Weather";
-import sidbarInfo from "../../sidbarInfo";
+import { sideBarTreeArray } from "../../sidebarInfo2"; // Assuming this is your Treeview array
+import OverviewTimeBar from "./OverviewTimeBar";
 
 const DashboardHeader = styled.div`
   display: flex;
@@ -30,59 +31,90 @@ const Container = styled.div`
   height: 30vh;
 `;
 
-const OverviewHeader = ({ apiKey }) => {
+const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
   const [startDate, setStartDate] = useState(dayjs().startOf("day"));
   const [endDate, setEndDate] = useState(dayjs());
   const [timeperiod, setTimeperiod] = useState("H");
   const [dateRange, setDateRange] = useState("today");
   const [data, setData] = useState({});
-
-  console.log("api key", apiKey);
-
-  // Extract API URLs dynamically based on the given apiKey
-  const apiEndpointsArray = sidbarInfo.apiUrls[apiKey]?.apiUrl || [];
-  const apiEndpoints = apiEndpointsArray.length > 0 ? apiEndpointsArray[0] : {};
-  console.log("API Endpoints", apiEndpoints);
+  const [error, setError] = useState(null);
 
   const fetchData = async (start, end, period) => {
     try {
-      const fetchPromises = Object.keys(apiEndpoints).map(async (key) => {
-        const response = await fetch(
-          `${
-            apiEndpoints[key]
-          }?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+      let apiEndpointsArray;
+
+      if (parentName && !parentName2) {
+        apiEndpointsArray = sideBarTreeArray[sectionName]?.find(
+          (item) => item.id === parentName
         );
+        apiEndpointsArray = apiEndpointsArray?.children?.find(
+          (child) => child.id === apiKey
+        );
+      } else if (parentName && parentName2) {
+        apiEndpointsArray = sideBarTreeArray[sectionName]?.find(
+          (item) => item.id === parentName
+        );
+        apiEndpointsArray = apiEndpointsArray?.children?.find(
+          (child) => child.id === parentName2
+        );
+        apiEndpointsArray = apiEndpointsArray?.children?.find(
+          (child) => child.id === apiKey
+        );
+      } else if (!parentName && !parentName2) {
+        apiEndpointsArray = sideBarTreeArray[sectionName]?.find(
+          (item) => item.id === apiKey
+        );
+      }
+
+      const apiEndpoints = apiEndpointsArray?.apis || [];
+
+      if (apiEndpoints.length === 0) {
+        throw new Error("No API endpoints found.");
+      }
+
+      // Fetch data from all APIs concurrently
+      const fetchPromises = apiEndpoints.map(async (api) => {
+        const response = await fetch(
+          `${api}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+        );
+
         if (!response.ok) {
-          throw new Error(`Error fetching ${key}: ${response.statusText}`);
+          throw new Error(
+            `Failed to fetch from ${api}: ${response.statusText}`
+          );
         }
+
         const result = await response.json();
-        return { [key]: result };
+        return { [api]: result }; // Return data keyed by the API URL
       });
 
       const results = await Promise.all(fetchPromises);
+
+      // Combine all results into a single object
       const aggregatedData = results.reduce(
         (acc, curr) => ({ ...acc, ...curr }),
         {}
       );
-      setData(aggregatedData);
 
-      console.log("Fetched Data:", aggregatedData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
+      setData(aggregatedData);
+      console.log("Fetched and Aggregated Data:", aggregatedData);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError(err.message);
     }
   };
 
   useEffect(() => {
-    if (startDate && endDate && apiKey) {
+    if (startDate && endDate && apiKey && sectionName) {
       fetchData(startDate, endDate, timeperiod);
     }
-  }, [startDate, endDate, timeperiod, apiKey]);
+  }, [startDate, endDate, timeperiod, apiKey, sectionName]);
 
   return (
     <div>
       <DashboardHeader>
         <DashboardTitle>Dashboard</DashboardTitle>
-        <TimeBar
+        <OverviewTimeBar
           setStartDate={setStartDate}
           setEndDate={setEndDate}
           dateRange={dateRange}
@@ -95,22 +127,25 @@ const OverviewHeader = ({ apiKey }) => {
       <Container
         style={{ display: "flex", gap: "2%", maxHeight: "fit-content" }}
       >
-        {data.p1_amfs_Solar &&
-        data.p1_amfs_transformer2 &&
-        data.p1_amfs_generator2 ? (
+        {Object.keys(data)?.length >= 3 ? (
           <AMFgaugeStacked
-            feeder1Power={data.p1_amfs_Solar["recent data"]?.b_ac_power || 0}
+            feeder1Power={
+              Object.values(data)[0]?.["average data"]?.app_energy_export || 0
+            }
             feeder2Power={
-              data.p1_amfs_transformer2["recent data"]?.b_ac_power || 0
+              Object.values(data)[1]?.["average data"]?.app_energy_export || 0
             }
             feeder3Power={
-              data.p1_amfs_generator2["recent data"]?.b_ac_power || 0
+              Object.values(data)[2]?.["average data"]?.app_energy_export || 0
             }
           />
+        ) : error ? (
+          <div style={{ color: "red" }}>{error}</div>
         ) : (
           <div>Loading...</div>
         )}
-        <KPI data={data} />
+
+        <KPI data={Object.values(data)[2]} />
         <WeatherWidget />
       </Container>
     </div>

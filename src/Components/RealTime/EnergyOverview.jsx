@@ -11,7 +11,7 @@ import {
   Legend,
   registerables,
 } from "chart.js";
-import "./realtimestyle.css";
+import "./RealTimeStyle.css";
 
 ChartJS.register(
   CategoryScale,
@@ -45,8 +45,21 @@ const RealTimeChart = ({
       const response = await fetch(
         `http://14.96.26.26:8080/analytics/deltaconsolidated/?start_date_time=${params.start_date_time}&end_date_time=${params.end_date_time}&resample_period=${params.resample_period}`
       );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const result = await response.json();
-      const recentData = result["recent data"];
+      console.log("Fetched real-time data:", result);
+
+      const recentData = result?.["recent data"] || null;
+
+      if (!recentData) {
+        console.warn("No recent data available in response.");
+        return;
+      }
+
       updateChartData(recentData);
       updatePowerStatus(recentData);
     } catch (error) {
@@ -56,6 +69,11 @@ const RealTimeChart = ({
 
   // Update chart data
   const updateChartData = (recentData) => {
+    if (!recentData.timestamp) {
+      console.warn("Timestamp missing in recent data.");
+      return;
+    }
+
     const newEntry = {
       time: recentData.timestamp,
       feeders: feeders.map((feeder) => ({
@@ -139,7 +157,7 @@ const RealTimeChart = ({
           display: true,
           text: "Power (kWh)",
         },
-        min: maxValue - 5,
+        min: Math.max(0, maxValue - 5),
         max: maxValue + 5,
         grid: {
           color: "rgba(0, 0, 0, 0.05)",

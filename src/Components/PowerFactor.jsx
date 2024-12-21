@@ -6,6 +6,7 @@ import { IconButton } from "@mui/material";
 import { Launch } from "@mui/icons-material";
 import "./PowerFactorGauge.css"; // Adjust the path as needed
 import sidbarInfo from "../sidbarInfo";
+import { sideBarTreeArray } from "../sidebarInfo2";
 
 // Styled Components for Consistent Card Design
 const Container = styled.div`
@@ -44,25 +45,53 @@ const GaugeCont = styled.div`
   margin-right: auto;
 `;
 
-const PowerFactorGauge = ({apikey}) => {
+const PowerFactorGauge = ({ apikey, topBar, parentName, parentName2 }) => {
   const [powerFactor, setPowerFactor] = useState(95); // Initial dummy data
   const [powerQuality, setPowerQuality] = useState("Loading...");
 
   const fetchPowerFactor = async () => {
     try {
-      if(sidbarInfo.apiUrls[apikey]){
-        const response = await axios.get(
-          sidbarInfo.apiUrls[apikey].apiUrl
-        );
-        const powerFactorValue = Math.floor(response.data["recent data"].avg_power_factor*100);
-        setPowerFactor(powerFactorValue);
-  
-        if (powerFactorValue >= 0.95) {
-          setPowerQuality("Good");
-        } else if (powerFactorValue >= 0.85) {
-          setPowerQuality("Average");
-        } else {
-          setPowerQuality("Bad");
+      if (apikey && topBar) {
+        let apiEndpointsArray = undefined;
+        if (parentName && !parentName2) {
+          apiEndpointsArray = sideBarTreeArray[topBar].find(
+            (arr) => arr.id === parentName
+          );
+          apiEndpointsArray = apiEndpointsArray.children.find(
+            (arr) => arr.id === apikey
+          );
+        } else if (parentName && parentName2) {
+          apiEndpointsArray = sideBarTreeArray[topBar].find(
+            (arr) => arr.id === parentName
+          );
+          apiEndpointsArray = apiEndpointsArray.children.find(
+            (arr) => arr.id === parentName2
+          );
+          apiEndpointsArray = apiEndpointsArray.children.find(
+            (arr) => arr.id === apikey
+          );
+        } else if (!parentName && !parentName2) {
+          apiEndpointsArray = sideBarTreeArray[topBar].find(
+            (arr) => arr.id === apikey
+          );
+        }
+        if (apiEndpointsArray) {
+          const apiEndPoint = apiEndpointsArray.apis[0];
+          if (apiEndPoint) {
+            const response = await axios.get(apiEndPoint);
+            const powerFactorValue = Math.floor(
+              response.data["recent data"].avg_power_factor * 100
+            );
+            setPowerFactor(powerFactorValue);
+
+            if (powerFactorValue >= 0.95) {
+              setPowerQuality("Good");
+            } else if (powerFactorValue >= 0.85) {
+              setPowerQuality("Average");
+            } else {
+              setPowerQuality("Bad");
+            }
+          }
         }
       }
     } catch (error) {
@@ -71,7 +100,7 @@ const PowerFactorGauge = ({apikey}) => {
   };
 
   useEffect(() => {
-    if(sidbarInfo.apiUrls[apikey]){
+    if (sidbarInfo.apiUrls[apikey]) {
       fetchPowerFactor();
     }
     const interval = setInterval(fetchPowerFactor, 5000); // Update every 5 seconds
@@ -80,7 +109,7 @@ const PowerFactorGauge = ({apikey}) => {
 
   return (
     <>
-      <div className="kpi-cont" style={{ marginBottom: "1vh"}}>
+      <div className="kpi-cont" style={{ marginBottom: "1vh" }}>
         <Top>
           <Title>Power Factor</Title>
         </Top>

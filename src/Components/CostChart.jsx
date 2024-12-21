@@ -5,7 +5,8 @@ import dayjs from "dayjs";
 import TimeBar from "./TRFF/TimePeriod"; // Ensure this path is correct
 import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
 //import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
-import "./StackedBarDGEB.css"; // Import the CSS file
+import "./StackedBarDGEB.css";
+import DateRangeSelector from "./Dashboard/Daterangeselector";
 
 const CostChart = ({
   data,
@@ -127,12 +128,12 @@ const CostChart = ({
                 startDate={startDate} // Pass startDate
                 endDate={endDate} // Pass endDate
               />
-              {/* <DateRangeSelector
+              <DateRangeSelector
                 startDate={startDate}
                 setStartDate={setStartDate}
                 endDate={endDate}
                 setEndDate={setEndDate}
-              /> */}
+              />
             </div>
           </div>
           <div className="row">

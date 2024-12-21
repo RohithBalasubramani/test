@@ -21,7 +21,7 @@
 }
 
 .chart-size {
-  height: 100%;
+  height: 50vh;
 }
 
 /* Value Container Styling */
@@ -53,10 +53,8 @@
 }
 
 .legend-container {
-  margin-bottom: 15px;
   display: grid;
   grid-template-columns: auto auto;
-  margin-top: 40%;
   grid-gap: 2vh;
 }
 
@@ -105,6 +103,8 @@
   font-weight: 400;
   line-height: 24px; /* 150% */
   margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
 }
 
 .current-value {

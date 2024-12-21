@@ -4,9 +4,10 @@ import "chart.js/auto";
 import dayjs from "dayjs";
 import TimeBar from "./TRFF/TimePeriod"; // Ensure this path is correct
 import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
-//import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
+// import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
 import BarChartLoad from "./ChartLoading";
 import "./StackedBarDGEB.css"; // Import the CSS file for styling
+import DateRangeSelector from "./Dashboard/Daterangeselector";
 
 const StackedBarChart = ({
   data,
@@ -141,12 +142,12 @@ const StackedBarChart = ({
                 startDate={startDate}
                 endDate={endDate}
               />
-              {/* <DateRangeSelector
+              <DateRangeSelector
                 startDate={startDate}
                 setStartDate={setStartDate}
                 endDate={endDate}
                 setEndDate={setEndDate}
-              /> */}
+              />
             </div>
           </div>
           <div className="row">
