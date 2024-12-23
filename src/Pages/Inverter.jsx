@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TopBar from "../Components/TopBar";
 import BottomTimeSeries from "../Components/Inverter/TimeseriesDash";
-import DashHeader from "../Components/DashHeader";
+import DashHeader from "../Components/Inverter/DashHeader";
 import Sidebar from "../Components/Sidebar";
 import styled from "styled-components";
 import { useLocation, useSearchParams } from "react-router-dom";
@@ -59,7 +59,7 @@ const Inverter = ({ apikey, sectionName }) => {
         <Sidebar handleItemId={handleItemIdChange} />
       </SidebarComp>
       <OutLetContainer>
-        {/* <DashHeader apikey={key} /> */}
+        <DashHeader apikey={key} topBar={topBar}/>
         <div className="emstit">
           <span className="emstitle">Real - Time Generation</span>
           <span className="emsspan">Status: Running EB power</span>

@@ -118,7 +118,7 @@ const FrequencyComponent = ({ apikey, topBar, parentName, parentName2 }) => {
       <Top>
         <Title>Frequency</Title>
       </Top>
-      <Frequency>{frequency} Hz</Frequency>
+      <Frequency>{frequency?.toFixed(2)} Hz</Frequency>
     </Card>
   );
 };
