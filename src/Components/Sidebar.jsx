@@ -39,6 +39,8 @@ const Sidebar = ({ handleItemId }) => {
     // Ensure that the path has at least 3 segments
     if (pathSegments.length >= 3) {
       setTopBarSelection(pathSegments[2]);
+    } else if(pathSegments.length === 2 && pathSegments[1] === 'inverter'){
+      setTopBarSelection('inverters')
     } else {
       setTopBarSelection(""); // Reset if not enough segments
     }

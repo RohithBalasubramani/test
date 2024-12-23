@@ -4,8 +4,8 @@ import GaugeChart from "react-gauge-chart";
 import styled from "styled-components";
 import { IconButton } from "@mui/material";
 import { Launch } from "@mui/icons-material";
-import "./PowerFactorGauge.css"; // Adjust the path as needed
-import { sideBarTreeArray } from "../sidebarInfo2";
+import "../PowerFactorGauge.css"; // Adjust the path as needed
+import { sideBarTreeArray } from "../../sidebarInfo2";
 
 // Styled Components for Consistent Card Design
 const Container = styled.div`
@@ -63,44 +63,16 @@ const Frequency = styled.div`
   line-height: 32px; /* 160% */
 `;
 
-const FrequencyComponent = ({ apikey, topBar, parentName, parentName2 }) => {
+const FrequencyComponent = ({ apikey }) => {
   const [frequency, setFrequency] = useState(32); // Initial dummy data
   const [powerQuality, setPowerQuality] = useState("Loading...");
 
   const fetchFrequency = async () => {
     try {
-      if (apikey && topBar) {
-        let apiEndpointsArray = undefined;
-        if (parentName && !parentName2) {
-          apiEndpointsArray = sideBarTreeArray[topBar].find(
-            (arr) => arr.id === parentName
-          );
-          apiEndpointsArray = apiEndpointsArray.children.find(
-            (arr) => arr.id === apikey
-          );
-        } else if (parentName && parentName2) {
-          apiEndpointsArray = sideBarTreeArray[topBar].find(
-            (arr) => arr.id === parentName
-          );
-          apiEndpointsArray = apiEndpointsArray.children.find(
-            (arr) => arr.id === parentName2
-          );
-          apiEndpointsArray = apiEndpointsArray.children.find(
-            (arr) => arr.id === apikey
-          );
-        } else if (!parentName && !parentName2) {
-          apiEndpointsArray = sideBarTreeArray[topBar].find(
-            (arr) => arr.id === apikey
-          );
-        }
-        if (apiEndpointsArray) {
-          const apiEndPoint = apiEndpointsArray.apis[0];
-          if (apiEndPoint) {
-            const response = await axios.get(apiEndPoint);
-            const frquencyValue = response.data["recent data"].frequency;
-            setFrequency(frquencyValue);
-          }
-        }
+      if (apikey) {
+        const response = await axios.get(apikey);
+        const frquencyValue = response.data["recent data"].frequency;
+        setFrequency(frquencyValue);
       }
     } catch (error) {
       console.error("Error fetching power factor data:", error);

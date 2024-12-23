@@ -50,13 +50,10 @@ const RealTimeVoltageChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
       resample_period: "T", // per minute
     };
     try {
-      if (
-        sidbarInfo.apiUrls[firstFeederApiKey]?.apiUrl &&
-        sidbarInfo.apiUrls[secondFeederApiKey]?.apiUrl
-      ) {
+      if (firstFeederApiKey && secondFeederApiKey) {
         const [firstFeederResponse, secondFeederResponse] = await Promise.all([
-          axios.get(sidbarInfo.apiUrls[firstFeederApiKey]?.apiUrl),
-          axios.get(sidbarInfo.apiUrls[secondFeederApiKey]?.apiUrl),
+          axios.get(firstFeederApiKey),
+          axios.get(secondFeederApiKey),
         ]);
 
         const rVolFirst =

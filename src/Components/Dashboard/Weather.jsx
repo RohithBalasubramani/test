@@ -170,7 +170,7 @@ const WeatherWidget = () => {
   return (
     <WeatherWidgetContainer>
       <WeatherHeader>
-        <WeatherMain>{current.temp.toFixed(1)}°C</WeatherMain>
+        <WeatherMain>{current.temp?.toFixed(1)}°C</WeatherMain>
         <div>
           <Name>M square Tech</Name>
           <Address>23 July 2024</Address>

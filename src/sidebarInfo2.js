@@ -448,14 +448,6 @@ export const sideBarTreeArray = {
       apis: ["http://14.96.26.26:8080/api/p1_peiplahu8/"],
     },
   ],
-  inverters: [
-    // Inverters from inverter1 to inverter17
-    ...Array.from({ length: 17 }, (_, i) => ({
-      id: `inverter${i + 1}`,
-      label: `Inverter-${i + 1}`,
-      apis: [`http://14.96.26.26:8080/api/p1_inverter${i + 1}/`],
-    })),
-  ],
   cellltp1: [
     {
       id: "hotwatertank1",
@@ -732,6 +724,11 @@ export const sideBarTreeArray = {
   ],
   inverters: [
     // Inverters from inverter1 to inverter17
+    {
+      id: "overview_inverter_p1",
+      label: "Overview",
+      apis: [],
+    },
     ...Array.from({ length: 17 }, (_, i) => ({
       id: `inverter${i + 1}`,
       label: `Inverter-${i + 1}`,

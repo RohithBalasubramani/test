@@ -3,8 +3,9 @@ import { Line } from "react-chartjs-2";
 import axios from "axios";
 import "../realtimestyle.css"; // Import the shared CSS file
 import sidbarInfo from "../../sidbarInfo";
+import { sideBarTreeArray } from "../../sidebarInfo2";
 
-const RealTimeCurrentChart = ({ apiKey }) => {
+const RealTimeCurrentChart = ({ apiKey, topBar }) => {
   const [data, setData] = useState([]);
   const [powerStatus, setPowerStatus] = useState("Loading...");
 
@@ -16,26 +17,33 @@ const RealTimeCurrentChart = ({ apiKey }) => {
       resample_period: "T", // per minute
     };
     try {
-      const response = await axios.get(sidbarInfo.apiUrls[apiKey]?.apiUrl);
+      if (apiKey && topBar) {
+        let apiEndpointsArray = undefined;
+        apiEndpointsArray = sideBarTreeArray[topBar].find(
+          (arr) => arr.id === apiKey
+        );
+        if (apiEndpointsArray) {
+          const apiEndpoints = apiEndpointsArray.apis[0];
+          if (apiEndpoints) {
+            const response = await axios.get(apiEndpoints);
 
-      const timestamp = response.data["recent data"]["timestamp"];
-      const rCurrent = response.data["recent data"]["r_current"];
-      const yCurrent = response.data["recent data"]["y_current"];
-      const bCurrent = response.data["recent data"]["b_current"];
+            const timestamp = response.data["recent data"]["timestamp"];
+            const rCurrent = response.data["recent data"]["r_current"];
+            const yCurrent = response.data["recent data"]["y_current"];
+            const bCurrent = response.data["recent data"]["b_current"];
 
-      updateChartData(timestamp, rCurrent, yCurrent, bCurrent);
+            updateChartData(timestamp, rCurrent, yCurrent, bCurrent);
+          }
+        }
+      }
+
       //updatePowerStatus(ebRecent, dg1Recent, dg2Recent);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  const updateChartData = (
-    timestamp,
-    rCurrent,
-    yCurrent,
-    bCurrent
-  ) => {
+  const updateChartData = (timestamp, rCurrent, yCurrent, bCurrent) => {
     const newEntry = {
       time: timestamp,
       rCurrent: rCurrent,
@@ -168,7 +176,10 @@ const RealTimeCurrentChart = ({ apiKey }) => {
         <div className="title">Current</div>
         <div className="legend-container-two">
           <div className="legend-item">
-            <span className="legend-color-box v1" style={{backgroundColor: '#6036D4'}}/>
+            <span
+              className="legend-color-box v1"
+              style={{ backgroundColor: "#6036D4" }}
+            />
             <span>Avg Current</span>
           </div>
           <div className="legend-item">
@@ -191,14 +202,21 @@ const RealTimeCurrentChart = ({ apiKey }) => {
       <div className="value-cont">
         <div className="value-heading">Current</div>
         <div className="current-value">Recent Value</div>
-        <div className="legend-container" style= {{ marginTop: '0px', justifyItems: "start", justifyContent: "center"}}>
+        <div
+          className="legend-container"
+          style={{
+            marginTop: "0px",
+            justifyItems: "start",
+            justifyContent: "center",
+          }}
+        >
           <div className="legend-item-two">
             <div className="value-name">
               <span className="legend-color-box v1" /> R phase
             </div>
             <div className="value">
               {data.length > 0
-                ? data[data.length - 1].rCurrent.toFixed(2)
+                ? data[data.length - 1].rCurrent?.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">A</span>
             </div>
@@ -209,7 +227,7 @@ const RealTimeCurrentChart = ({ apiKey }) => {
             </div>
             <div className="value">
               {data.length > 0
-                ? data[data.length - 1].yCurrent.toFixed(2)
+                ? data[data.length - 1].yCurrent?.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">A</span>
             </div>
@@ -220,7 +238,7 @@ const RealTimeCurrentChart = ({ apiKey }) => {
             </div>
             <div className="value">
               {data.length > 0
-                ? data[data.length - 1].bCurrent.toFixed(2)
+                ? data[data.length - 1].bCurrent?.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">A</span>
             </div>

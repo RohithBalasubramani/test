@@ -16,6 +16,7 @@ import "../realtimestyle.css"; // Import the shared CSS file
 import "chartjs-adapter-date-fns";
 import sidbarInfo from "../../sidbarInfo";
 import { useLocation } from "react-router-dom";
+import { sideBarTreeArray } from "../../sidebarInfo2";
 import dayjs from "dayjs";
 
 ChartJS.register(
@@ -29,7 +30,7 @@ ChartJS.register(
   ...registerables
 );
 
-const RealTimeChart = ({ apiKey }) => {
+const RealTimeChart = ({ apiKey, topBar }) => {
   const [data, setData] = useState([]);
   const [powerStatus, setPowerStatus] = useState("Loading...");
   const [activeData, setActiveData] = useState([]);
@@ -43,23 +44,31 @@ const RealTimeChart = ({ apiKey }) => {
       resample_period: "T", // per minute
     };
     try {
-      if (sidbarInfo.apiUrls[apiKey]?.apiUrl) {
-        const response = await axios.get(sidbarInfo.apiUrls[apiKey]?.apiUrl);
-
-        const timestamp = response.data["recent data"]["timestamp"];
-        const bActiveRecent = response.data["recent data"]["b_ac_power"];
-        const rActiveRecent = response.data["recent data"]["r_ac_power"];
-        const yActiveRecent = response.data["recent data"]["y_ac_power"];
-        const bAppRecent = response.data["recent data"]["dc_power"];
-
-        updateChartData(
-          timestamp,
-          bActiveRecent,
-          rActiveRecent,
-          yActiveRecent,
-          bAppRecent,
+      if (apiKey && topBar) {
+        let apiEndpointsArray = undefined;
+        apiEndpointsArray = sideBarTreeArray[topBar].find(
+          (arr) => arr.id === apiKey
         );
-        //updatePowerStatus(ebRecent, dgRecent, dg1s12Recent);
+        if (apiEndpointsArray) {
+          const apiEndpoints = apiEndpointsArray.apis[0];
+          if (apiEndpoints) {
+            const response = await axios.get(apiEndpoints);
+
+            const timestamp = response.data["recent data"]["timestamp"];
+            const bActiveRecent = response.data["recent data"]["b_ac_power"];
+            const rActiveRecent = response.data["recent data"]["r_ac_power"];
+            const yActiveRecent = response.data["recent data"]["y_ac_power"];
+            const bAppRecent = response.data["recent data"]["dc_power"];
+
+            updateChartData(
+              timestamp,
+              bActiveRecent,
+              rActiveRecent,
+              yActiveRecent,
+              bAppRecent
+            );
+          }
+        }
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -72,7 +81,7 @@ const RealTimeChart = ({ apiKey }) => {
     bActiveRecent,
     rActiveRecent,
     yActiveRecent,
-    bAppRecent,
+    bAppRecent
   ) => {
     const newEntry = {
       time: timestamp,
@@ -239,19 +248,31 @@ const RealTimeChart = ({ apiKey }) => {
         <div className="title">Power</div>
         <div className="legend-container-two">
           <div className="legend-item">
-            <span className="legend-color-box" style={{backgroundColor: '#C72F08'}}/>
+            <span
+              className="legend-color-box"
+              style={{ backgroundColor: "#C72F08" }}
+            />
             <span>R AC Power</span>
           </div>
           <div className="legend-item">
-            <span className="legend-color-box" style={{backgroundColor: '#E6B148'}}/>
+            <span
+              className="legend-color-box"
+              style={{ backgroundColor: "#E6B148" }}
+            />
             <span>Y AC Power</span>
           </div>
           <div className="legend-item">
-            <span className="legend-color-box" style={{backgroundColor: '#0171DB'}}/>
+            <span
+              className="legend-color-box"
+              style={{ backgroundColor: "#0171DB" }}
+            />
             <span>B AC Power</span>
           </div>
           <div className="legend-item">
-            <span className="legend-color-box" style={{backgroundColor: '#E45D3A'}}/>
+            <span
+              className="legend-color-box"
+              style={{ backgroundColor: "#E45D3A" }}
+            />
             <span>DC Power</span>
           </div>
         </div>
@@ -262,47 +283,70 @@ const RealTimeChart = ({ apiKey }) => {
       <div className="value-cont">
         <div className="value-heading">Power</div>
         <div className="current-value">Recent Value</div>
-        <div className="legend-container" style= {{ marginTop: '0px', justifyItems: "start", justifyContent: "center"}}>
+        <div
+          className="legend-container"
+          style={{
+            marginTop: "0px",
+            justifyItems: "start",
+            justifyContent: "center",
+          }}
+        >
           <div className="legend-item-two">
             <div className="value-name">
-              <span className="legend-color-box" style={{backgroundColor: '#C72F08'}}/> R AC Power
+              <span
+                className="legend-color-box"
+                style={{ backgroundColor: "#C72F08" }}
+              />{" "}
+              R AC Power
             </div>
             <div className="value">
               {data.length > 0
-                ? data[data.length - 1].rActiveRecent.toFixed(2)
+                ? data[data.length - 1].rActiveRecent?.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">kW</span>
             </div>
           </div>
           <div className="legend-item-two">
             <div className="value-name">
-              <span className="legend-color-box" style={{backgroundColor: '#E6B148'}}/> Y AC Power
+              <span
+                className="legend-color-box"
+                style={{ backgroundColor: "#E6B148" }}
+              />{" "}
+              Y AC Power
             </div>
             <div className="value">
               {data.length > 0
-                ? data[data.length - 1].yActiveRecent.toFixed(2)
+                ? data[data.length - 1].yActiveRecent?.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">kW</span>
             </div>
           </div>
           <div className="legend-item-two">
             <div className="value-name">
-              <span className="legend-color-box v1" style={{backgroundColor: '#0171DB'}}/> B AC Power
+              <span
+                className="legend-color-box v1"
+                style={{ backgroundColor: "#0171DB" }}
+              />{" "}
+              B AC Power
             </div>
             <div className="value">
               {data.length > 0
-                ? data[data.length - 1].bActiveRecent.toFixed(2)
+                ? data[data.length - 1].bActiveRecent?.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">kW</span>
             </div>
           </div>
           <div className="legend-item-two">
             <div className="value-name">
-              <span className="legend-color-box v1" style={{backgroundColor: '#E45D3A'}}/> DC Power
+              <span
+                className="legend-color-box v1"
+                style={{ backgroundColor: "#E45D3A" }}
+              />{" "}
+              DC Power
             </div>
             <div className="value">
               {data.length > 0
-                ? data[data.length - 1].bAppRecent.toFixed(2)
+                ? data[data.length - 1].bAppRecent?.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">kW</span>
             </div>

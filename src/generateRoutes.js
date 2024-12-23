@@ -4,6 +4,7 @@ import { Route, Navigate } from "react-router-dom";
 import Overview from "./Pages/Overview";
 import TestPage from "./Pages/TestPage";
 import PhaseOverview from "./Pages/PhaseOverview";
+import Inverter from "./Pages/Inverter";
 
 const generateRoutes = (nodes, basePath = "") => {
   // 'nodes' is an array like [ {id: "overview1a", ...}, {id: "dg_1", ...}, ...]
@@ -15,6 +16,16 @@ const generateRoutes = (nodes, basePath = "") => {
   // Extract section name from basePath
   const sectionPathSegments = basePath.split("/");
   const sectionName = sectionPathSegments[sectionPathSegments.length - 1]; // e.g. "amf1a"
+
+  const selectPage = (node) => {
+    if(node.id.includes("overview") || node.children){
+      return <Overview apikey={node.id} sectionName={sectionName} />
+    } else if(node.id.toLowerCase().includes("inverter")){
+      return <Inverter apikey={node.id} sectionName={sectionName} />
+    } else {
+      return <TestPage apikey={node.id} sectionName={sectionName} />
+    }
+  }
 
   return (
     // <Route
@@ -40,13 +51,7 @@ const generateRoutes = (nodes, basePath = "") => {
                   ? `${sectionName}`
                   : `${sectionName}/${node.id}`
               }
-              element={
-                node.id.includes("overview") || node.children ? (
-                  <Overview apikey={node.id} sectionName={sectionName} />
-                ) : (
-                  <TestPage apikey={node.id} sectionName={sectionName} />
-                )
-              }
+              element={selectPage(node)}
             />
             {node.children &&
               node.children.length &&

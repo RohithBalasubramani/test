@@ -204,7 +204,7 @@ const RealTimeChart = ({
             <div key={index} className="feeder-row">
               <span className="feeder-label">{feeder.label}:</span>
               <span className="feeder-value">
-                {feeder.value.toFixed(2)} kWh
+                {feeder.value?.toFixed(2)} kWh
               </span>
             </div>
           ))}

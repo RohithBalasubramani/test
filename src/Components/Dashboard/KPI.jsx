@@ -52,7 +52,7 @@ const KPI = ({ data }) => {
       }, 0);
 
       // Calculate energy cost (example: assume $0.10 per kWh)
-      const energyCost = (monthlyConsumption * 0.1).toFixed(2);
+      const energyCost = (monthlyConsumption * 0.1)?.toFixed(2);
 
       const efficiency = 78; // Example efficiency calculation
       const pendingAlerts = 18; // Assuming alerts are part of recent data

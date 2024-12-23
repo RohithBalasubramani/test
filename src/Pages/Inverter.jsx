@@ -4,7 +4,7 @@ import BottomTimeSeries from "../Components/Inverter/TimeseriesDash";
 import DashHeader from "../Components/DashHeader";
 import Sidebar from "../Components/Sidebar";
 import styled from "styled-components";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import RealTimeChart from "../Components/Inverter/Composite";
 import RealTimeCurrentChart from "../Components/Inverter/CurrentChart";
 import RealTimeVoltageChart from "../Components/Inverter/VoltageChart";
@@ -35,18 +35,23 @@ const ChartContainer = styled.div`
   gap: 3vh;
 `;
 
-const Inverter = () => {
-  const [key, setKey] = useState("");
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const handleItemIdChange = (itemId) => {
-    //setKey(itemId);
-    console.log(itemId);
-  };
+const Inverter = ({ apikey, sectionName }) => {
+  const location = useLocation();
+  const [key, setKey] = useState(apikey || "");
+  const [topBar, setTopBar] = useState(sectionName || "");
 
   useEffect(() => {
-    setKey(searchParams.get("key"));
-  }, [searchParams]);
+    if (!apikey) {
+      const pathSegments = location.pathname.split("/");
+      const derivedKey = pathSegments[pathSegments.length - 1] || "";
+      setKey(derivedKey);
+    }
+  }, [location, apikey]);
+
+  const handleItemIdChange = (itemId, topBarSelection) => {
+    setKey(itemId);
+    console.log("Selected Item ID:", itemId);
+  };
 
   return (
     <Container>
@@ -63,9 +68,9 @@ const Inverter = () => {
           className="realtimeflex"
           style={{ gap: "10px", display: "flex" }}
         >
-          <RealTimeChart apiKey={key} />
-          <RealTimeCurrentChart apiKey={key} />
-          <RealTimeVoltageChart apiKey={key} />
+          <RealTimeChart apiKey={key} topBar={topBar}/>
+          <RealTimeCurrentChart apiKey={key} topBar={topBar}/>
+          <RealTimeVoltageChart apiKey={key} topBar={topBar}/>
         </ChartContainer>
         <div className="emstit">
           <span className="emstitle">Energy Consumption History</span>
@@ -75,7 +80,7 @@ const Inverter = () => {
           </span>
         </div>
         <div style={{ width: "80vw" }}>
-          <BottomTimeSeries apikey={key} />
+          <BottomTimeSeries apiKey={key} topBar={topBar}/>
         </div>
       </OutLetContainer>
     </Container>
