@@ -22,9 +22,9 @@ import VoltageHistorical from "./VoltageHist";
 import CurrentHistorical from "./CurrentHist";
 import PowerfactorAndFreqHistorical from "./PowerFactorAndFreqHist";
 import sidbarInfo from "../../sidbarInfo";
-import testData from "../../testdata.json"
+import { sideBarTreeArray } from "../../sidebarInfo2";
 
-const BottomTimeSeries = ({apikey}) => {
+const BottomTimeSeries = ({apiKey, topBar}) => {
   // Initialize state with default values
   const [startDate, setStartDate] = useState(dayjs().startOf("day"));
   const [endDate, setEndDate] = useState(dayjs());
@@ -35,12 +35,23 @@ const BottomTimeSeries = ({apikey}) => {
   // Function to fetch data
   const fetchData = async (start, end, period) => {
     try {
-      const response = await fetch(
-        `${sidbarInfo.apiUrls[apikey].apiUrl}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
-      );
-      const result = await response.json();
-      setData(result);
-      console.log("datatimedash", result);
+      if (apiKey && topBar) {
+        let apiEndpointsArray = undefined;
+        apiEndpointsArray = sideBarTreeArray[topBar].find(
+          (arr) => arr.id === apiKey
+        );
+        if (apiEndpointsArray) {
+          const apiEndpoints = apiEndpointsArray.apis[0];
+          if (apiEndpoints) {
+            const response = await fetch(
+              `${apiEndpoints}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+            );
+            const result = await response.json();
+            setData(result);
+            console.log("datatimedash", result);
+          }
+        }
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -49,10 +60,10 @@ const BottomTimeSeries = ({apikey}) => {
   // Fetch data on initial render and whenever startDate, endDate, or timeperiod changes
   useEffect(() => {
     setData(null)
-    if (startDate && endDate && sidbarInfo.apiUrls[apikey]) {
+    if (startDate && endDate) {
       fetchData(startDate, endDate, timeperiod);
     }
-  }, [startDate, endDate, timeperiod, apikey]);
+  }, [startDate, endDate, timeperiod, apiKey]);
 
   // Handle time period change
   const handleChange = (event, newAlignment) => {
@@ -267,13 +278,13 @@ const BottomTimeSeries = ({apikey}) => {
           /> */}
 
           <div style={{ marginTop: "5vh" }}>
-            {testData && (
+            {data && (
               <DataTable
-                tablesData={testData["resampled data"]} // Pass the correct data subset
+                tablesData={data["resampled data"]} // Pass the correct data subset
                 orderBy=""
                 order="asc"
                 handleRequestSort={() => {}}
-                sortedData={testData["resampled data"]} // Ensure sorted data is correct
+                sortedData={data["resampled data"]} // Ensure sorted data is correct
                 rowsPerPage={10}
                 handleChangePage={() => {}}
                 handleChangeRowsPerPage={() => {}}

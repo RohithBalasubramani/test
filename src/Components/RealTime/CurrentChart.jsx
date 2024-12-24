@@ -122,7 +122,7 @@ const RealTimeCurrentChart = ({ rawData }) => {
             </div>
             <div className="value">
               {data.length > 0
-                ? data[data.length - 1].avgCurrent.toFixed(2)
+                ? data[data.length - 1].avgCurrent?.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">A</span>
             </div>
@@ -133,7 +133,7 @@ const RealTimeCurrentChart = ({ rawData }) => {
             </div>
             <div className="value">
               {data.length > 0
-                ? data[data.length - 1].rCurrent.toFixed(2)
+                ? data[data.length - 1].rCurrent?.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">A</span>
             </div>
@@ -144,7 +144,7 @@ const RealTimeCurrentChart = ({ rawData }) => {
             </div>
             <div className="value">
               {data.length > 0
-                ? data[data.length - 1].yCurrent.toFixed(2)
+                ? data[data.length - 1].yCurrent?.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">A</span>
             </div>
@@ -155,7 +155,7 @@ const RealTimeCurrentChart = ({ rawData }) => {
             </div>
             <div className="value">
               {data.length > 0
-                ? data[data.length - 1].bCurrent.toFixed(2)
+                ? data[data.length - 1].bCurrent?.toFixed(2)
                 : "0.00"}{" "}
               <span className="value-span">A</span>
             </div>

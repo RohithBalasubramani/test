@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import AMFgauge from "../Components/AmfGauge";
 import KPI from "../Components/KPI";
-import PowerFactorGauge from "../Components/PowerFactor";
-import FrequencyComponent from "../Components/Frequency";
+import PowerFactorGauge from "../Components/CompareScreenComp/PowerFactor";
+import FrequencyComponent from "../Components/CompareScreenComp/Frequency";
 import styled from "styled-components";
 import RealTimeChart from "../Components/CompareScreenComp/Composite";
 import RealTimeCurrentChart from "../Components/CompareScreenComp/CurrentChart";
@@ -14,9 +14,11 @@ import CostChart from "../Components/CompareScreenComp/CostChart";
 import VoltageHistorical from "../Components/CompareScreenComp/VoltageHist";
 import CurrentHistorical from "../Components/CompareScreenComp/CurrentHist";
 import PowerfactorAndFreqHistorical from "../Components/CompareScreenComp/PowerFactorAndFreqHist";
-// import testData from "../testdata.json";
+import { sideBarTreeArray } from "../sidebarInfo2";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { getFeederNode } from "../dfs";
 
 const Seperator = styled.div`
   border-left: 3px solid gray;
@@ -50,6 +52,16 @@ const TitleContainer = styled.div`
   margin-right: 1vw;
 `;
 
+const SelectContainer = styled.div`
+  /* margin-left: 23vw; */
+  display: flex;
+  /* gap: 50vw; */
+  margin-left: 1vw;
+  margin-right: 1vw;
+  justify-content: center;
+  gap: 50vw;
+`;
+
 const Compare = ({ apikey, key }) => {
   const [startDate, setStartDate] = useState(dayjs().startOf("day"));
   const [endDate, setEndDate] = useState(dayjs());
@@ -58,79 +70,163 @@ const Compare = ({ apikey, key }) => {
   const [firstFeederData, setFirstFeederData] = useState();
   const [secondFeederData, setSecondFeederData] = useState();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [firstFeeder, setFirstFeeder] = useState(searchParams.get("feeder_1"));
-  const [secondFeeder, setSecondFeeder] = useState(
-    searchParams.get("feeder_2")
-  );
+  const [firstFeeder, setFirstFeeder] = useState("");
+  const [secondFeeder, setSecondFeeder] = useState("");
+  const [feederArray, setFeederArray] = useState([]);
+  const [firstFeederURL, setFirstFeederURL] = useState("");
+  const [secondFeederURL, setSecondFeederURL] = useState("");
 
   // Function to fetch data
   const fetchData = async (start, end, period) => {
     try {
-      const [firstFeederResponse, secondFeederResponse] = await Promise.all([
-        axios.get(
-          `${
-            sidbarInfo.apiUrls[firstFeeder].apiUrl
-          }?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
-        ),
-        axios.get(
-          `${
-            sidbarInfo.apiUrls[secondFeeder].apiUrl
-          }?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
-        ),
-      ]);
-      setFirstFeederData(firstFeederResponse.data);
-      setSecondFeederData(secondFeederResponse.data);
+      if(firstFeeder && secondFeeder){
+        let firstFeederNode = getFeederNode(firstFeeder, sideBarTreeArray)
+        let secondFeederNode = getFeederNode(secondFeeder, sideBarTreeArray)
+        if(firstFeederNode?.length && secondFeederNode?.length){
+          let firstFeederURL = firstFeederNode[0].apis[0]
+          let secondFeederURL = secondFeederNode[0].apis[0]
+          if(firstFeederURL && secondFeederURL){
+            const [firstFeederResponse, secondFeederResponse] = await Promise.all([
+              axios.get(
+                `${
+                  firstFeederURL
+                }?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+              ),
+              axios.get(
+                `${
+                  secondFeederURL
+                }?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+              ),
+            ]);
+            setFirstFeederURL(firstFeederURL)
+            setSecondFeederURL(secondFeederURL)
+            setFirstFeederData(firstFeederResponse.data);
+            setSecondFeederData(secondFeederResponse.data);
+          }
+        }
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
   useEffect(() => {
-    if (
-      startDate &&
-      endDate &&
-      sidbarInfo.apiUrls[firstFeeder] &&
-      sidbarInfo.apiUrls[secondFeeder]
-    ) {
+    let arr = [];
+    Object.values(sideBarTreeArray).forEach((section) => {
+      section.forEach((sec) => {
+        if (!sec.id.toLowerCase().includes("overview") && !sec.children) {
+          arr.push({
+            id: sec.id,
+            label: sec.label,
+          });
+        }
+        if (sec.children) {
+          sec.children.forEach((child) => {
+            if (
+              !child.id.toLowerCase().includes("overview") &&
+              !child.children
+            ) {
+              arr.push({
+                id: child.id,
+                label: child.label,
+              });
+            }
+            if (child.children) {
+              child.children.forEach((ch) => {
+                if (!ch.id.toLowerCase().includes("overview")) {
+                  arr.push({
+                    id: ch.id,
+                    label: ch.label,
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
+    });
+    setFeederArray(arr);
+  }, []);
+
+  useEffect(() => {
+    if (startDate && endDate) {
       fetchData(startDate, endDate, timeperiod);
     }
-  }, [startDate, endDate, timeperiod]);
+  }, [startDate, endDate, timeperiod, firstFeeder, secondFeeder]);
 
   const bgsource = ["#5630BC", "#8963EF", "#C4B1F7"];
 
+  const handleChangeFeederOne = (event) => {
+    setFirstFeeder(event.target.value);
+  };
+
+  const handleChangeFeederTwo = (event) => {
+    setSecondFeeder(event.target.value);
+  };
+
   return (
     <CompareContainer>
-      <TitleContainer>
+      <SelectContainer>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 170 }}>
+          <InputLabel id="demo-simple-select-label">First Feeder</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={firstFeeder}
+            label="Age"
+            onChange={handleChangeFeederOne}
+          >
+            {feederArray.map((feeder) => (
+              <MenuItem value={feeder.id}>{feeder.label}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 170 }}>
+          <InputLabel id="demo-simple-select-label-1">Second Feeder</InputLabel>
+          <Select
+            labelId="demo-simple-select-label-1"
+            id="demo-simple-select"
+            value={secondFeeder}
+            label="Age"
+            onChange={handleChangeFeederTwo}
+          >
+            {feederArray.map((feeder) => (
+              <MenuItem value={feeder.id}>{feeder.label}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </SelectContainer>
+      {/* <TitleContainer>
         <div style={{ margin: "auto" }}>{firstFeeder}</div>
         <div style={{ margin: "auto" }}>{secondFeeder}</div>
-      </TitleContainer>
+      </TitleContainer> */}
       <KPIContainer>
         <AMFgauge />
         <KPI data={firstFeederData} />
         <div>
-          <PowerFactorGauge apikey={firstFeeder} />
-          <FrequencyComponent apikey={firstFeeder} />
+          <PowerFactorGauge apikey={firstFeederURL} />
+          <FrequencyComponent apikey={firstFeederURL} />
         </div>
         <Seperator></Seperator>
         <AMFgauge />
         <KPI data={secondFeederData} />
         <div>
-          <PowerFactorGauge apikey={secondFeeder} />
-          <FrequencyComponent apikey={secondFeeder} />
+          <PowerFactorGauge apikey={secondFeederURL} />
+          <FrequencyComponent apikey={secondFeederURL} />
         </div>
       </KPIContainer>
       <RealTimeChartContainer>
         <RealTimeChart
-          firstFeederApiKey={firstFeeder}
-          secondFeederApiKey={secondFeeder}
+          firstFeederApiKey={firstFeederURL}
+          secondFeederApiKey={secondFeederURL}
         />
         <RealTimeCurrentChart
-          firstFeederApiKey={firstFeeder}
-          secondFeederApiKey={secondFeeder}
+          firstFeederApiKey={firstFeederURL}
+          secondFeederApiKey={secondFeederURL}
         />
         <RealTimeVoltageChart
-          firstFeederApiKey={firstFeeder}
-          secondFeederApiKey={secondFeeder}
+          firstFeederApiKey={firstFeederURL}
+          secondFeederApiKey={secondFeederURL}
         />
       </RealTimeChartContainer>
       <HistoricalDataContainer>

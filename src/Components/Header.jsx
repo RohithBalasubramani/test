@@ -202,9 +202,9 @@ const Header = () => {
             <Tab label="PEPPL(P2)" value={"/peppl_p2"} />
             <Tab label="PEPPL(P3)" value={"/peppl_p3"} />
             <Tab label="HT" value={"/"} />
-            <Tab label="Inverters" value={"/"} />
+            <Tab label="Inverters" value={"/inverter"} />
             <Tab label="Reports" value={"/"} />
-            <Tab label="Comparisions" value={"/"} />
+            <Tab label="Comparisions" value={"/compare"} />
           </Tabs>
         </TabsContainer>
         <TopbarMenu>

@@ -3,8 +3,9 @@ import { Line } from "react-chartjs-2";
 import axios from "axios";
 import "../realtimestyle.css"; // Import the CSS file
 import sidbarInfo from "../../sidbarInfo";
+import { sideBarTreeArray } from "../../sidebarInfo2";
 
-const RealTimeVoltageChart = ({ apiKey }) => {
+const RealTimeVoltageChart = ({ apiKey, topBar }) => {
   const [data, setData] = useState([]);
   const [powerStatus, setPowerStatus] = useState("Loading...");
 
@@ -16,26 +17,35 @@ const RealTimeVoltageChart = ({ apiKey }) => {
       resample_period: "T", // per minute
     };
     try {
-      if(sidbarInfo.apiUrls[apiKey]?.apiUrl){
-        const response = await axios.get(sidbarInfo.apiUrls[apiKey]?.apiUrl)
-  
-        const rVol_recent = response.data["recent data"]["r_voltage"];
-        const yVol_recent = response.data["recent data"]["y_voltage"];
-        const bVol_recent = response.data["recent data"]["b_voltage"];
-        const ryVol_recent = response.data["recent data"]["ry_voltage"];
-        const ybVol_recent = response.data["recent data"]["yb_voltage"];
-        const brVol_recent = response.data["recent data"]["br_voltage"];
-        const timestamp = response.data["recent data"]["timestamp"];
-  
-        updateChartData(
-          timestamp,
-          rVol_recent,
-          yVol_recent,
-          bVol_recent,
-          ryVol_recent,
-          ybVol_recent,
-          brVol_recent
+      if (apiKey && topBar) {
+        let apiEndpointsArray = undefined;
+        apiEndpointsArray = sideBarTreeArray[topBar].find(
+          (arr) => arr.id === apiKey
         );
+        if (apiEndpointsArray) {
+          const apiEndpoints = apiEndpointsArray.apis[0];
+          if (apiEndpoints) {
+            const response = await axios.get(apiEndpoints);
+
+            const rVol_recent = response.data["recent data"]["r_voltage"];
+            const yVol_recent = response.data["recent data"]["y_voltage"];
+            const bVol_recent = response.data["recent data"]["b_voltage"];
+            const ryVol_recent = response.data["recent data"]["ry_voltage"];
+            const ybVol_recent = response.data["recent data"]["yb_voltage"];
+            const brVol_recent = response.data["recent data"]["br_voltage"];
+            const timestamp = response.data["recent data"]["timestamp"];
+
+            updateChartData(
+              timestamp,
+              rVol_recent,
+              yVol_recent,
+              bVol_recent,
+              ryVol_recent,
+              ybVol_recent,
+              brVol_recent
+            );
+          }
+        }
       }
       //updatePowerStatus(ebRecent, dg1Recent, dg2Recent);
     } catch (error) {
@@ -116,9 +126,7 @@ const RealTimeVoltageChart = ({ apiKey }) => {
     datasets: [
       {
         label: "Vr Voltage",
-        data: data.map((item) =>
-          item.Vr
-        ),
+        data: data.map((item) => item.Vr),
         borderColor: "#D33030",
         borderWidth: 2,
         pointRadius: 0,
@@ -127,9 +135,7 @@ const RealTimeVoltageChart = ({ apiKey }) => {
       },
       {
         label: "Vy Voltage",
-        data: data.map((item) =>
-          item.Vy
-        ),
+        data: data.map((item) => item.Vy),
         borderColor: "#FFB319",
         borderWidth: 2,
         pointRadius: 0,
@@ -138,9 +144,7 @@ const RealTimeVoltageChart = ({ apiKey }) => {
       },
       {
         label: "Vb Voltage",
-        data: data.map((item) =>
-          item.Vb
-        ),
+        data: data.map((item) => item.Vb),
         borderColor: "#017EF3",
         borderWidth: 2,
         pointRadius: 0,
@@ -149,9 +153,7 @@ const RealTimeVoltageChart = ({ apiKey }) => {
       },
       {
         label: "Vry Voltage",
-        data: data.map((item) =>
-          item.Vry
-        ),
+        data: data.map((item) => item.Vry),
         borderColor: "#DC8006",
         borderWidth: 2,
         pointRadius: 0,
@@ -160,9 +162,7 @@ const RealTimeVoltageChart = ({ apiKey }) => {
       },
       {
         label: "Vyb Voltage",
-        data: data.map((item) =>
-          item.Vyb
-        ),
+        data: data.map((item) => item.Vyb),
         borderColor: "#16896B",
         borderWidth: 2,
         pointRadius: 0,
@@ -171,9 +171,7 @@ const RealTimeVoltageChart = ({ apiKey }) => {
       },
       {
         label: "Vbr Voltage",
-        data: data.map((item) =>
-          item.Vbr
-        ),
+        data: data.map((item) => item.Vbr),
         borderColor: "#6036D4",
         borderWidth: 2,
         pointRadius: 0,
@@ -229,15 +227,24 @@ const RealTimeVoltageChart = ({ apiKey }) => {
             <span>B Voltage</span>
           </div>
           <div className="legend-item">
-            <span className="legend-color-box" style={{backgroundColor: '#DC8006'}}/>
+            <span
+              className="legend-color-box"
+              style={{ backgroundColor: "#DC8006" }}
+            />
             <span>RY Voltage</span>
           </div>
           <div className="legend-item">
-            <span className="legend-color-box" style={{backgroundColor: '#16896B'}}/>
+            <span
+              className="legend-color-box"
+              style={{ backgroundColor: "#16896B" }}
+            />
             <span>YB Voltage</span>
           </div>
           <div className="legend-item">
-            <span className="legend-color-box" style={{backgroundColor: '#6036D4'}}/>
+            <span
+              className="legend-color-box"
+              style={{ backgroundColor: "#6036D4" }}
+            />
             <span>BR Voltage</span>
           </div>
         </div>
@@ -248,75 +255,77 @@ const RealTimeVoltageChart = ({ apiKey }) => {
       <div className="value-cont">
         <div className="value-heading">Voltage</div>
         <div className="current-value">Recent Value</div>
-        <div className="legend-container" style= {{ marginTop: '0px', justifyItems: "start", justifyContent: "center"}}>
+        <div
+          className="legend-container"
+          style={{
+            marginTop: "0px",
+            justifyItems: "start",
+            justifyContent: "center",
+          }}
+        >
           <div className="legend-item-two">
             <div className="value-name">
               <span className="legend-color-box v1" /> R Voltage
             </div>
             <div className="value">
-              {data.length > 0
-                ? data[data.length - 1].Vr.toFixed(2)
-                : "0.00"}{" "}
+              {data.length > 0 ? data[data.length - 1].Vr?.toFixed(2) : "0.00"}{" "}
               <span className="value-span">V</span>
             </div>
           </div>
           <div className="legend-item-two">
             <div className="value-name">
-              <span className="legend-color-box v2" />
-              Y Voltage
+              <span className="legend-color-box v2" />Y Voltage
             </div>
             <div className="value">
-              {data.length > 0
-                ? data[data.length - 1].Vy.toFixed(2)
-                : "0.00"}{" "}
+              {data.length > 0 ? data[data.length - 1].Vy?.toFixed(2) : "0.00"}{" "}
               <span className="value-span">V</span>
             </div>
           </div>
           <div className="legend-item-two">
             <div className="value-name">
-              <span className="legend-color-box v3" />
-              B Voltage
+              <span className="legend-color-box v3" />B Voltage
             </div>
             <div className="value">
-              {data.length > 0
-                ? data[data.length - 1].Vb.toFixed(2)
-                : "0.00"}{" "}
+              {data.length > 0 ? data[data.length - 1].Vb?.toFixed(2) : "0.00"}{" "}
               <span className="value-span">V</span>
             </div>
           </div>
           <div className="legend-item-two">
             <div className="value-name">
-              <span className="legend-color-box ln" style={{backgroundColor: '#DC8006'}}/>
+              <span
+                className="legend-color-box ln"
+                style={{ backgroundColor: "#DC8006" }}
+              />
               RY Voltage
             </div>
             <div className="value">
-              {data.length > 0
-                ? data[data.length - 1].Vry.toFixed(2) 
-                : "0.00"}{" "}
+              {data.length > 0 ? data[data.length - 1].Vry?.toFixed(2) : "0.00"}{" "}
               <span className="value-span">V</span>
             </div>
           </div>
           <div className="legend-item-two">
             <div className="value-name">
-              <span className="legend-color-box ln"style={{backgroundColor: '#16896B'}} />
+              <span
+                className="legend-color-box ln"
+                style={{ backgroundColor: "#16896B" }}
+              />
               YB Voltage
             </div>
             <div className="value">
-              {data.length > 0
-                ? data[data.length - 1].Vyb.toFixed(2) 
-                : "0.00"}{" "}
+              {data.length > 0 ? data[data.length - 1].Vyb?.toFixed(2) : "0.00"}{" "}
               <span className="value-span">V</span>
             </div>
           </div>
           <div className="legend-item-two">
             <div className="value-name">
-              <span className="legend-color-box ln" style={{backgroundColor: '#6036D4'}}/>
+              <span
+                className="legend-color-box ln"
+                style={{ backgroundColor: "#6036D4" }}
+              />
               BR Voltage
             </div>
             <div className="value">
-              {data.length > 0
-                ? data[data.length - 1].Vbr.toFixed(2) 
-                : "0.00"}{" "}
+              {data.length > 0 ? data[data.length - 1].Vbr?.toFixed(2) : "0.00"}{" "}
               <span className="value-span">V</span>
             </div>
           </div>

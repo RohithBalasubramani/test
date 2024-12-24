@@ -6,13 +6,13 @@ import {
   ArrowUpward,
 } from "@mui/icons-material";
 import React, { useState, useEffect } from "react";
-// import "./kpi.css";
+import "../kpi.css";
 import styled from "styled-components";
 
 const Container = styled.div`
   display: flex;
-  gap: 1vw;
-  margin-bottom: 2vh;
+  flex-direction: column;
+  gap: 2%;
 `;
 
 const KPI = ({ data }) => {
@@ -24,6 +24,8 @@ const KPI = ({ data }) => {
     monthlyConsumption: 0,
     todayConsumption: 0,
     energyCost: 0,
+    peakCurrent: 0,
+    peakPower: 0,
   });
 
   console.log("KPI data", data);
@@ -35,36 +37,38 @@ const KPI = ({ data }) => {
       const resampled = data["resampled data"];
 
       // Calculate total consumption from resampled data
-      const totalConsumption =
-        (today.EBS10Reading_kwh || 0) +
-        (today.DG1S12Reading_kwh || 0) +
-        (today.DG2S3Reading_kwh || 0);
+      // const totalConsumption =
+      //   (today.EBS10Reading_kwh || 0) +
+      //   (today.DG1S12Reading_kwh || 0) +
+      //   (today.DG2S3Reading_kwh || 0);
+
+      const temp = resampled.map((item) => item['temp']);
+      const acPower = resampled.map((item) => item['ac_power']);
+      const peakTemp = Math.max(...temp);
+      const peakPower = Math.max(...acPower);
 
       // Calculate today's consumption from today data
-      const todayConsumption =
-        (today.EBS10Reading_kw || 0) +
-        (today.DG1S12Reading_kw || 0) +
-        (today.DG2S3Reading_kw || 0);
+      // const todayConsumption =
+      //   (today.EBS10Reading_kw || 0) +
+      //   (today.DG1S12Reading_kw || 0) +
+      //   (today.DG2S3Reading_kw || 0);
 
-      // Calculate monthly energy consumption from resampled data
-      const monthlyConsumption = resampled.reduce((total, item) => {
-        return total + (item.EBS10Reading_kw || 0);
-      }, 0);
+      // // Calculate monthly energy consumption from resampled data
+      // const monthlyConsumption = resampled.reduce((total, item) => {
+      //   return total + (item.EBS10Reading_kw || 0);
+      // }, 0);
 
-      // Calculate energy cost (example: assume $0.10 per kWh)
-      const energyCost = (monthlyConsumption * 0.1)?.toFixed(2);
+      // // Calculate energy cost (example: assume $0.10 per kWh)
+      // const energyCost = (monthlyConsumption * 0.1).toFixed(2);
 
       const efficiency = 78; // Example efficiency calculation
       const pendingAlerts = 18; // Assuming alerts are part of recent data
 
       setKpiData({
-        actpow: todayConsumption,
-        total: totalConsumption / 1000, // Convert to MWh
         efficiency,
         pendingAlerts,
-        monthlyConsumption, // Add monthly consumption to state
-        todayConsumption, // Add today's consumption to state
-        energyCost, // Add energy cost to state
+        temp: peakTemp,
+        peakPower: peakPower,
       });
     }
   }, [data]);
@@ -77,13 +81,13 @@ const KPI = ({ data }) => {
         {/* Monthly Energy Consumption Card */}
         <div className="kpi-cont">
           <div className="kpi-top">
-            <div className="kpi-tit">Monthly Energy Consumption</div>
+            <div className="kpi-tit">Inv Temp</div>
             <div style={{ display: "inline" }}>
               <span className="kpi-val">
                 {" "}
-                {kpiData.monthlyConsumption.toLocaleString()}{" "}
+                {kpiData?.peakTemp?.toFixed(2)}{" "}
               </span>
-              <span className="kpi-units"> kWh </span>
+              <span className="kpi-units"> Deg C </span>
             </div>
           </div>
           <div className="kpi-bot">
@@ -98,12 +102,9 @@ const KPI = ({ data }) => {
         {/* Today's Energy Consumption Card */}
         <div className="kpi-cont">
           <div className="kpi-top">
-            <div className="kpi-tit">Today's Energy Consumption</div>
+            <div className="kpi-tit">Inv AC Power</div>
             <div style={{ display: "inline" }}>
-              <span className="kpi-val">
-                {" "}
-                {kpiData.todayConsumption.toLocaleString()}{" "}
-              </span>
+              <span className="kpi-val"> {kpiData?.peakPower?.toFixed(2)} </span>
               <span className="kpi-units"> kWh </span>
             </div>
           </div>
@@ -117,7 +118,7 @@ const KPI = ({ data }) => {
         </div>
 
         {/* Energy Cost Card */}
-        <div className="kpi-cont">
+        {/* <div className="kpi-cont">
           <div className="kpi-top">
             <div className="kpi-tit">Monthly Energy Cost</div>
             <div style={{ display: "inline" }}>
@@ -132,7 +133,7 @@ const KPI = ({ data }) => {
             </span>
             <span className="percentage-span">More than last month</span>
           </div>
-        </div>
+        </div> */}
       </Container>
     </>
   );

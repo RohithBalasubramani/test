@@ -56,7 +56,7 @@ const KPI = ({ data }) => {
         <div className="kpi-top">
           <div className="kpi-tit">Current Energy</div>
           <div style={{ display: "inline" }}>
-            <span className="kpi-val">{Number(currentPower.toFixed(2))}</span>
+            <span className="kpi-val">{Number(currentPower?.toFixed(2))}</span>
             <span className="kpi-units"> Kwh</span>
           </div>
         </div>
@@ -72,7 +72,7 @@ const KPI = ({ data }) => {
         <div className="kpi-top">
           <div className="kpi-tit">Energy Today</div>
           <div style={{ display: "inline" }}>
-            <span className="kpi-val">{Number(kwToday.toFixed(0))}</span>
+            <span className="kpi-val">{Number(kwToday?.toFixed(0))}</span>
             <span className="kpi-units"> Wh</span>
           </div>
         </div>
@@ -88,7 +88,7 @@ const KPI = ({ data }) => {
         <div className="kpi-top">
           <div className="kpi-tit">Peak Current</div>
           <div style={{ display: "inline" }}>
-            <span className="kpi-val">{Number(peakCurrent.toFixed(2))}</span>
+            <span className="kpi-val">{Number(peakCurrent?.toFixed(2))}</span>
             <span className="kpi-units"> Amps</span>
           </div>
         </div>
@@ -104,7 +104,7 @@ const KPI = ({ data }) => {
         <div className="kpi-top">
           <div className="kpi-tit">Peak Voltage</div>
           <div style={{ display: "inline" }}>
-            <span className="kpi-val">{Number(peakVoltage.toFixed(2))}</span>
+            <span className="kpi-val">{Number(peakVoltage?.toFixed(2))}</span>
             <span className="kpi-units"> Volts</span>
           </div>
         </div>

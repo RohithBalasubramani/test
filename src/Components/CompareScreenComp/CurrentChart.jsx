@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
 import "../realtimestyle.css"; // Import the shared CSS file
-import sidbarInfo from "../../sidbarInfo";
 import { Checkbox } from "@mui/material";
 
 const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
@@ -42,41 +41,43 @@ const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
       resample_period: "T", // per minute
     };
     try {
-      const [firstFeederResponse, secondFeederResponse] = await Promise.all([
-        axios.get(sidbarInfo.apiUrls[firstFeederApiKey]?.apiUrl),
-        axios.get(sidbarInfo.apiUrls[secondFeederApiKey]?.apiUrl),
-      ]);
-
-      const timestamp = firstFeederResponse.data["recent data"]["timestamp"];
-      const avgCurrentFirst =
-        firstFeederResponse.data["recent data"]["avg_current"];
-      const rCurrentFirst =
-        firstFeederResponse.data["recent data"]["r_current"];
-      const yCurrentFirst =
-        firstFeederResponse.data["recent data"]["y_current"];
-      const bCurrentFirst =
-        firstFeederResponse.data["recent data"]["b_current"];
-      const avgCurrentSecond =
-        secondFeederResponse.data["recent data"]["avg_current"];
-      const rCurrentSecond =
-        secondFeederResponse.data["recent data"]["r_current"];
-      const yCurrentSecond =
-        secondFeederResponse.data["recent data"]["y_current"];
-      const bCurrentSecond =
-        secondFeederResponse.data["recent data"]["b_current"];
-
-      updateChartData(
-        timestamp,
-        avgCurrentFirst,
-        rCurrentFirst,
-        yCurrentFirst,
-        bCurrentFirst,
-        avgCurrentSecond,
-        rCurrentSecond,
-        yCurrentSecond,
-        bCurrentSecond
-      );
-      //updatePowerStatus(ebRecent, dg1Recent, dg2Recent);
+      if(firstFeederApiKey && secondFeederApiKey){
+        const [firstFeederResponse, secondFeederResponse] = await Promise.all([
+          axios.get(firstFeederApiKey),
+          axios.get(secondFeederApiKey),
+        ]);
+  
+        const timestamp = firstFeederResponse.data["recent data"]["timestamp"];
+        const avgCurrentFirst =
+          firstFeederResponse.data["recent data"]["avg_current"];
+        const rCurrentFirst =
+          firstFeederResponse.data["recent data"]["r_current"];
+        const yCurrentFirst =
+          firstFeederResponse.data["recent data"]["y_current"];
+        const bCurrentFirst =
+          firstFeederResponse.data["recent data"]["b_current"];
+        const avgCurrentSecond =
+          secondFeederResponse.data["recent data"]["avg_current"];
+        const rCurrentSecond =
+          secondFeederResponse.data["recent data"]["r_current"];
+        const yCurrentSecond =
+          secondFeederResponse.data["recent data"]["y_current"];
+        const bCurrentSecond =
+          secondFeederResponse.data["recent data"]["b_current"];
+  
+        updateChartData(
+          timestamp,
+          avgCurrentFirst,
+          rCurrentFirst,
+          yCurrentFirst,
+          bCurrentFirst,
+          avgCurrentSecond,
+          rCurrentSecond,
+          yCurrentSecond,
+          bCurrentSecond
+        );
+        //updatePowerStatus(ebRecent, dg1Recent, dg2Recent);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
