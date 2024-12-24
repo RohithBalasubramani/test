@@ -32,6 +32,12 @@ const RealTimeChart = ({
   const [powerStatus, setPowerStatus] = useState("Loading...");
   const [activeData, setActiveData] = useState([]);
 
+  // Normalize feeders to lowercase keys
+  const normalizedFeeders = feeders.map((feeder) => ({
+    ...feeder,
+    key: feeder.key.toLowerCase(),
+  }));
+
   // Fetch data from the API
   const fetchData = async () => {
     const currentTime = new Date().toISOString();
@@ -60,8 +66,14 @@ const RealTimeChart = ({
         return;
       }
 
-      updateChartData(recentData);
-      updatePowerStatus(recentData);
+      // 🔄 Normalize recent data keys
+      const normalizedRecentData = {};
+      Object.keys(recentData).forEach((key) => {
+        normalizedRecentData[key.toLowerCase()] = recentData[key];
+      });
+
+      updateChartData(normalizedRecentData);
+      updatePowerStatus(normalizedRecentData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -76,7 +88,7 @@ const RealTimeChart = ({
 
     const newEntry = {
       time: recentData.timestamp,
-      feeders: feeders.map((feeder) => ({
+      feeders: normalizedFeeders.map((feeder) => ({
         label: feeder.label,
         value: recentData[feeder.key] || 0,
       })),
@@ -94,7 +106,9 @@ const RealTimeChart = ({
 
   // Update power status
   const updatePowerStatus = (recentData) => {
-    const activeFeeder = feeders.find((feeder) => recentData[feeder.key] > 0);
+    const activeFeeder = normalizedFeeders.find(
+      (feeder) => recentData[feeder.key] > 0
+    );
     setPowerStatus(
       activeFeeder ? `Running on ${activeFeeder.label}` : "No Power"
     );
@@ -112,7 +126,7 @@ const RealTimeChart = ({
   // Configure chart data
   const chartData = {
     labels: data.map((item) => item.time),
-    datasets: feeders.map((feeder, index) => ({
+    datasets: normalizedFeeders.map((feeder, index) => ({
       type: "line",
       label: feeder.label,
       data: data.map(
