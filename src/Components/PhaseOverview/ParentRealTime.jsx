@@ -41,7 +41,14 @@ const ParentRealtime = () => {
   };
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div
+      style={{
+        padding: "1rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "2vh",
+      }}
+    >
       <RealTimeChart
         amfOptions={amfOptions}
         selectedAPI={selectedAPI}

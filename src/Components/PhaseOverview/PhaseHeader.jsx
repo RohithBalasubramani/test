@@ -7,15 +7,19 @@ import TimeBar from "../TRFF/TimePeriod";
 import OverviewTimeBar from "../Overview/OverviewTimeBar";
 import WeatherWidget from "../Dashboard/Weather";
 import KPI from "./KPI";
+import DateRangeSelector from "../Dashboard/Daterangeselector";
 
 // Styled Components
 const DashboardHeader = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
-  gap: 16px;
-  width: 100vw;
-  height: 50vh;
+  gap: auto;
+  padding-bottom: 1vh;
+`;
+
+const ContainerBox = styled.div`
+  height: 70vh;
 `;
 
 const DashboardTitle = styled.div`
@@ -108,19 +112,37 @@ const OverviewHeader = () => {
   const feederData = prepareFeederData();
 
   return (
-    <div>
+    <ContainerBox>
       {/* 📊 Header Section */}
       <DashboardHeader>
-        <DashboardTitle>Dashboard</DashboardTitle>
-        <OverviewTimeBar
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
-          dateRange={dateRange}
-          setDateRange={setDateRange}
-          setTimeperiod={setTimeperiod}
-          startDate={startDate}
-          endDate={endDate}
-        />
+        <DashboardTitle>Phase 1 - PEPPL Overview</DashboardTitle>
+        <div
+          style={{
+            marginRight: 0,
+            marginLeft: "auto",
+            display: "flex",
+            gap: "1vw",
+          }}
+        >
+          <OverviewTimeBar
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
+            setTimeperiod={setTimeperiod}
+            startDate={startDate}
+            endDate={endDate}
+          />
+          <DateRangeSelector
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
+            setTimeperiod={setTimeperiod}
+            startDate={startDate}
+            endDate={endDate}
+          />
+        </div>
       </DashboardHeader>
 
       {/* 📊 Widgets Section */}
@@ -139,7 +161,7 @@ const OverviewHeader = () => {
         <KPI data={Object.values(data)[2]} />
         <WeatherWidget />
       </Container>
-    </div>
+    </ContainerBox>
   );
 };
 

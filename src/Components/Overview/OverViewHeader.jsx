@@ -7,12 +7,19 @@ import KPI from "../KPI";
 import WeatherWidget from "../Weather";
 import { sideBarTreeArray } from "../../sidebarInfo2"; // Assuming this is your Treeview array
 import OverviewTimeBar from "./OverviewTimeBar";
+import Alerts from "../Dashboard/Alerts";
+import DateRangeSelector from "../Dashboard/Daterangeselector";
 
 const DashboardHeader = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
-  gap: 16px;
+  gap: auto;
+  padding-bottom: 1vh;
+`;
+
+const ContainerBox = styled.div`
+  height: 50vh;
 `;
 
 const DashboardTitle = styled.div`
@@ -111,18 +118,36 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
   }, [startDate, endDate, timeperiod, apiKey, sectionName]);
 
   return (
-    <div>
+    <ContainerBox>
       <DashboardHeader>
-        <DashboardTitle>Dashboard</DashboardTitle>
-        <OverviewTimeBar
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
-          dateRange={dateRange}
-          setDateRange={setDateRange}
-          setTimeperiod={setTimeperiod}
-          startDate={startDate}
-          endDate={endDate}
-        />
+        <DashboardTitle>Overview Page</DashboardTitle>
+        <div
+          style={{
+            marginRight: 0,
+            marginLeft: "auto",
+            display: "flex",
+            gap: "1vw",
+          }}
+        >
+          <OverviewTimeBar
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
+            setTimeperiod={setTimeperiod}
+            startDate={startDate}
+            endDate={endDate}
+          />
+          <DateRangeSelector
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
+            setTimeperiod={setTimeperiod}
+            startDate={startDate}
+            endDate={endDate}
+          />
+        </div>
       </DashboardHeader>
       <Container
         style={{ display: "flex", gap: "2%", maxHeight: "fit-content" }}
@@ -146,9 +171,9 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
         )}
 
         <KPI data={Object.values(data)[2]} />
-        <WeatherWidget />
+        <Alerts />
       </Container>
-    </div>
+    </ContainerBox>
   );
 };
 

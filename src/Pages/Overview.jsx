@@ -17,6 +17,12 @@ const Container = styled.div`
   max-width: 96vw;
 `;
 
+const ContainerBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+`;
+
 const SidebarComp = styled.div`
   flex: 1;
 `;
@@ -100,47 +106,50 @@ const Overview = ({ apikey, sectionName, parentName, parentName2 }) => {
         <Sidebar handleItemId={(itemId) => setKey(itemId)} />
       </SidebarComp>
       <OutLetContainer>
-        <OverviewHeader
-          apiKey={key}
-          sectionName={sectionName}
-          parentName={parentName}
-          parentName2={parentName2}
-        />
-        <br />
-        <br />
-        <div className="emstit">
-          <span className="emstitle">Real - Time Consumption</span>
-          <span className="emsspan">Status: Running EB power</span>
-        </div>
-        <ChartContainer
-          className="realtimeflex"
-          style={{ gap: "10px", display: "flex" }}
-        >
-          <ParentOverviewComponent
-            apiKey={key}
-            topBar={sectionName}
-            parentName={parentName}
-            parentName2={parentName2}
-          />
-        </ChartContainer>
+        <ContainerBox>
+          <div>
+            <OverviewHeader
+              apiKey={key}
+              sectionName={sectionName}
+              parentName={parentName}
+              parentName2={parentName2}
+            />
+          </div>
 
-        <div className="emstit">
-          <span className="emstitle">Energy Consumption History</span>
-          <span className="emsspan">
-            Access and analyze historical energy consumption trends to identify
-            patterns and areas for improvement.
-          </span>
-        </div>
-        <RealTimeChart feeders={feeders} pollingInterval={5000} />
-        <br />
-        <div style={{ width: "80vw" }}>
-          <BottomTimeSeries
-            apiKey={key}
-            topBar={sectionName}
-            parentName={parentName}
-            parentName2={parentName2}
-          />
-        </div>
+          <ChartContainer
+            className="realtimeflex"
+            style={{ gap: "10px", display: "flex" }}
+          >
+            <div className="emstit">
+              <span className="emstitle">Real - Time Consumption</span>
+              <span className="emsspan">Status: Running EB power</span>
+            </div>
+            <ParentOverviewComponent
+              apiKey={key}
+              topBar={sectionName}
+              parentName={parentName}
+              parentName2={parentName2}
+            />
+          </ChartContainer>
+
+          <RealTimeChart feeders={feeders} pollingInterval={5000} />
+          <br />
+          <div className="emstit">
+            <span className="emstitle">Energy Consumption History</span>
+            <span className="emsspan">
+              Access and analyze historical energy consumption trends to
+              identify patterns and areas for improvement.
+            </span>
+          </div>
+          <div style={{ width: "80vw" }}>
+            <BottomTimeSeries
+              apiKey={key}
+              topBar={sectionName}
+              parentName={parentName}
+              parentName2={parentName2}
+            />
+          </div>
+        </ContainerBox>
       </OutLetContainer>
     </Container>
   );

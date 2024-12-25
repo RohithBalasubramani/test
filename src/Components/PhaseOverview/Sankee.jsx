@@ -7,10 +7,47 @@ import TimeBar from "../TRFF/TimePeriod";
 import ToggleButtons from "../Togglesampling";
 import DateRangeSelector from "../Dashboard/Daterangeselector";
 import { RadioGroup, FormControlLabel, Radio } from "@mui/material";
-
+import { styled } from "@mui/system";
 /**
  * Extract the second-last segment from the URL
  */
+// --- Styled Radio Components ---
+const StyledRadioGroup = styled(RadioGroup)({
+  display: "flex",
+  gap: "16px",
+  flexDirection: "row",
+  marginBottom: "16px",
+});
+
+const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
+  border: "1px solid #EAECF0",
+  borderRadius: "8px",
+  margin: "0",
+  padding: "1vh",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  textAlign: "center",
+  backgroundColor: "#FFFFFF",
+  "& .MuiFormControlLabel-label": {
+    fontFamily: "DM Sans",
+    fontSize: "12px",
+    fontWeight: 400,
+    lineHeight: "16px",
+    color: "#445164",
+  },
+  "& .MuiRadio-root": {
+    padding: "0 8px",
+    color: "#445164",
+  },
+  "& .MuiRadio-root.Mui-checked": {
+    color: "#4E46B4",
+  },
+  "&:hover": {
+    backgroundColor: "#F3F4F6",
+  },
+}));
+
 const extractApiKey = (url) => {
   const segments = url.split("/");
   if (segments.length >= 2) {
@@ -218,15 +255,15 @@ const SankeyChart = ({
             row
             value={selectedRoot}
             onChange={(e) => setSelectedRoot(e.target.value)}
-            style={{ margin: "20px 0" }}
+            style={{ margin: "20px 0", gap: "1vw" }}
           >
-            <FormControlLabel
+            <StyledFormControlLabel
               value="all"
               control={<Radio />}
               label="All Nodes"
             />
             {Object.keys(sideBarTreeArray).map((rootKey) => (
-              <FormControlLabel
+              <StyledFormControlLabel
                 key={rootKey}
                 value={rootKey}
                 control={<Radio />}
@@ -238,7 +275,7 @@ const SankeyChart = ({
           <Plot
             data={plotData}
             layout={{
-              title: { text: "Sankey Diagram (Filtered)", font: { size: 18 } },
+              title: { text: "Energy Flow Chart", font: { size: 18 } },
               margin: { l: 20, r: 20, t: 40, b: 20 },
             }}
             config={{ displayModeBar: false }}

@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { Description } from "@mui/icons-material";
+import React from "react";
 import styled from "styled-components";
-import Weatherbg from "../../Assets/weatherbg.png";
-import DescriptionIcon from "@mui/icons-material/Description";
 
 const WeatherWidgetContainer = styled.div`
   display: flex;
@@ -12,19 +10,19 @@ const WeatherWidgetContainer = styled.div`
   width: 100%;
 `;
 
-const WeatherHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #ffffff;
-  padding: 16px;
-  padding-top: 4vh;
-  padding-bottom: 4vh;
-  border-radius: var(--paddings-gaps-p-4, 16px);
-  background-image: url(${Weatherbg});
-  background-size: cover;
-  flex: 2;
-`;
+// const WeatherHeader = styled.div`
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   background-color: #ffffff;
+//   padding: 16px;
+//   padding-top: 4vh;
+//   padding-bottom: 4vh;
+//   border-radius: var(--paddings-gaps-p-4, 16px);
+//   background-image: url(${Weatherbg});
+//   background-size: cover;
+//   flex: 2;
+// `;
 
 const WeatherMain = styled.div`
   color: var(--Gray---Typography-800, #1b2533);
@@ -64,10 +62,12 @@ const Address = styled.div`
 `;
 
 const AlertsContainer = styled.div`
-  border-radius: 16px;
+  border-radius: 8px;
   background: #ffffff;
   display: flex;
   flex: 3;
+  width: 40vw;
+  height: 43vh;
 
   padding: 16px;
   flex-direction: column;
@@ -88,13 +88,14 @@ const AlertItem = styled.div`
   display: flex;
   align-items: center;
   padding: 10px;
+  width: 100%;
   border-bottom: 1px solid #eee;
   &:last-child {
     border-bottom: none;
   }
 `;
 
-const AlertIcon = styled(DescriptionIcon)`
+const AlertIcon = styled(Description)`
   margin-right: 10px;
   color: #8f97a2;
   background-color: #f6f6f7;
@@ -127,56 +128,9 @@ const Date = styled.div`
   line-height: 16px; /* 133.333% */
 `;
 
-const WeatherWidget = () => {
-  const [weatherData, setWeatherData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const apiKey = "66dc8817c3439e5c408f731143c36a35"; // Use your actual API key
-  const lat = "17.639762355942285"; // Latitude for Chicago
-  const lon = "78.3789324345932"; // Longitude for Chicago
-  const exclude = "minutely,hourly"; // Customize as needed
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=${exclude}&appid=${apiKey}&units=metric&lang=en`;
-        const response = await axios.get(url);
-        setWeatherData(response.data);
-      } catch (error) {
-        setErrorMessage(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (errorMessage) {
-    return <div>Error: {errorMessage}</div>;
-  }
-
-  if (!weatherData) {
-    return null;
-  }
-
-  const { current } = weatherData;
-
+const Alerts = () => {
   return (
-    <WeatherWidgetContainer>
-      <WeatherHeader>
-        <WeatherMain>{current.temp?.toFixed(1)}°C</WeatherMain>
-        <div>
-          <Name>Premier PEPPL(Phase 1)</Name>
-          <Address>23 July 2024</Address>
-        </div>
-      </WeatherHeader>
-
+    <div>
       <AlertsContainer>
         <div>Alerts</div>
         <AlertItem>
@@ -200,9 +154,16 @@ const WeatherWidget = () => {
             <div>A new Monthly report is ready to Download!</div>
           </AlertText>
         </AlertItem>
+        <AlertItem>
+          <AlertIcon />
+          <AlertText>
+            <Date>July 15, 2024</Date>
+            <div>A new Monthly report is ready to Download!</div>
+          </AlertText>
+        </AlertItem>
       </AlertsContainer>
-    </WeatherWidgetContainer>
+    </div>
   );
 };
 
-export default WeatherWidget;
+export default Alerts;

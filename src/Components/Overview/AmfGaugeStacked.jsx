@@ -5,8 +5,8 @@ import styled from "styled-components";
 const Container = styled.div`
   display: flex;
   justify-content: center;
-  width: 50vw;
-  height: 30vh;
+  width: 20vw;
+  height: 40vh;
   background: #ffffff;
   padding: 4vh;
 

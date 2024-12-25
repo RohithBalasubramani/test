@@ -185,41 +185,43 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
       )}
       {fieldsDonut.length > 0 && data && (
         <>
-          <div style={{ width: "50%" }}>
-            <DonutChart
-              data={data}
-              startDate={startDate}
-              setStartDate={setStartDate}
-              endDate={endDate}
-              setEndDate={setEndDate}
-              timeperiod={timeperiod}
-              setTimeperiod={setTimeperiod}
-              dateRange={dateRange}
-              setDateRange={setDateRange}
-              fields={fieldsDonut}
-              backgroundColors={["#ED75A3", "#017EF3", "#FFC550"]}
-            />
-          </div>
-          <div style={{ width: "50%" }}>
-            <HorizontalChart
-              data={data}
-              startDate={startDate}
-              setStartDate={setStartDate}
-              endDate={endDate}
-              setEndDate={setEndDate}
-              timeperiod={timeperiod}
-              setTimeperiod={setTimeperiod}
-              dateRange={dateRange}
-              setDateRange={setDateRange}
-              backgroundColors={[
-                "#ED75A3",
-                "#017EF3",
-                "#FFC550",
-                "#4BC0C0",
-                "#9966FF",
-              ]}
-              fields={fieldsDonut}
-            />
+          <div style={{ display: "flex", gap: "5%" }}>
+            <div style={{ width: "46%" }}>
+              <DonutChart
+                data={data}
+                startDate={startDate}
+                setStartDate={setStartDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
+                timeperiod={timeperiod}
+                setTimeperiod={setTimeperiod}
+                dateRange={dateRange}
+                setDateRange={setDateRange}
+                fields={fieldsDonut}
+                backgroundColors={["#ED75A3", "#017EF3", "#FFC550"]}
+              />
+            </div>
+            <div style={{ width: "46%" }}>
+              <HorizontalChart
+                data={data}
+                startDate={startDate}
+                setStartDate={setStartDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
+                timeperiod={timeperiod}
+                setTimeperiod={setTimeperiod}
+                dateRange={dateRange}
+                setDateRange={setDateRange}
+                backgroundColors={[
+                  "#ED75A3",
+                  "#017EF3",
+                  "#FFC550",
+                  "#4BC0C0",
+                  "#9966FF",
+                ]}
+                fields={fieldsDonut}
+              />
+            </div>
           </div>
           <StackedBarChart
             data={data}

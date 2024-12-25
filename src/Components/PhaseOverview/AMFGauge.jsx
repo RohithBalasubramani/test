@@ -13,8 +13,8 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60vw;
-  height: 40vh;
+  width: 50vw;
+  height: 50vh;
   background: #ffffff;
   padding: 4vh;
   border-radius: 10px;
@@ -25,6 +25,7 @@ const Container = styled.div`
 const Card = styled.div`
   text-align: center;
   position: relative;
+  height: 40vh;
 `;
 
 const Title = styled.div`
@@ -79,8 +80,8 @@ const AMFgaugeStacked = ({ feeders }) => {
 
   return (
     <Container>
+      {/* <Title>B AC Power Distribution</Title> */}
       <Card>
-        <Title>B AC Power Distribution</Title>
         <RadialBarChart
           width={400}
           height={400}
@@ -107,12 +108,13 @@ const AMFgaugeStacked = ({ feeders }) => {
             cornerRadius={10}
             background
           />
-          <Legend
+          {/* <Legend
             iconSize={10}
             layout="horizontal"
             verticalAlign="bottom"
             align="center"
-          />
+
+          /> */}
           <Tooltip />
         </RadialBarChart>
         <CenterText onClick={() => setSelectedFeeder(null)}>

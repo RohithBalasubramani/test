@@ -66,7 +66,7 @@ const KPI = ({ data }) => {
     <>
       <Container>
         {/* 📊 Peak Current Card */}
-        <div className="kpi-cont">
+        <div className="kpi-cont3">
           <div className="kpi-top">
             <div className="kpi-tit">Peak Current</div>
             <div style={{ display: "inline" }}>
@@ -85,7 +85,7 @@ const KPI = ({ data }) => {
         </div>
 
         {/* 📊 Total Consumption Card */}
-        <div className="kpi-cont">
+        <div className="kpi-cont3">
           <div className="kpi-top">
             <div className="kpi-tit">Total Consumption</div>
             <div style={{ display: "inline" }}>
@@ -105,7 +105,7 @@ const KPI = ({ data }) => {
         </div>
 
         {/* 💵 Total Energy Cost Card */}
-        <div className="kpi-cont">
+        <div className="kpi-cont3">
           <div className="kpi-top">
             <div className="kpi-tit">Total Energy Cost</div>
             <div style={{ display: "inline" }}>

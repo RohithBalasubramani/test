@@ -1,28 +1,51 @@
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  LineElement,
-  TimeScale,
-  Title,
-  Tooltip,
-  Legend,
-  registerables,
-} from "chart.js";
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+} from "@mui/material";
+import { styled } from "@mui/system";
 import "./RealTimeStyle.css";
+import "chartjs-adapter-date-fns";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  LineElement,
-  TimeScale,
-  Title,
-  Tooltip,
-  Legend,
-  ...registerables
-);
+// --- Styled Radio Components ---
+const StyledRadioGroup = styled(RadioGroup)({
+  display: "flex",
+  gap: "16px",
+  flexDirection: "row",
+  marginBottom: "16px",
+});
+
+const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
+  border: "1px solid #EAECF0",
+  borderRadius: "8px",
+  margin: "0",
+  padding: "1vh",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  textAlign: "center",
+  backgroundColor: "#FFFFFF",
+  "& .MuiFormControlLabel-label": {
+    fontFamily: "DM Sans",
+    fontSize: "12px",
+    fontWeight: 400,
+    lineHeight: "16px",
+    color: "#445164",
+  },
+  "& .MuiRadio-root": {
+    padding: "0 8px",
+    color: "#445164",
+  },
+  "& .MuiRadio-root.Mui-checked": {
+    color: "#4E46B4",
+  },
+  "&:hover": {
+    backgroundColor: "#F3F4F6",
+  },
+}));
 
 const RealTimeChart = ({
   feeders = [], // Array of feeder objects with key and label
@@ -42,9 +65,9 @@ const RealTimeChart = ({
   const fetchData = async () => {
     const currentTime = new Date().toISOString();
     const params = {
-      start_date_time: new Date(Date.now() - 60000).toISOString(), // Last one minute
+      start_date_time: new Date(Date.now() - 600000).toISOString(), // Last 10 minutes
       end_date_time: currentTime,
-      resample_period: "T", // Per minute
+      resample_period: "H", // Per hour
     };
 
     try {
@@ -57,7 +80,6 @@ const RealTimeChart = ({
       }
 
       const result = await response.json();
-      console.log("Fetched real-time data:", result);
 
       const recentData = result?.["recent data"] || null;
 
@@ -66,7 +88,6 @@ const RealTimeChart = ({
         return;
       }
 
-      // 🔄 Normalize recent data keys
       const normalizedRecentData = {};
       Object.keys(recentData).forEach((key) => {
         normalizedRecentData[key.toLowerCase()] = recentData[key];
@@ -136,7 +157,7 @@ const RealTimeChart = ({
       fill: true,
       borderColor: feeder.color || `hsl(${index * 60}, 70%, 50%)`,
       backgroundColor: feeder.color
-        ? `${feeder.color}33` // Add transparency for fill
+        ? `${feeder.color}33`
         : `hsl(${index * 60}, 70%, 70%, 0.2)`,
       borderWidth: 2,
       pointRadius: 4,
@@ -146,12 +167,6 @@ const RealTimeChart = ({
     })),
   };
 
-  const maxValue = Math.max(
-    ...data.flatMap((entry) => entry.feeders.map((f) => f.value)),
-    0
-  );
-
-  // Configure chart options
   const options = {
     maintainAspectRatio: false,
     responsive: true,
@@ -161,65 +176,51 @@ const RealTimeChart = ({
         time: {
           tooltipFormat: "PP HH:mm",
         },
-        grid: {
-          color: "rgba(0, 0, 0, 0.05)",
-          borderDash: [5, 5],
-        },
       },
       y: {
         title: {
           display: true,
           text: "Power (kWh)",
         },
-        min: Math.max(0, maxValue - 5),
-        max: maxValue + 5,
-        grid: {
-          color: "rgba(0, 0, 0, 0.05)",
-          borderDash: [5, 5],
-        },
       },
     },
     plugins: {
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            let label = context.dataset.label || "";
-            if (label) {
-              label += ": ";
-            }
-            if (context.parsed.y !== null) {
-              label += context.parsed.y + " kWh";
-            }
-            return label;
-          },
-        },
-      },
       legend: {
-        display: true,
-        position: "bottom",
+        display: false, // ✅ Legend removed
       },
     },
   };
 
-  // Render the chart component
   return (
     <div className="containerchart">
+      {/* Chart Container */}
       <div className="chart-cont">
         <div className="title">Real-Time Energy Consumption</div>
         <div className="chart-size">
           <Line data={chartData} options={options} />
         </div>
       </div>
+
+      {/* Value-Cont Redesigned */}
       <div className="value-cont">
         <div className="value-heading">Power Status</div>
         <div className="current-value">{powerStatus}</div>
-        <div className="all-feeders">
-          {activeData.map((feeder, index) => (
-            <div key={index} className="feeder-row">
-              <span className="feeder-label">{feeder.label}:</span>
-              <span className="feeder-value">
-                {feeder.value?.toFixed(2)} kWh
-              </span>
+        <div className="legend-container">
+          {normalizedFeeders.map((feeder, index) => (
+            <div className="legend-item-two" key={index}>
+              <div className="value-name">
+                <span
+                  className="legend-color-box"
+                  style={{ backgroundColor: feeder.color || "#000" }}
+                />
+                {feeder.label}
+              </div>
+              <div className="value">
+                {data.length > 0
+                  ? data[data.length - 1].feeders[index]?.value?.toFixed(2)
+                  : "0.00"}{" "}
+                <span className="value-span">kWh</span>
+              </div>
             </div>
           ))}
         </div>
