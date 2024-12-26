@@ -18,7 +18,7 @@ const generateRoutes = (nodes, basePath = "") => {
   const sectionName = sectionPathSegments[sectionPathSegments.length - 1]; // e.g. "amf1a"
 
   const selectPage = (node) => {
-    if(node.id.includes("overview") || node.children){
+    if(node.id.includes("overview")){
       return <Overview apikey={node.id} sectionName={sectionName} />
     } else if(node.id.toLowerCase().includes("inverter")){
       return <Inverter apikey={node.id} sectionName={sectionName} />
@@ -48,7 +48,7 @@ const generateRoutes = (nodes, basePath = "") => {
               index={node.id.includes("overview")}
               path={
                 node.id.includes("overview")
-                  ? `${sectionName}`
+                  ? `${sectionName}/${node.id}`
                   : `${sectionName}/${node.id}`
               }
               element={selectPage(node)}
@@ -63,8 +63,7 @@ const generateRoutes = (nodes, basePath = "") => {
                       index={child.id.toLowerCase().includes("overview")}
                       path={`${sectionName}/${node.id}/${child.id}`}
                       element={
-                        child.id.toLowerCase().includes("overview") ||
-                        child.children ? (
+                        child.id.toLowerCase().includes("overview") ? (
                           <Overview
                             apikey={child.id}
                             sectionName={sectionName}

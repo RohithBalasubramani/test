@@ -48,25 +48,18 @@ const AMFgauge = ({ kpidata }) => {
   const [dgUsage, setDgUsage] = useState(0);
   const [ebTot, setEbtot] = useState(0);
   const [dgTot, setDgTot] = useState(0);
+  const [energy, setEnergy] = useState(0)
+  const [voltage, setVoltage] = useState(0)
 
   const fetchData = async () => {
     try {
-      const [ebResponse, dgResponse1, dgResponse2] = await Promise.all([
-        axios.get("https://www.therion.co.in/api/ebs10reading/"),
-        axios.get("https://www.therion.co.in/api/dg1s12reading/"),
-        axios.get("https://www.therion.co.in/api/dg2s3reading/"),
-      ]);
-
-      const ebKwh = ebResponse.data["recent data"].kwh;
-      const dg1Kwh = dgResponse1.data["recent data"].kwh;
-      const dg2Kwh = dgResponse2.data["recent data"].kwh;
-
-      const totalKwh = ebKwh + dg1Kwh + dg2Kwh;
-      if (totalKwh > 0) {
-        setEbUsage((ebKwh / totalKwh) * 100);
-        setDgUsage(((dg1Kwh + dg2Kwh) / totalKwh) * 100);
-        setDgTot(dg1Kwh + dg2Kwh);
-        setEbtot(ebKwh);
+      if(kpidata && kpidata["resampled data"]){
+        const energyArray = kpidata["resampled data"].map((item) => item["app_energy_export"]);
+        const voltageArray = kpidata["resampled data"].map((item) => Math.max(item["ry_voltage"], item["yb_voltage"], item["br_voltage"]));
+        const sumOfEnergyArray = energyArray.reduce((acc,currentValue) => acc + currentValue, 0);
+        const peakVoltage = Math.max(...voltageArray)
+        setVoltage(peakVoltage)
+        setEnergy(sumOfEnergyArray)
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -103,7 +96,7 @@ const AMFgauge = ({ kpidata }) => {
               endAngle={130}
               innerRadius="75%"
               outerRadius="110%"
-              value={ebUsage}
+              value={energy}
               text={({ value }) => `${value.toFixed(2)} ${" %"}`}
               cornerRadius="50%"
               sx={{
@@ -116,7 +109,7 @@ const AMFgauge = ({ kpidata }) => {
               }}
             />
             <div className="figuretext">
-              <span>{ebTot.toLocaleString()}</span>
+              <span>{energy.toLocaleString()}</span>
               <span> kWh </span>
             </div>
           </GaugeCont>
@@ -127,8 +120,8 @@ const AMFgauge = ({ kpidata }) => {
         <div className="kpi-top">
           <div className="kpi-tit">Peak Voltage</div>
           <div style={{ display: "inline" }}>
-            <span className="kpi-val"> {1} </span>
-            <span className="kpi-units"> A </span>
+            <span className="kpi-val"> {voltage?.toFixed(2)} </span>
+            <span className="kpi-units"> V </span>
           </div>
         </div>
         <div className="kpi-bot">

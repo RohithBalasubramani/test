@@ -207,7 +207,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
         </button>
       </DashboardHeader>
       <KPIContainer>
-        <AMFgauge />
+        <AMFgauge kpidata={data}/>
         <KPI data={data} />
         <div>
           <PowerFactorGauge
