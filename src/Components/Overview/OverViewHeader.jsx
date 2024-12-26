@@ -152,18 +152,8 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
       <Container
         style={{ display: "flex", gap: "2%", maxHeight: "fit-content" }}
       >
-        {Object.keys(data)?.length >= 3 ? (
-          <AMFgaugeStacked
-            feeder1Power={
-              Object.values(data)[0]?.["average data"]?.app_energy_export || 0
-            }
-            feeder2Power={
-              Object.values(data)[1]?.["average data"]?.app_energy_export || 0
-            }
-            feeder3Power={
-              Object.values(data)[2]?.["average data"]?.app_energy_export || 0
-            }
-          />
+        {Object.keys(data)?.length > 0 ? (
+          <AMFgaugeStacked feederData={data} />
         ) : error ? (
           <div style={{ color: "red" }}>{error}</div>
         ) : (

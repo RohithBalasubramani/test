@@ -30,32 +30,31 @@ export const sideBarTreeArray = {
       label: "OG-1",
       apis: ["http://14.96.26.26:8080/api/p1_amfs_outgoing1/"],
     },
-
     {
-      id: "cell_pcc_panel_1_incomer",
-      label: "Cell PCC Panel-1 Incomer",
-      apis: ["http://14.96.26.26:8080/api/p1_pcc1_cellincomer/"],
+      id: "cell_pcc_panel_1_incomer_overview",
+      label: "Cell PCC Panel-1 Incomer Overview",
+      apis: [
+        "http://14.96.26.26:8080/api/p1_amfs_generator1/",
+        "http://14.96.26.26:8080/api/p1_amfs_transformer1/",
+      ],
+      feeder_apis: [
+        "http://14.96.26.26:8080/api/p1_pcc1_ups1a/",
+        "http://14.96.26.26:8080/api/p1_pcc1_ups1b/",
+        "http://14.96.26.26:8080/api/p1_pcc1_ups1c/",
+        "http://14.96.26.26:8080/api/p1_pcc1_ups1d/",
+        "http://14.96.26.26:8080/api/p1_pcc1_ups1e/",
+        "http://14.96.26.26:8080/api/p1_pcc1_ltp1/",
+        "http://14.96.26.26:8080/api/p1_pcc1_ltp2/",
+        "http://14.96.26.26:8080/api/p1_pcc1_chiller2/",
+      ],
       children: [
         {
-          id: "cell_pcc_panel_1_incomer_overview",
-          label: "Cell PCC Panel-1 Incomer Overview",
-          apis: [
-            "http://14.96.26.26:8080/api/p1_amfs_generator1/",
-            "http://14.96.26.26:8080/api/p1_amfs_transformer1/",
-          ],
-          feeder_apis: [
-            "http://14.96.26.26:8080/api/p1_pcc1_ups1a/",
-            "http://14.96.26.26:8080/api/p1_pcc1_ups1b/",
-            "http://14.96.26.26:8080/api/p1_pcc1_ups1c/",
-            "http://14.96.26.26:8080/api/p1_pcc1_ups1d/",
-            "http://14.96.26.26:8080/api/p1_pcc1_ups1e/",
-            "http://14.96.26.26:8080/api/p1_pcc1_ltp1/",
-            "http://14.96.26.26:8080/api/p1_pcc1_ltp2/",
-            "http://14.96.26.26:8080/api/p1_pcc1_chiller2/",
-          ],
+          id: "cell_pcc_panel_1_incomer",
+          label: "Cell PCC Panel-1 Incomer",
+          apis: ["http://14.96.26.26:8080/api/p1_pcc1_cellincomer/"],
         },
         {
-          id: "ups_1",
+          id: "ups_1_overview",
           label: "UPS Overview",
           apis: [
             "http://14.96.26.26:8080/api/p1_pcc1_ups1a/",
@@ -175,21 +174,21 @@ export const sideBarTreeArray = {
           ],
         },
         {
-          id: "og_cell_lt_panel-1",
-          label: "OG Cell LT Panel-1",
+          id: "og_cell_lt_panel-1_overview",
+          label: "OG Cell LT Panel-1 Overview",
           apis: ["http://14.96.26.26:8080/api/p1_pcc1_ltp1/"],
+          feeder_apis: [
+            "http://14.96.26.26:8080/api/p1_cellltp1_hotwatertank1/",
+            "http://14.96.26.26:8080/api/p1_cellltp1_hotwatertank2/",
+            "http://14.96.26.26:8080/api/p1_celltoolltp1_alox1/",
+            "http://14.96.26.26:8080/api/p1_celltoolltp1_alox2/",
+            "http://14.96.26.26:8080/api/p1_celltoolltp1_alox3/",
+          ],
           children: [
             {
-              id: "og_cell_lt_panel-1_overview",
-              label: "OG Cell LT Panel-1 Overview",
+              id: "og_cell_lt_panel-1",
+              label: "OG Cell LT Panel-1",
               apis: ["http://14.96.26.26:8080/api/p1_pcc1_ltp1/"],
-              feeder_apis: [
-                "http://14.96.26.26:8080/api/p1_cellltp1_hotwatertank1/",
-                "http://14.96.26.26:8080/api/p1_cellltp1_hotwatertank2/",
-                "http://14.96.26.26:8080/api/p1_celltoolltp1_alox1/",
-                "http://14.96.26.26:8080/api/p1_celltoolltp1_alox2/",
-                "http://14.96.26.26:8080/api/p1_celltoolltp1_alox3/",
-              ],
             },
             {
               id: "cellltp1_hotwatertank1",
@@ -224,19 +223,19 @@ export const sideBarTreeArray = {
           ],
         },
         {
-          id: "og_cell_tool_pdb-1",
-          label: "OG Cell Tool PDB-1",
+          id: "og_cell_tool_pdb-1_overview",
+          label: "OG Cell Tool PDB-1 Overview",
           apis: ["http://14.96.26.26:8080/api/p1_pcc1_ltp2/"],
+          feeder_apis: [
+            "http://14.96.26.26:8080/api/p1_celltoolpdb1_diffusion1/",
+            "http://14.96.26.26:8080/api/p1_celltoolpdb1_diffusion2/",
+            "http://14.96.26.26:8080/api/p1_celltoolpdb1_diffusion3/",
+          ],
           children: [
             {
-              id: "og_cell_tool_pdb-1_overview",
-              label: "OG Cell Tool PDB-1 Overview",
+              id: "og_cell_tool_pdb-1",
+              label: "OG Cell Tool PDB-1",
               apis: ["http://14.96.26.26:8080/api/p1_pcc1_ltp2/"],
-              feeder_apis: [
-                "http://14.96.26.26:8080/api/p1_celltoolpdb1_diffusion1/",
-                "http://14.96.26.26:8080/api/p1_celltoolpdb1_diffusion2/",
-                "http://14.96.26.26:8080/api/p1_celltoolpdb1_diffusion3/",
-              ],
             },
             {
               id: "cell_tool_pdb-1_incomer",
@@ -890,12 +889,13 @@ export const sideBarTreeArray = {
       apis: ["http://14.96.26.26:8080/api/p1_peiplahu8/"],
     },
   ],
-  inverters: [
+  inverter: [
     // Inverters from inverter1 to inverter17
     {
-      id: "overview_inverter_p1",
+      id: "overview",
       label: "Overview",
       apis: [],
+      feeder_apis: []
     },
     ...Array.from({ length: 17 }, (_, i) => ({
       id: `inverter${i + 1}`,

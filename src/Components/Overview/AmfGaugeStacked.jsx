@@ -34,19 +34,34 @@ const CenterText = styled.div`
   font-weight: bold;
   cursor: pointer;
   user-select: none;
+  padding: 2px;
 `;
 
-const AMFgaugeStacked = ({ feeder1Power, feeder2Power, feeder3Power }) => {
-  const totalPower = feeder1Power + feeder2Power + feeder3Power;
+const AMFgaugeStacked = ({ feederData }) => {
+  const totalPowerArray = feederData ? Object.values(feederData).map((item) => item["average data"]?.app_energy_export) : []
+  const totalPower = totalPowerArray.reduce((acc,currentValue) => acc + currentValue, 0)
 
   const [selectedFeeder, setSelectedFeeder] = useState(null);
+  const color_array = [
+    "#FF4500",
+    "#FFD700",
+    "#1E90FF",
+    "#FF4500",
+    "#FFD700",
+    "#1E90FF",
+    "#FF4500",
+    "#FFD700",
+    "#1E90FF"
+  ]
 
   // Prepare data for RadialBarChart
-  const data = [
-    { name: "Feeder 1", value: feeder1Power, fill: "#FF4500" },
-    { name: "Feeder 2", value: feeder2Power, fill: "#FFD700" },
-    { name: "Feeder 3", value: feeder3Power, fill: "#1E90FF" },
-  ];
+  const data = Object.values(feederData).map((item, index) => {
+    return {
+      name: "Feeder" + (index+1),
+      value: item["average data"]?.app_energy_export || 0,
+      fill: color_array[index]
+    }
+  })
 
   // Handle click event
   const handleClick = (e) => {
