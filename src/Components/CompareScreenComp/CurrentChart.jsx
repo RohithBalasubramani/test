@@ -2,23 +2,22 @@ import React, { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
 import "../realtimestyle.css"; // Shared CSS file
-import { Checkbox } from "@mui/material";
 
 /**
- * Component to display real-time current data for two feeders with styled legends and checkboxes.
+ * Component to display real-time current data for two feeders with interactive legends.
  */
 const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
   const [data, setData] = useState([]);
   const ref = useRef();
 
-  // Checkbox states for each feeder
-  const [firstFeederCheckBox, setFirstFeederCheckBox] = useState({
+  // Visibility states for each feeder dataset
+  const [firstFeederVisibility, setFirstFeederVisibility] = useState({
     avgCurrent: true,
     rCurrent: true,
     yCurrent: true,
     bCurrent: true,
   });
-  const [secondFeederCheckBox, setSecondFeederCheckBox] = useState({
+  const [secondFeederVisibility, setSecondFeederVisibility] = useState({
     avgCurrent: true,
     rCurrent: true,
     yCurrent: true,
@@ -100,31 +99,46 @@ const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     return () => clearInterval(interval);
   }, [firstFeederApiKey, secondFeederApiKey]);
 
+  /**
+   * Toggle visibility state for a legend item.
+   */
+  const toggleVisibility = (id, isSecondFeeder) => {
+    if (isSecondFeeder) {
+      setSecondFeederVisibility((prev) => ({
+        ...prev,
+        [id]: !prev[id],
+      }));
+    } else {
+      setFirstFeederVisibility((prev) => ({
+        ...prev,
+        [id]: !prev[id],
+      }));
+    }
+  };
+
   // Labels for the x-axis
   const labels = data.map((item) => item.time);
 
   /**
-   * Configure Chart.js datasets.
+   * Configure Chart.js datasets dynamically.
    */
   const currentChartData = {
     labels,
     datasets: [
-      // First Feeder Datasets
       ...firstFeederLegendData.map((item) => ({
         label: `${item.title} F1`,
         data: data.map((entry) => entry[`${item.id}First`] || 0),
         borderColor: item.color,
-        hidden: !firstFeederCheckBox[item.id],
+        hidden: !firstFeederVisibility[item.id],
         borderWidth: 2,
         pointRadius: 0,
         tension: 0.4,
       })),
-      // Second Feeder Datasets
       ...secondFeederLegendData.map((item) => ({
         label: `${item.title} F2`,
         data: data.map((entry) => entry[`${item.id}Second`] || 0),
         borderColor: item.color,
-        hidden: !secondFeederCheckBox[item.id],
+        hidden: !secondFeederVisibility[item.id],
         borderWidth: 2,
         pointRadius: 0,
         tension: 0.4,
@@ -132,33 +146,16 @@ const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     ],
   };
 
-  /**
-   * Chart.js configuration options.
-   */
   const options = {
     maintainAspectRatio: false,
     scales: {
       x: {
         type: "time",
-        time: {
-          tooltipFormat: "PP HH:mm",
-          displayFormats: {
-            minute: "HH:mm",
-          },
-        },
-        grid: {
-          color: "rgba(0, 0, 0, 0.05)",
-          borderDash: [5, 5],
-        },
       },
       y: {
         title: {
           display: true,
           text: "Current (A)",
-        },
-        grid: {
-          color: "rgba(0, 0, 0, 0.05)",
-          borderDash: [5, 5],
         },
       },
     },
@@ -166,60 +163,32 @@ const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
       legend: {
         display: false, // Custom legend used below
       },
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            let label = context.dataset.label || "";
-            if (label) label += ": ";
-            if (context.parsed.y !== null) label += context.parsed.y + " A";
-            return label;
-          },
-        },
-      },
     },
-  };
-
-  /**
-   * Handle checkbox state changes.
-   */
-  const handleCheckBox = (e, id, isSecondFeeder) => {
-    if (isSecondFeeder) {
-      setSecondFeederCheckBox((prev) => ({
-        ...prev,
-        [id]: e.target.checked,
-      }));
-    } else {
-      setFirstFeederCheckBox((prev) => ({
-        ...prev,
-        [id]: e.target.checked,
-      }));
-    }
   };
 
   /**
    * Reusable ValueContainer component for feeder legends.
    */
-  const ValueContainer = ({
-    legendData,
-    checkBoxState,
-    data,
-    feederLabel,
-    isSecondFeeder,
-  }) => (
+  const ValueContainer = ({ legendData, visibilityState, isSecondFeeder }) => (
     <div className="value-cont">
-      <div className="value-heading">Feeder {feederLabel} Current</div>
+      <div className="value-heading">Current</div>
       <div className="legend-container">
         {legendData.map((item) => (
-          <div key={item.id} className="legend-item-two">
+          <div
+            key={item.id}
+            className={`legend-item-two ${
+              !visibilityState[item.id] ? "crossed-out" : ""
+            }`}
+            onClick={() => toggleVisibility(item.id, isSecondFeeder)}
+          >
             <div className="value-name">
               <span
                 className="legend-color-box"
-                style={{ backgroundColor: item.color }}
-              />
-              <Checkbox
-                style={{ padding: "0px" }}
-                checked={checkBoxState[item.id]}
-                onChange={(e) => handleCheckBox(e, item.id, isSecondFeeder)}
+                style={{
+                  backgroundColor: visibilityState[item.id]
+                    ? item.color
+                    : "#ccc",
+                }}
               />
               {item.title}
             </div>
@@ -231,7 +200,7 @@ const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
                     ] || 0
                   ).toFixed(2)
                 : "0.00"}{" "}
-              <span className="value-span">A</span>
+              A
             </div>
           </div>
         ))}
@@ -241,26 +210,22 @@ const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
 
   return (
     <div className="containerchart">
+      {/* First Feeder Legends */}
       <ValueContainer
         legendData={firstFeederLegendData}
-        checkBoxState={firstFeederCheckBox}
-        data={data}
-        feederLabel="1"
-        isSecondFeeder={false}
+        visibilityState={firstFeederVisibility}
       />
+
+      {/* Chart */}
       <div className="chart-cont">
-        <div className="title">Current</div>
-        <div className="chart-size">
-          <Line data={currentChartData} options={options} ref={ref} />
-        </div>
+        <Line data={currentChartData} options={options} ref={ref} />
       </div>
 
+      {/* Second Feeder Legends */}
       <ValueContainer
         legendData={secondFeederLegendData}
-        checkBoxState={secondFeederCheckBox}
-        data={data}
-        feederLabel="2"
-        isSecondFeeder={true}
+        visibilityState={secondFeederVisibility}
+        isSecondFeeder
       />
     </div>
   );

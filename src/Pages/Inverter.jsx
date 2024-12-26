@@ -54,12 +54,12 @@ const Inverter = ({ apikey, sectionName }) => {
   };
 
   return (
-    <Container>
-      <SidebarComp>
+    <>
+      {/* <SidebarComp>
         <Sidebar handleItemId={handleItemIdChange} />
-      </SidebarComp>
+      </SidebarComp> */}
       <OutLetContainer>
-        <DashHeader apikey={key} topBar={topBar}/>
+        <DashHeader apikey={key} topBar={topBar} />
         <div className="emstit">
           <span className="emstitle">Real - Time Generation</span>
           <span className="emsspan">Status: Running EB power</span>
@@ -68,9 +68,9 @@ const Inverter = ({ apikey, sectionName }) => {
           className="realtimeflex"
           style={{ gap: "10px", display: "flex" }}
         >
-          <RealTimeChart apiKey={key} topBar={topBar}/>
-          <RealTimeCurrentChart apiKey={key} topBar={topBar}/>
-          <RealTimeVoltageChart apiKey={key} topBar={topBar}/>
+          <RealTimeChart apiKey={key} topBar={topBar} />
+          <RealTimeCurrentChart apiKey={key} topBar={topBar} />
+          <RealTimeVoltageChart apiKey={key} topBar={topBar} />
         </ChartContainer>
         <div className="emstit">
           <span className="emstitle">Energy Consumption History</span>
@@ -80,10 +80,10 @@ const Inverter = ({ apikey, sectionName }) => {
           </span>
         </div>
         <div style={{ width: "80vw" }}>
-          <BottomTimeSeries apiKey={key} topBar={topBar}/>
+          <BottomTimeSeries apiKey={key} topBar={topBar} />
         </div>
       </OutLetContainer>
-    </Container>
+    </>
   );
 };
 

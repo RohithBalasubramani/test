@@ -11,6 +11,7 @@ import { sideBarTreeArray } from "./sidebarInfo2"; // Ensure correct import
 import generateRoutes from "./generateRoutes.js"; // Ensure correct path
 import PhaseOverviewPage from "./Pages/PhaseOverviewPage.jsx";
 import Inverter from "./Pages/Inverter.jsx";
+import IndiLayout from "./Pages/IndiLayout.jsx";
 
 function App() {
   console.log("sideBarTreeArray:", sideBarTreeArray); // Debugging line
@@ -23,11 +24,15 @@ function App() {
           {/* Main Dashboard */}
           <Route path="/" element={<Dashboard />} />
           {/* Phase Overview */}
-          <Route path="peppl_p1/*" element={<PhaseOverview />}>
+          <Route path="peppl_p1" element={<PhaseOverview />}>
             <Route index element={<PhaseOverviewPage />} />
-            {Object.keys(sideBarTreeArray).map((section) =>
-              generateRoutes(sideBarTreeArray[section], `peppl_p1/${section}`)
-            )}
+
+            {/* Nested IndiLayout */}
+            <Route path="" element={<IndiLayout />}>
+              {Object.keys(sideBarTreeArray).map((section) =>
+                generateRoutes(sideBarTreeArray[section], `peppl_p1/${section}`)
+              )}
+            </Route>
           </Route>
           {/* <Route path="test" element={<PhaseOverview />}>
             <Route path="test1" element={<PhaseOverview />}>

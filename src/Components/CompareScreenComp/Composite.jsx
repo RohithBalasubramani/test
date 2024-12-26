@@ -12,9 +12,8 @@ import {
   registerables,
 } from "chart.js";
 import axios from "axios";
-import "../realtimestyle.css";
+import "../realtimestyle.css"; // Make sure this includes your .crossed-out and .legend-item-two CSS
 import "chartjs-adapter-date-fns";
-import { Checkbox } from "@mui/material";
 
 ChartJS.register(
   CategoryScale,
@@ -28,14 +27,14 @@ ChartJS.register(
 );
 
 /**
- * Component to display real-time power data for two feeders with styled legends and checkboxes.
+ * Component to display real-time power data for two feeders with interactive legends.
  */
 const RealTimeChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
   const [data, setData] = useState([]);
-  const ref = useRef();
+  const chartRef = useRef();
 
-  // Maintain checkbox states for each feeder
-  const [firstFeederCheckBox, setFirstFeederCheckBox] = useState({
+  // Maintain visibility states for each feeder
+  const [firstFeederVisibility, setFirstFeederVisibility] = useState({
     rActive: true,
     yActive: true,
     bActive: true,
@@ -46,7 +45,7 @@ const RealTimeChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     yReactive: true,
     bReactive: true,
   });
-  const [secondFeederCheckBox, setSecondFeederCheckBox] = useState({
+  const [secondFeederVisibility, setSecondFeederVisibility] = useState({
     rActive: true,
     yActive: true,
     bActive: true,
@@ -70,6 +69,7 @@ const RealTimeChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     { id: "yReactive", title: "Y Reactive", color: "#FFD173" },
     { id: "bReactive", title: "B Reactive", color: "#3498F5" },
   ];
+
   const secondFeederLegendData = [
     { id: "rActive", title: "R Active (Sec)", color: "#A82828" },
     { id: "yActive", title: "Y Active (Sec)", color: "#D98E1E" },
@@ -153,12 +153,33 @@ const RealTimeChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     }, 5000);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [firstFeederApiKey, secondFeederApiKey]);
 
+  /**
+   * Toggle visibility state for a legend item.
+   */
+  const toggleVisibility = (id, isSecondFeeder) => {
+    if (isSecondFeeder) {
+      setSecondFeederVisibility((prev) => ({
+        ...prev,
+        [id]: !prev[id],
+      }));
+    } else {
+      setFirstFeederVisibility((prev) => ({
+        ...prev,
+        [id]: !prev[id],
+      }));
+    }
+  };
+
+  /**
+   * Prepare labels from data.
+   */
   const labels = data.map((item) => item.time);
 
   /**
-   * Configure Chart.js datasets dynamically.
+   * Build chart.js datasets using the local visibility states.
    */
   const chartData = {
     labels,
@@ -167,7 +188,7 @@ const RealTimeChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
         label: `${item.title} F1`,
         data: data.map((entry) => entry[`${item.id}First`] || 0),
         borderColor: item.color,
-        hidden: !firstFeederCheckBox[item.id],
+        hidden: !firstFeederVisibility[item.id],
         borderWidth: 2,
         pointRadius: 0,
         tension: 0.4,
@@ -176,7 +197,7 @@ const RealTimeChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
         label: `${item.title} F2`,
         data: data.map((entry) => entry[`${item.id}Second`] || 0),
         borderColor: item.color,
-        hidden: !secondFeederCheckBox[item.id],
+        hidden: !secondFeederVisibility[item.id],
         borderWidth: 2,
         pointRadius: 0,
         tension: 0.4,
@@ -184,6 +205,9 @@ const RealTimeChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     ],
   };
 
+  /**
+   * Chart.js options (we disable the built-in legend since we have our custom one).
+   */
   const options = {
     maintainAspectRatio: false,
     scales: {
@@ -192,60 +216,71 @@ const RealTimeChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
         title: { display: true, text: "Power (kW)" },
       },
     },
-    plugins: { legend: { display: false } },
+    plugins: {
+      legend: { display: false },
+    },
   };
 
-  const handleCheckBox = (e, id, isSecondFeeder) => {
-    if (isSecondFeeder) {
-      setSecondFeederCheckBox((prev) => ({ ...prev, [id]: e.target.checked }));
-    } else {
-      setFirstFeederCheckBox((prev) => ({ ...prev, [id]: e.target.checked }));
-    }
-  };
-
-  const ValueContainer = ({ legendData, checkBoxState, isSecondFeeder }) => (
+  /**
+   * Custom legend container
+   */
+  const ValueContainer = ({ legendData, visibilityState, isSecondFeeder }) => (
     <div className="value-cont">
       <div className="value-heading">Power</div>
       <div className="legend-container">
-        {legendData.map((item) => (
-          <div key={item.id} className="legend-item-two">
-            <div className="value-name">
-              <span
-                className="legend-color-box"
-                style={{ backgroundColor: item.color }}
-              />
-              <Checkbox
-                checked={checkBoxState[item.id]}
-                onChange={(e) => handleCheckBox(e, item.id, isSecondFeeder)}
-              />
-              {item.title}
+        {legendData.map((item) => {
+          const currentValue =
+            data.length > 0
+              ? data[data.length - 1][
+                  `${item.id}${isSecondFeeder ? "Second" : "First"}`
+                ]?.toFixed(2)
+              : "0.00";
+
+          return (
+            <div
+              key={item.id}
+              className={`legend-item-two ${
+                !visibilityState[item.id] ? "crossed-out" : ""
+              }`}
+              onClick={() => toggleVisibility(item.id, isSecondFeeder)}
+            >
+              <div className="value-name">
+                {/* Gray out the color box if not visible */}
+                <span
+                  className="legend-color-box"
+                  style={{
+                    backgroundColor: visibilityState[item.id]
+                      ? item.color
+                      : "#ccc",
+                  }}
+                />
+                {item.title}
+              </div>
+              <div className="value">{currentValue} kW</div>
             </div>
-            <div className="value">
-              {data.length > 0
-                ? data[data.length - 1][
-                    `${item.id}${isSecondFeeder ? "Second" : "First"}`
-                  ]?.toFixed(2)
-                : "0.00"}{" "}
-              kW
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 
   return (
     <div className="containerchart">
+      {/* Left Legend: First Feeder */}
       <ValueContainer
         legendData={firstFeederLegendData}
-        checkBoxState={firstFeederCheckBox}
+        visibilityState={firstFeederVisibility}
       />
+
+      {/* Chart */}
       <div className="chart-cont">
-        <Line data={chartData} options={options} ref={ref} />
+        <Line ref={chartRef} data={chartData} options={options} />
       </div>
+
+      {/* Right Legend: Second Feeder */}
       <ValueContainer
         legendData={secondFeederLegendData}
-        checkBoxState={secondFeederCheckBox}
+        visibilityState={secondFeederVisibility}
         isSecondFeeder
       />
     </div>

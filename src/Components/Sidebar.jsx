@@ -6,7 +6,8 @@ import { sideBarTreeArray } from "../sidebarInfo2"; // Correct named import
 import { useLocation } from "react-router-dom";
 
 const Container = styled.div`
-  height: 100vh;
+  min-height: 100vh;
+  max-height: max-content;
   border-radius: 8px;
   background: var(--Neutral-White, #fff);
   display: flex;
@@ -39,8 +40,8 @@ const Sidebar = ({ handleItemId }) => {
     // Ensure that the path has at least 3 segments
     if (pathSegments.length >= 3) {
       setTopBarSelection(pathSegments[2]);
-    } else if(pathSegments.length === 2 && pathSegments[1] === 'inverter'){
-      setTopBarSelection('inverters')
+    } else if (pathSegments.length === 2 && pathSegments[1] === "inverter") {
+      setTopBarSelection("inverters");
     } else {
       setTopBarSelection(""); // Reset if not enough segments
     }

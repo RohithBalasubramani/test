@@ -37,24 +37,21 @@ const TestPage = ({ apikey, sectionName, parentName, parentName2 }) => {
   const [key, setKey] = useState(apikey || "");
   const [topBar, setTopBar] = useState(sectionName || "");
 
-  useEffect(() => {
-    if (!apikey) {
-      const pathSegments = location.pathname.split("/");
-      const derivedKey = pathSegments[pathSegments.length - 1] || "";
-      setKey(derivedKey);
-    }
-  }, [location, apikey]);
+  // useEffect(() => {
+  //   if (!apikey) {
+  //     const pathSegments = location.pathname.split("/");
+  //     const derivedKey = pathSegments[pathSegments.length - 1] || "";
+  //     setKey(derivedKey);
+  //   }
+  // }, [location, apikey]);
 
-  const handleItemIdChange = (itemId, topBarSelection) => {
-    setKey(itemId);
-    console.log("Selected Item ID:", itemId);
-  };
+  // const handleItemIdChange = (itemId, topBarSelection) => {
+  //   setKey(itemId);
+  //   console.log("Selected Item ID:", itemId);
+  // };
 
   return (
-    <Container>
-      <SidebarComp>
-        <Sidebar handleItemId={handleItemIdChange} />
-      </SidebarComp>
+    <>
       <OutLetContainer>
         <DashHeader
           apikey={key}
@@ -94,7 +91,7 @@ const TestPage = ({ apikey, sectionName, parentName, parentName2 }) => {
         </div>
         <Outlet />
       </OutLetContainer>
-    </Container>
+    </>
   );
 };
 
