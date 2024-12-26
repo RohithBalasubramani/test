@@ -9,7 +9,7 @@ const TopBar = () => {
   const location = useLocation();
 
   const sections = Object.keys(sideBarTreeArray); // e.g., ['amf1a', 'amf1b', 'pcc3', 'pcc4']
-  const allTabs = ["/peppl_p1", ...sections.map((sec) => `/peppl_p1/${sec}`)];
+  const allTabs = ["/peppl_p1", ...sections.map((sec) => `/peppl_p1/${sec}/overview`)];
 
   const currentValue =
     allTabs.find((path) => location.pathname.startsWith(path)) || "/peppl_p1";
@@ -34,7 +34,7 @@ const TopBar = () => {
         {sections.map((section, index) => (
           <Tab
             key={section}
-            value={`/peppl_p1/${section}/`}
+            value={`/peppl_p1/${section}/overview`}
             label={section.toUpperCase().replace(/_/g, " ")}
           />
         ))}

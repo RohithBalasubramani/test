@@ -40,7 +40,7 @@ const SidebarTree = ({ treeArray, handleItemIdChange, topBarSelection }) => {
       `/peppl_p1/${topBarSelection}/${currentPath}`,
       treeArray
     );
-    setSelectedItemId(selectedId);
+    setSelectedItemId(location.pathname.split('/')[location.pathname.split('/').length - 1]);
   }, [location, treeArray, topBarSelection]);
 
   // Handle item selection change and navigate
