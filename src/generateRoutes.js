@@ -18,14 +18,14 @@ const generateRoutes = (nodes, basePath = "") => {
   const sectionName = sectionPathSegments[sectionPathSegments.length - 1]; // e.g. "amf1a"
 
   const selectPage = (node) => {
-    if(node.id.includes("overview") || node.children){
-      return <Overview apikey={node.id} sectionName={sectionName} />
-    } else if(node.id.toLowerCase().includes("inverter")){
-      return <Inverter apikey={node.id} sectionName={sectionName} />
+    if (node.id.includes("overview") || node.children) {
+      return <Overview apikey={node.id} sectionName={sectionName} />;
+    } else if (node.id.toLowerCase().includes("inverter")) {
+      return <Inverter apikey={node.id} sectionName={sectionName} />;
     } else {
-      return <TestPage apikey={node.id} sectionName={sectionName} />
+      return <TestPage apikey={node.id} sectionName={sectionName} />;
     }
-  }
+  };
 
   return (
     // <Route

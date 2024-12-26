@@ -1,7 +1,7 @@
 export const sideBarTreeArray = {
   amf1a: [
     {
-      id: "overview",
+      id: "",
       label: "Overview",
       apis: [
         "http://14.96.26.26:8080/api/p1_amfs_generator1/",
@@ -29,6 +29,7 @@ export const sideBarTreeArray = {
       label: "OG-1",
       apis: ["http://14.96.26.26:8080/api/p1_amfs_outgoing1/"],
     },
+
     {
       id: "cell_pcc_panel_1_incomer",
       label: "Cell PCC Panel-1 Incomer",

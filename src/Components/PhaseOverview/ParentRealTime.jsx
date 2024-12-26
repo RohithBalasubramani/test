@@ -9,7 +9,7 @@ const ParentRealtime = () => {
   const amfOptions = OverviewArray.filter((item) => item.id !== "overview");
 
   // State for currently selected API & data
-  const [selectedAPI, setSelectedAPI] = useState(amfOptions[0].apis[0]);
+  const [selectedAPI, setSelectedAPI] = useState(amfOptions[0]?.apis[0]);
   const [rawData, setRawData] = useState(null);
 
   const fetchData = async (apiURL) => {
@@ -39,6 +39,11 @@ const ParentRealtime = () => {
     setSelectedAPI(newAPI);
     setRawData(null); // Reset data to avoid mixing old and new
   };
+
+  // Intentionally trigger an error
+  if (!selectedAPI) {
+    throw new Error("Uncaught Error: selectedAPI is undefined!");
+  }
 
   return (
     <div

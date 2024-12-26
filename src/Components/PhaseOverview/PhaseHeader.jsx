@@ -8,6 +8,8 @@ import OverviewTimeBar from "../Overview/OverviewTimeBar";
 import WeatherWidget from "../Dashboard/Weather";
 import KPI from "./KPI";
 import DateRangeSelector from "../Dashboard/Daterangeselector";
+import { CloudDownload } from "@mui/icons-material";
+import ReportModal from "../Reports";
 
 // Styled Components
 const DashboardHeader = styled.div`
@@ -45,7 +47,20 @@ const OverviewHeader = () => {
   const [dateRange, setDateRange] = useState("today");
   const [data, setData] = useState({});
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const handleGenerateReportClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleModalSubmit = (formData) => {
+    console.log("Report Data Submitted:", formData);
+    // You can process or save the data here
+  };
   /**
    * 🛠️ Fetch Data from APIs listed in `OverviewArray`
    */
@@ -142,6 +157,12 @@ const OverviewHeader = () => {
             startDate={startDate}
             endDate={endDate}
           />
+          <button onClick={handleGenerateReportClick} className="emsbutton">
+            <i className="emsbuttonicon">
+              <CloudDownload />
+            </i>
+            <span>Generate Report</span>
+          </button>
         </div>
       </DashboardHeader>
 
@@ -161,6 +182,21 @@ const OverviewHeader = () => {
         <KPI data={Object.values(data)[2]} />
         <WeatherWidget />
       </Container>
+      {/* <ReportModal
+        open={isModalOpen}
+        onClose={handleModalClose}
+        onSubmit={handleModalSubmit}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        timeperiod={timeperiod}
+        setTimeperiod={setTimeperiod}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
+        data={data} // Pass the processed reportData directly
+        filename="PEPPL(Overview).xlsx"
+      /> */}
     </ContainerBox>
   );
 };

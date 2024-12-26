@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
-import "../realtimestyle.css"; // Import the CSS file
-import sidbarInfo from "../../sidbarInfo";
+import "../realtimestyle.css";
 import { Checkbox } from "@mui/material";
 
 const RealTimeVoltageChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
   const [data, setData] = useState([]);
-  const [powerStatus, setPowerStatus] = useState("Loading...");
   const ref = useRef();
+
+  // Maintain checkbox states for each feeder
   const [firstFeederCheckBox, setFirstFeederCheckBox] = useState({
     rVol: true,
     yVol: true,
@@ -25,30 +25,27 @@ const RealTimeVoltageChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     ybVol: true,
     brVol: true,
   });
+
+  // Feeder-specific legend data (with color codes)
   const firstFeederLegendData = [
-    { id: "rVol", title: "R Voltage", isSecondFeeder: false },
-    { id: "yVol", title: "Y Voltage", isSecondFeeder: false },
-    { id: "bVol", title: "B Voltage", isSecondFeeder: false },
-    { id: "ryVol", title: "RY Voltage", isSecondFeeder: false },
-    { id: "ybVol", title: "YB Voltage", isSecondFeeder: false },
-    { id: "brVol", title: "BR Voltage", isSecondFeeder: false },
+    { id: "rVol", title: "R Voltage", color: "#D33030" },
+    { id: "yVol", title: "Y Voltage", color: "#FFB319" },
+    { id: "bVol", title: "B Voltage", color: "#017EF3" },
+    { id: "ryVol", title: "RY Voltage", color: "#DC8006" },
+    { id: "ybVol", title: "YB Voltage", color: "#16896B" },
+    { id: "brVol", title: "BR Voltage", color: "#6036D4" },
   ];
   const secondFeederLegendData = [
-    { id: "rVol", title: "R Voltage", isSecondFeeder: true },
-    { id: "yVol", title: "Y Voltage", isSecondFeeder: true },
-    { id: "bVol", title: "B Voltage", isSecondFeeder: true },
-    { id: "ryVol", title: "RY Voltage", isSecondFeeder: true },
-    { id: "ybVol", title: "YB Voltage", isSecondFeeder: true },
-    { id: "brVol", title: "BR Voltage", isSecondFeeder: true },
+    { id: "rVol", title: "R Voltage", color: "#A82828" },
+    { id: "yVol", title: "Y Voltage", color: "#D98E1E" },
+    { id: "bVol", title: "B Voltage", color: "#0166C1" },
+    { id: "ryVol", title: "RY Voltage", color: "#B46505" },
+    { id: "ybVol", title: "YB Voltage", color: "#0F6A4F" },
+    { id: "brVol", title: "BR Voltage", color: "#482899" },
   ];
 
+  // Fetch data from two feeders
   const fetchData = async () => {
-    const currentTime = new Date().toISOString();
-    const params = {
-      start_date_time: new Date(Date.now() - 60000).toISOString(), // last one minute
-      end_date_time: currentTime,
-      resample_period: "T", // per minute
-    };
     try {
       if (firstFeederApiKey && secondFeederApiKey) {
         const [firstFeederResponse, secondFeederResponse] = await Promise.all([
@@ -56,83 +53,35 @@ const RealTimeVoltageChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
           axios.get(secondFeederApiKey),
         ]);
 
-        const rVolFirst =
-          firstFeederResponse.data["recent data"]["r_phase_voltage"];
-        const yVolFirst =
-          firstFeederResponse.data["recent data"]["y_phase_voltage"];
-        const bVolFirst =
-          firstFeederResponse.data["recent data"]["b_phase_voltage"];
-        const ryVolFirst =
-          firstFeederResponse.data["recent data"]["ry_voltage"];
-        const ybVolFirst =
-          firstFeederResponse.data["recent data"]["yb_voltage"];
-        const brVolFirst =
-          firstFeederResponse.data["recent data"]["br_voltage"];
         const timestamp = firstFeederResponse.data["recent data"]["timestamp"];
-        const rVolSecond =
-          secondFeederResponse.data["recent data"]["r_phase_voltage"];
-        const yVolSecond =
-          secondFeederResponse.data["recent data"]["y_phase_voltage"];
-        const bVolSecond =
-          secondFeederResponse.data["recent data"]["b_phase_voltage"];
-        const ryVolSecond =
-          secondFeederResponse.data["recent data"]["ry_voltage"];
-        const ybVolSecond =
-          secondFeederResponse.data["recent data"]["yb_voltage"];
-        const brVolSecond =
-          secondFeederResponse.data["recent data"]["br_voltage"];
-
         updateChartData(
           timestamp,
-          rVolFirst,
-          yVolFirst,
-          bVolFirst,
-          ryVolFirst,
-          ybVolFirst,
-          brVolFirst,
-          rVolSecond,
-          yVolSecond,
-          bVolSecond,
-          ryVolSecond,
-          ybVolSecond,
-          brVolSecond
+          firstFeederResponse.data["recent data"],
+          secondFeederResponse.data["recent data"]
         );
       }
-      //updatePowerStatus(ebRecent, dg1Recent, dg2Recent);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  const updateChartData = (
-    timestamp,
-    rVolFirst,
-    yVolFirst,
-    bVolFirst,
-    ryVolFirst,
-    ybVolFirst,
-    brVolFirst,
-    rVolSecond,
-    yVolSecond,
-    bVolSecond,
-    ryVolSecond,
-    ybVolSecond,
-    brVolSecond
-  ) => {
+  // Update the chart data array
+  const updateChartData = (timestamp, firstData, secondData) => {
     const newEntry = {
       time: timestamp,
-      rVolFirst,
-      yVolFirst,
-      bVolFirst,
-      ryVolFirst,
-      ybVolFirst,
-      brVolFirst,
-      rVolSecond,
-      yVolSecond,
-      bVolSecond,
-      ryVolSecond,
-      ybVolSecond,
-      brVolSecond,
+      rVolFirst: firstData["r_phase_voltage"] || 0,
+      yVolFirst: firstData["y_phase_voltage"] || 0,
+      bVolFirst: firstData["b_phase_voltage"] || 0,
+      ryVolFirst: firstData["ry_voltage"] || 0,
+      ybVolFirst: firstData["yb_voltage"] || 0,
+      brVolFirst: firstData["br_voltage"] || 0,
+
+      rVolSecond: secondData["r_phase_voltage"] || 0,
+      yVolSecond: secondData["y_phase_voltage"] || 0,
+      bVolSecond: secondData["b_phase_voltage"] || 0,
+      ryVolSecond: secondData["ry_voltage"] || 0,
+      ybVolSecond: secondData["yb_voltage"] || 0,
+      brVolSecond: secondData["br_voltage"] || 0,
     };
 
     setData((prevData) => {
@@ -143,157 +92,132 @@ const RealTimeVoltageChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     });
   };
 
-  const updatePowerStatus = (ebRecent, dg1Recent, dg2Recent) => {
-    if (ebRecent.average_current > 0) {
-      setPowerStatus("Running on EB");
-    } else if (dg1Recent.average_current > 0) {
-      setPowerStatus("Running on DG1");
-    } else if (dg2Recent.average_current > 0) {
-      setPowerStatus("Running on DG2");
-    } else {
-      setPowerStatus("No Power");
-    }
-  };
-
+  // Initialize / poll data every 5 seconds
   useEffect(() => {
     setData([]);
     const interval = setInterval(() => {
       fetchData();
-    }, 5000); // polling every 5 seconds
-
+    }, 5000);
     return () => clearInterval(interval);
   }, [firstFeederApiKey, secondFeederApiKey]);
 
-  // const activeData = data
-  //   .filter(
-  //     (item) =>
-  //       item.ebV1 > 0 ||
-  //       item.ebV2 > 0 ||
-  //       item.ebV3 > 0 ||
-  //       item.ebLN > 0 ||
-  //       item.dg1V1 > 0 ||
-  //       item.dg1V2 > 0 ||
-  //       item.dg1V3 > 0 ||
-  //       item.dg1LN > 0 ||
-  //       item.dg2V1 > 0 ||
-  //       item.dg2V2 > 0 ||
-  //       item.dg2V3 > 0 ||
-  //       item.dg2LN > 0
-  //   )
-  //   .slice(-15);
-
+  // Chart.js config
   const labels = data.map((item) => item.time);
 
+  // Each dataset is either "___First" or "___Second"
   const voltageChartData = {
     labels,
     datasets: [
+      // First feeder
       {
-        label: "Vr Voltage",
+        label: "R Voltage F1",
         data: data.map((item) => item.rVolFirst),
-        borderColor: "#D33030",
+        borderColor: firstFeederLegendData[0].color,
+        hidden: !firstFeederCheckBox.rVol,
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
+        tension: 0.4,
       },
       {
-        label: "Vy Voltage",
+        label: "Y Voltage F1",
         data: data.map((item) => item.yVolFirst),
-        borderColor: "#FFB319",
+        borderColor: firstFeederLegendData[1].color,
+        hidden: !firstFeederCheckBox.yVol,
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
+        tension: 0.4,
       },
       {
-        label: "Vb Voltage",
+        label: "B Voltage F1",
         data: data.map((item) => item.bVolFirst),
-        borderColor: "#017EF3",
+        borderColor: firstFeederLegendData[2].color,
+        hidden: !firstFeederCheckBox.bVol,
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
+        tension: 0.4,
       },
       {
-        label: "Vry Voltage",
+        label: "RY Voltage F1",
         data: data.map((item) => item.ryVolFirst),
-        borderColor: "#DC8006",
+        borderColor: firstFeederLegendData[3].color,
+        hidden: !firstFeederCheckBox.ryVol,
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
+        tension: 0.4,
       },
       {
-        label: "Vyb Voltage",
+        label: "YB Voltage F1",
         data: data.map((item) => item.ybVolFirst),
-        borderColor: "#16896B",
+        borderColor: firstFeederLegendData[4].color,
+        hidden: !firstFeederCheckBox.ybVol,
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
+        tension: 0.4,
       },
       {
-        label: "Vbr Voltage",
+        label: "BR Voltage F1",
         data: data.map((item) => item.brVolFirst),
-        borderColor: "#6036D4",
+        borderColor: firstFeederLegendData[5].color,
+        hidden: !firstFeederCheckBox.brVol,
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
+        tension: 0.4,
       },
+
+      // Second feeder
       {
-        label: "Vr Voltage Sec",
+        label: "R Voltage F2",
         data: data.map((item) => item.rVolSecond),
-        borderColor: "#D33030",
+        borderColor: secondFeederLegendData[0].color,
+        hidden: !secondFeederCheckBox.rVol,
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
+        tension: 0.4,
       },
       {
-        label: "Vy Voltage Sec",
+        label: "Y Voltage F2",
         data: data.map((item) => item.yVolSecond),
-        borderColor: "#FFB319",
+        borderColor: secondFeederLegendData[1].color,
+        hidden: !secondFeederCheckBox.yVol,
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
+        tension: 0.4,
       },
       {
-        label: "Vb Voltage Sec",
+        label: "B Voltage F2",
         data: data.map((item) => item.bVolSecond),
-        borderColor: "#017EF3",
+        borderColor: secondFeederLegendData[2].color,
+        hidden: !secondFeederCheckBox.bVol,
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
+        tension: 0.4,
       },
       {
-        label: "Vry Voltage Sec",
+        label: "RY Voltage F2",
         data: data.map((item) => item.ryVolSecond),
-        borderColor: "#DC8006",
+        borderColor: secondFeederLegendData[3].color,
+        hidden: !secondFeederCheckBox.ryVol,
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
+        tension: 0.4,
       },
       {
-        label: "Vyb Voltage Sec",
+        label: "YB Voltage F2",
         data: data.map((item) => item.ybVolSecond),
-        borderColor: "#16896B",
+        borderColor: secondFeederLegendData[4].color,
+        hidden: !secondFeederCheckBox.ybVol,
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
+        tension: 0.4,
       },
       {
-        label: "Vbr Voltage Sec",
+        label: "BR Voltage F2",
         data: data.map((item) => item.brVolSecond),
-        borderColor: "#6036D4",
+        borderColor: secondFeederLegendData[5].color,
+        hidden: !secondFeederCheckBox.brVol,
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
+        tension: 0.4,
       },
     ],
   };
@@ -321,130 +245,88 @@ const RealTimeVoltageChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     },
     plugins: {
       legend: {
-        display: false, // Hide default legend
+        display: false, // We'll use custom legends below
       },
     },
   };
 
-  const handleCheckBox = (e, index, label, isSecondFeeder) => {
-    let checkBoxStateCopy = isSecondFeeder
-      ? { ...secondFeederCheckBox }
-      : { ...firstFeederCheckBox };
-    const chart = ref.current;
-    checkBoxStateCopy[label] = e.target.checked;
+  // Handle checkbox toggling
+  const handleCheckBox = (e, id, isSecondFeeder) => {
     if (isSecondFeeder) {
-      setSecondFeederCheckBox(checkBoxStateCopy);
+      setSecondFeederCheckBox((prev) => ({
+        ...prev,
+        [id]: e.target.checked,
+      }));
     } else {
-      setFirstFeederCheckBox(checkBoxStateCopy);
+      setFirstFeederCheckBox((prev) => ({
+        ...prev,
+        [id]: e.target.checked,
+      }));
     }
-    chart.getDatasetMeta(index).hidden = !e.target.checked;
-    chart.update();
+    // We'll automatically hide/unhide datasets in "datasets" using the "hidden" property
   };
 
   return (
     <div className="containerchart">
+      {/* Value Container for Feeder 1 */}
       <div className="value-cont">
-        <div className="value-heading">Voltage</div>
-        <div className="current-value">Recent Value</div>
-        <div
-          className="legend-container"
-          style={{
-            marginTop: "0px",
-            justifyItems: "start",
-            justifyContent: "center",
-          }}
-        >
+        <div className="value-heading">Feeder 1 Voltage</div>
+        <div className="legend-container">
           {firstFeederLegendData.map((item, index) => (
-            <div className="legend-item-two">
+            <div key={item.id} className="legend-item-two">
               <div className="value-name">
+                <span
+                  className="legend-color-box"
+                  style={{ backgroundColor: item.color }}
+                />
                 <Checkbox
+                  style={{ padding: 0 }}
                   checked={firstFeederCheckBox[item.id]}
-                  style={{ padding: "0px" }}
-                  onChange={(e) =>
-                    handleCheckBox(e, index, item.id, item.isSecondFeeder)
-                  }
-                />{" "}
+                  onChange={(e) => handleCheckBox(e, item.id, false)}
+                />
                 {item.title}
               </div>
               <div className="value">
                 {data.length > 0
-                  ? data[data.length - 1][`${item.id}First`].toFixed(2)
-                  : "0.00"}{" "}
-                <span className="value-span">V</span>
+                  ? (data[data.length - 1][`${item.id}First`] || 0).toFixed(2)
+                  : "0.00"}
+                <span className="value-span"> V</span>
               </div>
             </div>
           ))}
         </div>
       </div>
+      {/* Chart Container */}
       <div className="chart-cont">
         <div className="title">Voltage</div>
-        <div className="legend-container-two">
-          <div className="legend-item">
-            <span className="legend-color-box v1" />
-            <span>R Voltage</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-color-box v2" />
-            <span>Y Voltage</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-color-box v3" />
-            <span>B Voltage</span>
-          </div>
-          <div className="legend-item">
-            <span
-              className="legend-color-box"
-              style={{ backgroundColor: "#DC8006" }}
-            />
-            <span>RY Voltage</span>
-          </div>
-          <div className="legend-item">
-            <span
-              className="legend-color-box"
-              style={{ backgroundColor: "#16896B" }}
-            />
-            <span>YB Voltage</span>
-          </div>
-          <div className="legend-item">
-            <span
-              className="legend-color-box"
-              style={{ backgroundColor: "#6036D4" }}
-            />
-            <span>BR Voltage</span>
-          </div>
-        </div>
         <div className="chart-size">
           <Line data={voltageChartData} options={options} ref={ref} />
         </div>
       </div>
+
+      {/* Value Container for Feeder 2 */}
       <div className="value-cont">
-        <div className="value-heading">Voltage</div>
-        <div className="current-value">Recent Value</div>
-        <div
-          className="legend-container"
-          style={{
-            marginTop: "0px",
-            justifyItems: "start",
-            justifyContent: "center",
-          }}
-        >
+        <div className="value-heading">Feeder 2 Voltage</div>
+        <div className="legend-container">
           {secondFeederLegendData.map((item, index) => (
-            <div className="legend-item-two">
+            <div key={item.id} className="legend-item-two">
               <div className="value-name">
+                <span
+                  className="legend-color-box"
+                  style={{ backgroundColor: item.color }}
+                />
                 <Checkbox
+                  style={{ padding: 0 }}
                   checked={secondFeederCheckBox[item.id]}
-                  style={{ padding: "0px" }}
-                  onChange={(e) =>
-                    handleCheckBox(e, index + 6, item.id, item.isSecondFeeder)
-                  }
-                />{" "}
+                  onChange={(e) => handleCheckBox(e, item.id, true)}
+                />
                 {item.title}
               </div>
               <div className="value">
                 {data.length > 0
-                  ? data[data.length - 1][`${item.id}First`].toFixed(2)
-                  : "0.00"}{" "}
-                <span className="value-span">V</span>
+                  ? (data[data.length - 1][`${item.id}Second`] || 0).toFixed(2)
+                  : "0.00"}
+                <span className="value-span"> V</span>
               </div>
             </div>
           ))}

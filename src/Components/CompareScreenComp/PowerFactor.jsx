@@ -44,16 +44,15 @@ const GaugeCont = styled.div`
   margin-right: auto;
 `;
 
-const PowerFactorGauge = ({ apikey }) => {
+const PowerFactorGauge = ({ data }) => {
   const [powerFactor, setPowerFactor] = useState(95); // Initial dummy data
   const [powerQuality, setPowerQuality] = useState("Loading...");
 
   const fetchPowerFactor = async () => {
     try {
-      if (apikey) {
-        const response = await axios.get(apikey);
+      if (data) {
         const powerFactorValue = Math.floor(
-          response.data["recent data"].avg_power_factor * 100
+          data["recent data"].avg_power_factor * 100
         );
         setPowerFactor(powerFactorValue);
 
@@ -74,7 +73,7 @@ const PowerFactorGauge = ({ apikey }) => {
     fetchPowerFactor();
     const interval = setInterval(fetchPowerFactor, 5000); // Update every 5 seconds
     return () => clearInterval(interval);
-  }, [apikey]);
+  }, [data]);
 
   return (
     <>

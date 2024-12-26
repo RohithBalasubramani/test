@@ -1,13 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
-import "../realtimestyle.css"; // Import the shared CSS file
+import "../realtimestyle.css"; // Shared CSS file
 import { Checkbox } from "@mui/material";
 
+/**
+ * Component to display real-time current data for two feeders with styled legends and checkboxes.
+ */
 const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
   const [data, setData] = useState([]);
-  const [powerStatus, setPowerStatus] = useState("Loading...");
   const ref = useRef();
+
+  // Checkbox states for each feeder
   const [firstFeederCheckBox, setFirstFeederCheckBox] = useState({
     avgCurrent: true,
     rCurrent: true,
@@ -20,90 +24,59 @@ const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     yCurrent: true,
     bCurrent: true,
   });
+
+  // Legend data with colors for each dataset
   const firstFeederLegendData = [
-    { id: "avgCurrent", title: "Avg Current", isSecondFeeder: false },
-    { id: "rCurrent", title: "R Phase", isSecondFeeder: false },
-    { id: "yCurrent", title: "Y Phase", isSecondFeeder: false },
-    { id: "bCurrent", title: "B Phase", isSecondFeeder: false },
+    { id: "avgCurrent", title: "Avg Current", color: "#6036D4" },
+    { id: "rCurrent", title: "R Current", color: "#D33030" },
+    { id: "yCurrent", title: "Y Current", color: "#FFB319" },
+    { id: "bCurrent", title: "B Current", color: "#017EF3" },
   ];
   const secondFeederLegendData = [
-    { id: "avgCurrent", title: "Avg Current", isSecondFeeder: true },
-    { id: "rCurrent", title: "R Phase", isSecondFeeder: true },
-    { id: "yCurrent", title: "Y Phase", isSecondFeeder: true },
-    { id: "bCurrent", title: "B Phase", isSecondFeeder: true },
+    { id: "avgCurrent", title: "Avg Current (Sec)", color: "#482899" },
+    { id: "rCurrent", title: "R Current (Sec)", color: "#A82828" },
+    { id: "yCurrent", title: "Y Current (Sec)", color: "#D98E1E" },
+    { id: "bCurrent", title: "B Current (Sec)", color: "#0166C1" },
   ];
 
+  /**
+   * Fetch data concurrently from two feeders.
+   */
   const fetchData = async () => {
-    const currentTime = new Date().toISOString();
-    const params = {
-      start_date_time: new Date(Date.now() - 60000).toISOString(), // last one minute
-      end_date_time: currentTime,
-      resample_period: "T", // per minute
-    };
     try {
-      if(firstFeederApiKey && secondFeederApiKey){
+      if (firstFeederApiKey && secondFeederApiKey) {
         const [firstFeederResponse, secondFeederResponse] = await Promise.all([
           axios.get(firstFeederApiKey),
           axios.get(secondFeederApiKey),
         ]);
-  
+
         const timestamp = firstFeederResponse.data["recent data"]["timestamp"];
-        const avgCurrentFirst =
-          firstFeederResponse.data["recent data"]["avg_current"];
-        const rCurrentFirst =
-          firstFeederResponse.data["recent data"]["r_current"];
-        const yCurrentFirst =
-          firstFeederResponse.data["recent data"]["y_current"];
-        const bCurrentFirst =
-          firstFeederResponse.data["recent data"]["b_current"];
-        const avgCurrentSecond =
-          secondFeederResponse.data["recent data"]["avg_current"];
-        const rCurrentSecond =
-          secondFeederResponse.data["recent data"]["r_current"];
-        const yCurrentSecond =
-          secondFeederResponse.data["recent data"]["y_current"];
-        const bCurrentSecond =
-          secondFeederResponse.data["recent data"]["b_current"];
-  
         updateChartData(
           timestamp,
-          avgCurrentFirst,
-          rCurrentFirst,
-          yCurrentFirst,
-          bCurrentFirst,
-          avgCurrentSecond,
-          rCurrentSecond,
-          yCurrentSecond,
-          bCurrentSecond
+          firstFeederResponse.data["recent data"],
+          secondFeederResponse.data["recent data"]
         );
-        //updatePowerStatus(ebRecent, dg1Recent, dg2Recent);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  const updateChartData = (
-    timestamp,
-    avgCurrentFirst,
-    rCurrentFirst,
-    yCurrentFirst,
-    bCurrentFirst,
-    avgCurrentSecond,
-    rCurrentSecond,
-    yCurrentSecond,
-    bCurrentSecond
-  ) => {
+  /**
+   * Update the data array for chart visualization.
+   */
+  const updateChartData = (timestamp, firstData, secondData) => {
     const newEntry = {
       time: timestamp,
-      avgCurrentFirst: avgCurrentFirst,
-      rCurrentFirst: rCurrentFirst,
-      yCurrentFirst: yCurrentFirst,
-      bCurrentFirst: bCurrentFirst,
-      avgCurrentSecond: avgCurrentSecond,
-      rCurrentSecond: rCurrentSecond,
-      yCurrentSecond: yCurrentSecond,
-      bCurrentSecond: bCurrentSecond,
+      avgCurrentFirst: firstData["avg_current"] || 0,
+      rCurrentFirst: firstData["r_current"] || 0,
+      yCurrentFirst: firstData["y_current"] || 0,
+      bCurrentFirst: firstData["b_current"] || 0,
+
+      avgCurrentSecond: secondData["avg_current"] || 0,
+      rCurrentSecond: secondData["r_current"] || 0,
+      yCurrentSecond: secondData["y_current"] || 0,
+      bCurrentSecond: secondData["b_current"] || 0,
     };
 
     setData((prevData) => {
@@ -114,154 +87,65 @@ const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     });
   };
 
-  const updatePowerStatus = (ebRecent, dg1Recent, dg2Recent) => {
-    if (
-      ebRecent.phase_1_current > 0 ||
-      ebRecent.phase_2_current > 0 ||
-      ebRecent.phase_3_current > 0
-    ) {
-      setPowerStatus("Running on EB");
-    } else if (
-      dg1Recent.phase_1_current > 0 ||
-      dg1Recent.phase_2_current > 0 ||
-      dg1Recent.phase_3_current > 0
-    ) {
-      setPowerStatus("Running on DG1");
-    } else if (
-      dg2Recent.phase_1_current > 0 ||
-      dg2Recent.phase_2_current > 0 ||
-      dg2Recent.phase_3_current > 0
-    ) {
-      setPowerStatus("Running on DG2");
-    } else {
-      setPowerStatus("No Power");
-    }
-  };
-
-  const handleCheckBox = (e, index, label, isSecondFeeder) => {
-    let checkBoxStateCopy = isSecondFeeder
-      ? { ...secondFeederCheckBox }
-      : { ...firstFeederCheckBox };
-    const chart = ref.current;
-    checkBoxStateCopy[label] = e.target.checked;
-    if (isSecondFeeder) {
-      setSecondFeederCheckBox(checkBoxStateCopy);
-    } else {
-      setFirstFeederCheckBox(checkBoxStateCopy);
-    }
-    chart.getDatasetMeta(index).hidden = !e.target.checked;
-    chart.update();
-  };
-
+  /**
+   * Set up polling for data fetching.
+   */
   useEffect(() => {
     setData([]);
+    fetchData();
     const interval = setInterval(() => {
       fetchData();
-    }, 5000); // polling every 5 seconds
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [firstFeederApiKey, secondFeederApiKey]);
 
-  // const activeData = data
-  //   .filter(
-  //     (item) =>
-  //       item.ebR > 0 ||
-  //       item.ebY > 0 ||
-  //       item.ebB > 0 ||
-  //       item.dg1R > 0 ||
-  //       item.dg1Y > 0 ||
-  //       item.dg1B > 0 ||
-  //       item.dg2R > 0 ||
-  //       item.dg2Y > 0 ||
-  //       item.dg2B > 0
-  //   )
-  //   .slice(-15);
-
+  // Labels for the x-axis
   const labels = data.map((item) => item.time);
 
+  /**
+   * Configure Chart.js datasets.
+   */
   const currentChartData = {
     labels,
     datasets: [
-      {
-        label: "Avg Current",
-        data: data.map((item) => item.avgCurrentFirst),
-        borderColor: "#6036D4",
+      // First Feeder Datasets
+      ...firstFeederLegendData.map((item) => ({
+        label: `${item.title} F1`,
+        data: data.map((entry) => entry[`${item.id}First`] || 0),
+        borderColor: item.color,
+        hidden: !firstFeederCheckBox[item.id],
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
-      },
-      {
-        label: "R Current",
-        data: data.map((item) => item.rCurrentFirst),
-        borderColor: "#D33030",
+        tension: 0.4,
+      })),
+      // Second Feeder Datasets
+      ...secondFeederLegendData.map((item) => ({
+        label: `${item.title} F2`,
+        data: data.map((entry) => entry[`${item.id}Second`] || 0),
+        borderColor: item.color,
+        hidden: !secondFeederCheckBox[item.id],
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
-      },
-      {
-        label: "Y Current",
-        data: data.map((item) => item.yCurrentFirst),
-        borderColor: "#FFB319",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
-      },
-      {
-        label: "B Current",
-        data: data.map((item) => item.bCurrentFirst),
-        borderColor: "#017EF3",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
-      },
-      {
-        label: "Avg Current 2",
-        data: data.map((item) => item.avgCurrentSecond),
-        borderColor: "#6036D4",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
-      },
-      {
-        label: "R Current 2",
-        data: data.map((item) => item.rCurrentSecond),
-        borderColor: "#D33030",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
-      },
-      {
-        label: "Y Current 2",
-        data: data.map((item) => item.yCurrentSecond),
-        borderColor: "#FFB319",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
-      },
-      {
-        label: "B Current 2",
-        data: data.map((item) => item.bCurrentSecond),
-        borderColor: "#017EF3",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4, // Smooth line
-      },
+        tension: 0.4,
+      })),
     ],
   };
 
+  /**
+   * Chart.js configuration options.
+   */
   const options = {
     maintainAspectRatio: false,
     scales: {
       x: {
         type: "time",
+        time: {
+          tooltipFormat: "PP HH:mm",
+          displayFormats: {
+            minute: "HH:mm",
+          },
+        },
         grid: {
           color: "rgba(0, 0, 0, 0.05)",
           borderDash: [5, 5],
@@ -280,106 +164,104 @@ const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     },
     plugins: {
       legend: {
-        display: false, // Hide default legend
+        display: false, // Custom legend used below
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            let label = context.dataset.label || "";
+            if (label) label += ": ";
+            if (context.parsed.y !== null) label += context.parsed.y + " A";
+            return label;
+          },
+        },
       },
     },
   };
 
+  /**
+   * Handle checkbox state changes.
+   */
+  const handleCheckBox = (e, id, isSecondFeeder) => {
+    if (isSecondFeeder) {
+      setSecondFeederCheckBox((prev) => ({
+        ...prev,
+        [id]: e.target.checked,
+      }));
+    } else {
+      setFirstFeederCheckBox((prev) => ({
+        ...prev,
+        [id]: e.target.checked,
+      }));
+    }
+  };
+
+  /**
+   * Reusable ValueContainer component for feeder legends.
+   */
+  const ValueContainer = ({
+    legendData,
+    checkBoxState,
+    data,
+    feederLabel,
+    isSecondFeeder,
+  }) => (
+    <div className="value-cont">
+      <div className="value-heading">Feeder {feederLabel} Current</div>
+      <div className="legend-container">
+        {legendData.map((item) => (
+          <div key={item.id} className="legend-item-two">
+            <div className="value-name">
+              <span
+                className="legend-color-box"
+                style={{ backgroundColor: item.color }}
+              />
+              <Checkbox
+                style={{ padding: "0px" }}
+                checked={checkBoxState[item.id]}
+                onChange={(e) => handleCheckBox(e, item.id, isSecondFeeder)}
+              />
+              {item.title}
+            </div>
+            <div className="value">
+              {data.length > 0
+                ? (
+                    data[data.length - 1][
+                      `${item.id}${isSecondFeeder ? "Second" : "First"}`
+                    ] || 0
+                  ).toFixed(2)
+                : "0.00"}{" "}
+              <span className="value-span">A</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div className="containerchart">
-      <div className="value-cont">
-        <div className="value-heading">Current</div>
-        <div className="current-value">Recent Value</div>
-        <div
-          className="legend-container"
-          style={{
-            marginTop: "0px",
-            justifyItems: "start",
-            justifyContent: "center",
-          }}
-        >
-          {firstFeederLegendData.map((item, index) => (
-            <div className="legend-item-two">
-              <div className="value-name">
-                <Checkbox
-                  checked={firstFeederCheckBox[item.id]}
-                  style={{ padding: "0px" }}
-                  onChange={(e) =>
-                    handleCheckBox(e, index, item.id, item.isSecondFeeder)
-                  }
-                />{" "}
-                {item.title}
-              </div>
-              <div className="value">
-                {data.length > 0
-                  ? data[data.length - 1][`${item.id}First`].toFixed(2)
-                  : "0.00"}{" "}
-                <span className="value-span">A</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <ValueContainer
+        legendData={firstFeederLegendData}
+        checkBoxState={firstFeederCheckBox}
+        data={data}
+        feederLabel="1"
+        isSecondFeeder={false}
+      />
       <div className="chart-cont">
         <div className="title">Current</div>
-        <div className="legend-container-two">
-          <div className="legend-item">
-            <span
-              className="legend-color-box v1"
-              style={{ backgroundColor: "#6036D4" }}
-            />
-            <span>Avg Current</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-color-box v1" />
-            <span>R phase</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-color-box v2" />
-            <span>Y phase</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-color-box v3" />
-            <span>B phase</span>
-          </div>
-        </div>
         <div className="chart-size">
           <Line data={currentChartData} options={options} ref={ref} />
         </div>
       </div>
-      <div className="value-cont">
-        <div className="value-heading">Current</div>
-        <div className="current-value">Recent Value</div>
-        <div
-          className="legend-container"
-          style={{
-            marginTop: "0px",
-            justifyItems: "start",
-            justifyContent: "center",
-          }}
-        >
-          {secondFeederLegendData.map((item, index) => (
-            <div className="legend-item-two">
-              <div className="value-name">
-                <Checkbox
-                  checked={secondFeederCheckBox[item.id]}
-                  style={{ padding: "0px" }}
-                  onChange={(e) =>
-                    handleCheckBox(e, index + 4, item.id, item.isSecondFeeder)
-                  }
-                />{" "}
-                {item.title}
-              </div>
-              <div className="value">
-                {data.length > 0
-                  ? data[data.length - 1][`${item.id}Second`].toFixed(2)
-                  : "0.00"}{" "}
-                <span className="value-span">A</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+
+      <ValueContainer
+        legendData={secondFeederLegendData}
+        checkBoxState={secondFeederCheckBox}
+        data={data}
+        feederLabel="2"
+        isSecondFeeder={true}
+      />
     </div>
   );
 };
