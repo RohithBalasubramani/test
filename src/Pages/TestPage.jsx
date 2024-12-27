@@ -37,13 +37,11 @@ const TestPage = ({ apikey, sectionName, parentName, parentName2 }) => {
   const [key, setKey] = useState(apikey || "");
   const [topBar, setTopBar] = useState(sectionName || "");
 
-  // useEffect(() => {
-  //   if (!apikey) {
-  //     const pathSegments = location.pathname.split("/");
-  //     const derivedKey = pathSegments[pathSegments.length - 1] || "";
-  //     setKey(derivedKey);
-  //   }
-  // }, [location, apikey]);
+  useEffect(() => {
+    const pathSegments = location.pathname.split("/");
+    const derivedKey = pathSegments[pathSegments.length - 1] || "";
+    setKey(derivedKey);
+  }, [location, apikey]);
 
   // const handleItemIdChange = (itemId, topBarSelection) => {
   //   setKey(itemId);

@@ -227,10 +227,19 @@ const HorizontalChart = ({
       if (elements.length > 0) {
         const datasetIndex = elements[0].datasetIndex;
         const index = elements[0].index;
-        const link = chartData.datasets[datasetIndex].links[index];
-        if (link) {
-          navigate(link);
-        }
+        const fieldKey = chartData.datasets[datasetIndex].links[index]
+          .split("/")
+          .pop(); // Extract field key
+
+        // Get the current location and modify the path
+        const currentPath = window.location.hash
+          .split("/")
+          .slice(0, -1)
+          .join("/");
+        const newPath = `${currentPath}/${fieldKey}`;
+
+        navigate(newPath);
+        console.log("Redirecting to:", newPath);
       }
     },
   };

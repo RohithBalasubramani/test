@@ -60,6 +60,7 @@ const DateRangeSelector = ({
     fontWeight: 400,
     lineHeight: "16px", // Line height as a string
     display: "flex",
+    padding: "1.2vh",
     alignItems: "center",
     justifyContent: "center",
     gap: "8px", // Space between icon and text

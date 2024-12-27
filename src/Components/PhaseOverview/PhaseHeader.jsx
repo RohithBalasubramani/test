@@ -46,11 +46,14 @@ const OverviewHeader = () => {
   const [timeperiod, setTimeperiod] = useState("H");
   const [dateRange, setDateRange] = useState("today");
   const [data, setData] = useState({});
+  const [reportData, setReportData] = useState({});
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleGenerateReportClick = () => {
     setIsModalOpen(true);
+    const flattenedData = flattenDataForExport();
+    setReportData(flattenedData);
   };
 
   const handleModalClose = () => {
@@ -61,7 +64,50 @@ const OverviewHeader = () => {
     console.log("Report Data Submitted:", formData);
     // You can process or save the data here
   };
+
   /**
+   * 🛠️ Flatten API Data for Report Export
+   */
+  /**
+   * 🛠️ Flatten API Data for Report Export (Dynamic Fields)
+   */
+  const flattenDataForExport = () => {
+    if (!data || Object.keys(data).length === 0) {
+      console.warn("No data available for export.");
+      return [];
+    }
+
+    return Object.entries(data).flatMap(([api, apiData]) => {
+      // 🟢 Resampled Data (if available)
+      if (apiData?.["resampled data"]?.length > 0) {
+        return apiData["resampled data"].map((entry) => {
+          // Include all dynamic keys in each entry
+          return {
+            ...entry,
+          };
+        });
+      }
+
+      // 🟡 Recent Data (Fallback)
+      if (apiData?.["recent data"]) {
+        return {
+          ...apiData["recent data"],
+        };
+      }
+
+      // 🟠 Average Data (Fallback)
+      if (apiData?.["average data"]) {
+        return {
+          ...apiData["average data"],
+        };
+      }
+
+      return [];
+    });
+  };
+
+  /**
+   *
    * 🛠️ Fetch Data from APIs listed in `OverviewArray`
    */
   const fetchData = async (start, end, period) => {
@@ -182,7 +228,7 @@ const OverviewHeader = () => {
         <KPI data={Object.values(data)[2]} />
         <WeatherWidget />
       </Container>
-      {/* <ReportModal
+      <ReportModal
         open={isModalOpen}
         onClose={handleModalClose}
         onSubmit={handleModalSubmit}
@@ -194,9 +240,9 @@ const OverviewHeader = () => {
         setTimeperiod={setTimeperiod}
         dateRange={dateRange}
         setDateRange={setDateRange}
-        data={data} // Pass the processed reportData directly
+        data={reportData}
         filename="PEPPL(Overview).xlsx"
-      /> */}
+      />
     </ContainerBox>
   );
 };

@@ -1,12 +1,7 @@
-import React, { useState } from "react";
-import {
-  RadialBarChart,
-  RadialBar,
-  Legend,
-  PolarAngleAxis,
-  Tooltip,
-} from "recharts";
+import React, { useState, useEffect } from "react";
+import { RadialBarChart, RadialBar, PolarAngleAxis, Tooltip } from "recharts";
 import styled from "styled-components";
+import dayjs from "dayjs";
 
 // Styled Components
 const Container = styled.div`
@@ -28,13 +23,6 @@ const Card = styled.div`
   height: 40vh;
 `;
 
-const Title = styled.div`
-  font-weight: bold;
-  font-size: 18px;
-  color: #333;
-  margin-bottom: 1rem;
-`;
-
 const CenterText = styled.div`
   position: absolute;
   top: 50%;
@@ -47,87 +35,152 @@ const CenterText = styled.div`
   user-select: none;
 `;
 
-// Main Component
-const AMFgaugeStacked = ({ feeders }) => {
-  const totalPower = feeders.reduce((sum, feeder) => sum + feeder.value, 0);
-  const [selectedFeeder, setSelectedFeeder] = useState(null);
+// Data Source Definition
+export const OverviewSource = [
+  {
+    id: "DG",
+    label: "Diesel Generator",
+    apis: [
+      "http://14.96.26.26:8080/api/p1_amfs_generator1/",
+      "http://14.96.26.26:8080/api/p1_amfs_generator2/",
+      "http://14.96.26.26:8080/api/p1_amfs_generator3/",
+      "http://14.96.26.26:8080/api/p1_amfs_generator4/",
+    ],
+  },
+  {
+    id: "EB",
+    label: "EB Supply",
+    apis: [
+      "http://14.96.26.26:8080/api/p1_amfs_transformer1/",
+      "http://14.96.26.26:8080/api/p1_amfs_transformer2/",
+      "http://14.96.26.26:8080/api/p1_amfs_transformer3/",
+      "http://14.96.26.26:8080/api/p1_amfs_transformer4/",
+    ],
+  },
+  {
+    id: "Solar",
+    label: "AMF 2a",
+    apis: [
+      "http://14.96.26.26:8080/api/p1_inverter1/",
+      "http://14.96.26.26:8080/api/p1_inverter2/",
+      "http://14.96.26.26:8080/api/p1_inverter3/",
+      "http://14.96.26.26:8080/api/p1_inverter4/",
+    ],
+  },
+];
 
-  // Default colors for feeders
-  const defaultColors = [
-    "#FF4500",
-    "#FFD700",
-    "#1E90FF",
-    "#32CD32",
-    "#FF69B4",
-    "#8A2BE2",
-    "#00CED1",
-  ];
+const AMFgaugeStacked = () => {
+  const [aggregatedData, setAggregatedData] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [error, setError] = useState(null);
 
-  // Map feeders with colors dynamically
-  const data = feeders.map((feeder, index) => ({
-    name: feeder.name,
-    value: feeder.value,
-    fill: defaultColors[index % defaultColors.length],
-  }));
+  /**
+   * 🛠️ Fetch and Aggregate Feeder Data from API
+   */
+  const fetchFeederData = async () => {
+    try {
+      const response = await fetch(
+        `http://14.96.26.26:8080/analytics/deltaconsolidated/?start_date_time=${dayjs()
+          .startOf("day")
+          .toISOString()}&end_date_time=${dayjs()
+          .endOf("day")
+          .toISOString()}&resample_period=H`
+      );
+      const result = await response.json();
 
-  // Handle Click Event on Chart
+      // Extract resampled data for aggregation
+      const resampledData = result?.["resampled data"] || [];
+      const aggregated = {};
+
+      OverviewSource.forEach((source) => {
+        aggregated[source.label] = source.apis.reduce((sum, api) => {
+          const key = api.split("/api/")[1]?.replace(/\//g, "");
+          const feederData = resampledData.find((entry) => entry[key]);
+
+          if (feederData) {
+            sum += feederData[key] || 0;
+          }
+          return sum;
+        }, 0);
+      });
+
+      console.log("Aggregated Feeder Data:", aggregated);
+      setAggregatedData(aggregated);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError(err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchFeederData();
+  }, []);
+
+  // Map aggregated data to chart format
+  const chartData = Object.entries(aggregatedData).map(
+    ([category, value], index) => ({
+      name: category,
+      value,
+      fill: ["#FF4500", "#FFD700", "#1E90FF"][index % 3], // Colors for categories
+    })
+  );
+
+  const totalValue = chartData.reduce((sum, item) => sum + item.value, 0);
+
   const handleClick = (e) => {
     if (e && e.activePayload) {
       const clickedData = e.activePayload[0]?.payload;
-      setSelectedFeeder(clickedData?.name || null);
+      setSelectedCategory(clickedData?.name || null);
     }
   };
 
   return (
     <Container>
-      {/* <Title>B AC Power Distribution</Title> */}
-      <Card>
-        <RadialBarChart
-          width={400}
-          height={400}
-          cx="50%"
-          cy="50%"
-          innerRadius="60%"
-          outerRadius="100%"
-          barSize={20}
-          data={data}
-          startAngle={180}
-          endAngle={0}
-          onClick={handleClick}
-        >
-          <PolarAngleAxis
-            type="number"
-            domain={[0, totalPower || 1]} // Avoid division by 0
-            angleAxisId={0}
-            tick={false}
-          />
-          <RadialBar
-            minAngle={15}
-            clockWise
-            dataKey="value"
-            cornerRadius={10}
-            background
-          />
-          {/* <Legend
-            iconSize={10}
-            layout="horizontal"
-            verticalAlign="bottom"
-            align="center"
-
-          /> */}
-          <Tooltip />
-        </RadialBarChart>
-        <CenterText onClick={() => setSelectedFeeder(null)}>
-          {selectedFeeder ? (
-            <>
-              {selectedFeeder} <br />
-              {data.find((d) => d.name === selectedFeeder)?.value || 0} kW
-            </>
-          ) : (
-            <>Total: {totalPower.toLocaleString()} kW</>
-          )}
-        </CenterText>
-      </Card>
+      {error ? (
+        <div style={{ color: "red" }}>Error: {error}</div>
+      ) : (
+        <Card>
+          <RadialBarChart
+            width={400}
+            height={400}
+            cx="50%"
+            cy="50%"
+            innerRadius="60%"
+            outerRadius="100%"
+            barSize={20}
+            data={chartData}
+            startAngle={180}
+            endAngle={0}
+            onClick={handleClick}
+          >
+            <PolarAngleAxis
+              type="number"
+              domain={[0, totalValue || 1]} // Prevent division by zero
+              tick={false}
+            />
+            <RadialBar
+              minAngle={15}
+              clockWise
+              dataKey="value"
+              cornerRadius={10}
+              background
+            />
+            <Tooltip />
+          </RadialBarChart>
+          <CenterText onClick={() => setSelectedCategory(null)}>
+            {selectedCategory ? (
+              <>
+                {selectedCategory} <br />
+                {chartData.find((d) => d.name === selectedCategory)?.value ||
+                  0}{" "}
+                kW
+              </>
+            ) : (
+              <>Total: {totalValue.toLocaleString()} kW</>
+            )}
+          </CenterText>
+        </Card>
+      )}
     </Container>
   );
 };

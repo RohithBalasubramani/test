@@ -35,7 +35,7 @@ function IndiLayout({ apikey = "" }) {
       const derivedKey = pathSegments[pathSegments.length - 1] || "";
       setKey(derivedKey);
     }
-  }, [location, apikey]);
+  }, [location, key]);
 
   const handleItemIdChange = (itemId, topBarSelection) => {
     setKey(itemId);

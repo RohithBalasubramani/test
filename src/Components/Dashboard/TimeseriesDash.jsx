@@ -22,69 +22,69 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
   /**
    * 🛠️ Extract Feeder Fields Based on Hierarchy for DonutChart
    */
-  useEffect(() => {
-    const extractFieldsFromTree = () => {
-      let apiEndpoints = [];
-      let links = [];
+  // useEffect(() => {
+  //   const extractFieldsFromTree = () => {
+  //     let apiEndpoints = [];
+  //     let links = [];
 
-      if (topBar && !parentName && !parentName2) {
-        // ✅ TopBar only: Get all children excluding 'overview'
-        const topBarNode = sideBarTreeArray[topBar];
-        if (topBarNode) {
-          topBarNode.forEach((child) => {
-            if (child.id !== "overview" && child.apis) {
-              apiEndpoints.push(...child.apis);
-            }
-            // if (child.children) {
-            //   child.children.forEach((subChild) => {
-            //     if (subChild.apis) apiEndpoints.push(...subChild.apis);
-            //   });
-            // }
-          });
-        }
-      } else if (topBar && parentName && !parentName2) {
-        // ✅ TopBar + ParentName: Get all APIs from children of parentName
-        const parentNode = sideBarTreeArray[topBar]?.find(
-          (item) => item.id === parentName
-        );
+  //     if (topBar && !parentName && !parentName2) {
+  //       // ✅ TopBar only: Get all children excluding 'overview'
+  //       const topBarNode = sideBarTreeArray[topBar];
+  //       if (topBarNode) {
+  //         topBarNode.forEach((child) => {
+  //           if (child.id !== "overview" && child.apis) {
+  //             apiEndpoints.push(...child.apis);
+  //           }
+  //           // if (child.children) {
+  //           //   child.children.forEach((subChild) => {
+  //           //     if (subChild.apis) apiEndpoints.push(...subChild.apis);
+  //           //   });
+  //           // }
+  //         });
+  //       }
+  //     } else if (topBar && parentName && !parentName2) {
+  //       // ✅ TopBar + ParentName: Get all APIs from children of parentName
+  //       const parentNode = sideBarTreeArray[topBar]?.find(
+  //         (item) => item.id === parentName
+  //       );
 
-        if (parentNode?.children) {
-          parentNode.children.forEach((child) => {
-            if (child.apis) apiEndpoints.push(...child.apis);
-            if (child.children) {
-              child.children.forEach((subChild) => {
-                if (subChild.apis) apiEndpoints.push(...subChild.apis);
-              });
-            }
-          });
-        }
-      } else if (topBar && parentName && parentName2) {
-        // ✅ TopBar + ParentName + ParentName2: Get APIs from specific child
-        const parentNode = sideBarTreeArray[topBar]?.find(
-          (item) => item.id === parentName
-        );
-        const childNode = parentNode?.children?.find(
-          (child) => child.id === parentName2
-        );
+  //       if (parentNode?.children) {
+  //         parentNode.children.forEach((child) => {
+  //           if (child.apis) apiEndpoints.push(...child.apis);
+  //           if (child.children) {
+  //             child.children.forEach((subChild) => {
+  //               if (subChild.apis) apiEndpoints.push(...subChild.apis);
+  //             });
+  //           }
+  //         });
+  //       }
+  //     } else if (topBar && parentName && parentName2) {
+  //       // ✅ TopBar + ParentName + ParentName2: Get APIs from specific child
+  //       const parentNode = sideBarTreeArray[topBar]?.find(
+  //         (item) => item.id === parentName
+  //       );
+  //       const childNode = parentNode?.children?.find(
+  //         (child) => child.id === parentName2
+  //       );
 
-        if (childNode?.apis) {
-          apiEndpoints.push(...childNode.apis);
-        }
-      }
+  //       if (childNode?.apis) {
+  //         apiEndpoints.push(...childNode.apis);
+  //       }
+  //     }
 
-      // Map to { key, label } format
-      const newFields = apiEndpoints.map((api) => {
-        const key = api.split("/api/")[1]?.replace(/\//g, "");
-        const label = key?.replace(/_/g, " ").toUpperCase();
-        return { key, label };
-      });
+  //     // Map to { key, label } format
+  //     const newFields = apiEndpoints.map((api) => {
+  //       const key = api.split("/api/")[1]?.replace(/\//g, "");
+  //       const label = key?.replace(/_/g, " ").toUpperCase();
+  //       return { key, label };
+  //     });
 
-      console.log("Extracted Donut Fields:", newFields);
-      setFieldsDonut(newFields);
-    };
+  //     console.log("Extracted Donut Fields:", newFields);
+  //     setFieldsDonut(newFields);
+  //   };
 
-    extractFieldsFromTree();
-  }, [apiKey, topBar, parentName, parentName2]);
+  //   extractFieldsFromTree();
+  // }, [apiKey, topBar, parentName, parentName2]);
 
   /**
    * 🛠️ Extract Stacked Chart Fields Separately
@@ -115,6 +115,17 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
           (item) => item.id === apiKey
         );
       }
+
+      // Map to { key, label } format
+      const apiEndpointsDonut = apiEndpointsArray?.feeder_apis || [];
+      const newFieldsDonut = apiEndpointsDonut.map((api) => {
+        const key = api.split("/api/")[1]?.replace(/\//g, "");
+        const label = key?.replace(/_/g, " ");
+        return { key, label };
+      });
+
+      console.log("Extracted Donut Fields:", newFieldsDonut);
+      setFieldsDonut(newFieldsDonut);
 
       const apiEndpoints = apiEndpointsArray?.apis || [];
       const newFields = apiEndpoints.map((api) => {

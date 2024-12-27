@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AMFgauge from "../Components/AmfGauge"; // second gauge remains
-import AMFgaugeStacked from "../Components/PhaseOverview/AMFGauge"; // new stacked gauge
+
 import PowerFactorGauge from "../Components/CompareScreenComp/PowerFactor";
 import FrequencyComponent from "../Components/CompareScreenComp/Frequency";
 import styled from "styled-components";
@@ -22,6 +22,7 @@ import { getFeederNode } from "../dfs";
 import StackedPowerFactorGauge from "../Components/CompareScreenComp/StackedPoweFactor";
 import DataTable from "../Components/CompareScreenComp/Table";
 import KPI from "../Components/CompareScreenComp/KPI";
+import AMFgaugeStacked from "../Components/CompareScreenComp/AMFGauge";
 
 // =============== Styled Components ===============
 const Container = styled.div`

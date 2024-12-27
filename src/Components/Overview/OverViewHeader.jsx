@@ -9,17 +9,18 @@ import { sideBarTreeArray } from "../../sidebarInfo2"; // Assuming this is your 
 import OverviewTimeBar from "./OverviewTimeBar";
 import Alerts from "../Dashboard/Alerts";
 import DateRangeSelector from "../Dashboard/Daterangeselector";
+import { CloudDownload } from "@mui/icons-material";
+import ReportModal from "../Reports";
 
 const DashboardHeader = styled.div`
   display: flex;
-  justify-content: left;
+  justify-content: space-between;
   align-items: center;
-  gap: auto;
-  padding-bottom: 1vh;
+  margin-bottom: 2vh;
 `;
 
 const ContainerBox = styled.div`
-  height: 50vh;
+  height: 55vh;
 `;
 
 const DashboardTitle = styled.div`
@@ -44,6 +45,8 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
   const [timeperiod, setTimeperiod] = useState("H");
   const [dateRange, setDateRange] = useState("today");
   const [data, setData] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [reportData, setReportData] = useState([]);
   const [error, setError] = useState(null);
 
   const fetchData = async (start, end, period) => {
@@ -117,16 +120,32 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
     }
   }, [startDate, endDate, timeperiod, apiKey, sectionName]);
 
+  const handleGenerateReportClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleModalSubmit = (formData) => {
+    console.log("Report Data Submitted:", formData);
+    // You can process or save the data here
+  };
+
   return (
     <ContainerBox>
       <DashboardHeader>
         <DashboardTitle>Overview Page</DashboardTitle>
         <div
           style={{
-            marginRight: 0,
-            marginLeft: "auto",
             display: "flex",
             gap: "1vw",
+            height: "min-content",
+            width: "50vw",
+            marginRight: "0",
+            marginLeft: "auto",
+            alignItems: "right",
           }}
         >
           <OverviewTimeBar
@@ -147,6 +166,12 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
             startDate={startDate}
             endDate={endDate}
           />
+          <button onClick={handleGenerateReportClick} className="emsbutton">
+            <i className="emsbuttonicon">
+              <CloudDownload />
+            </i>
+            <span>Generate Report</span>
+          </button>
         </div>
       </DashboardHeader>
       <Container
@@ -163,6 +188,21 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
         <KPI data={Object.values(data)[2]} />
         <Alerts />
       </Container>
+      {/* <ReportModal
+        open={isModalOpen}
+        onClose={handleModalClose}
+        onSubmit={handleModalSubmit}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        timeperiod={timeperiod}
+        setTimeperiod={setTimeperiod}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
+        data={data} // Pass the processed reportData directly
+        filename="OverviewReport.xlsx"
+      /> */}
     </ContainerBox>
   );
 };

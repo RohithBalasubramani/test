@@ -30,12 +30,10 @@ const Overview = ({ apikey, sectionName, parentName, parentName2 }) => {
 
   // Derive API Key from URL if not provided
   useEffect(() => {
-    if (!apikey) {
-      const pathSegments = location.pathname.split("/");
-      const derivedKey = pathSegments[pathSegments.length - 1] || "";
-      console.log("Derived key from pathname: ", derivedKey);
-      setKey(derivedKey);
-    }
+    const pathSegments = location.pathname.split("/");
+    const derivedKey = pathSegments[pathSegments.length - 1] || "";
+    console.log("Derived key from pathname: ", derivedKey);
+    setKey(derivedKey);
   }, [location, apikey]);
 
   // Dynamically generate feeders based on sectionName and parentName(s)
