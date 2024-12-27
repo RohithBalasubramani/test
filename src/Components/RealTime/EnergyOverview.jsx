@@ -137,12 +137,13 @@ const RealTimeChart = ({
 
   // Set up data fetching interval
   useEffect(() => {
+    setData([])
     const interval = setInterval(() => {
       fetchData();
     }, pollingInterval);
 
     return () => clearInterval(interval);
-  }, [pollingInterval]);
+  }, [pollingInterval, feeders]);
 
   // Configure chart data
   const chartData = {

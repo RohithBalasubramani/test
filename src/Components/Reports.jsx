@@ -13,7 +13,7 @@ import {
   FormLabel,
 } from "@mui/material";
 import TimeBar from "./TRFF/TimePeriod";
-// import DateRangeSelector from "./Daterangeselector";
+import DateRangeSelector from "./Dashboard/Daterangeselector";
 import ToggleButtons from "./Togglesampling";
 import { exportToExcel } from "./exportToExcel"; // Import the utility function
 import "./EnergyComp.css"; // Import the CSS file 
@@ -97,12 +97,12 @@ const ReportModal = ({
         </div>
         <div>
           <FormLabel component="legend">Source Data Type</FormLabel>
-          {/* <DateRangeSelector
+          <DateRangeSelector
             startDate={startDate}
             setStartDate={setStartDate}
             endDate={endDate}
             setEndDate={setEndDate}
-          /> */}
+          />
         </div>
         <div>
           <FormLabel component="legend">Source Data Type</FormLabel>
@@ -119,12 +119,12 @@ const ReportModal = ({
             onChange={handleFormatChange}
             sx={{ display: "flex", flexDirection: "row" }}
           >
-            <FormControlLabel
+            {/* <FormControlLabel
               className="styled-form-control-label"
               value="PDF"
               control={<Radio />}
               label="PDF"
-            />
+            /> */}
             <FormControlLabel
               className="styled-form-control-label"
               value="Excel"
