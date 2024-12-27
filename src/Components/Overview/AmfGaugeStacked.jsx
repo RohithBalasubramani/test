@@ -38,8 +38,17 @@ const CenterText = styled.div`
 `;
 
 const AMFgaugeStacked = ({ feederData }) => {
-  const totalPowerArray = feederData ? Object.values(feederData).map((item) => item["average data"]?.app_energy_export) : []
-  const totalPower = totalPowerArray.reduce((acc,currentValue) => acc + currentValue, 0)
+  const totalPowerArray = feederData
+    ? Object.values(feederData).map(
+        (item) => item["average data"]?.app_energy_export
+      )
+    : [];
+  const totalPower = totalPowerArray.reduce(
+    (acc, currentValue) => acc + currentValue,
+    0
+  );
+
+  console.log("feederData", feederData);
 
   const [selectedFeeder, setSelectedFeeder] = useState(null);
   const color_array = [
@@ -51,22 +60,27 @@ const AMFgaugeStacked = ({ feederData }) => {
     "#1E90FF",
     "#FF4500",
     "#FFD700",
-    "#1E90FF"
-  ]
+    "#1E90FF",
+  ];
 
   // Prepare data for RadialBarChart
-  const data = Object.values(feederData).map((item, index) => {
+
+  const data = Object.entries(feederData).map(([key, item], index) => {
+    // Extract last part of the API URL dynamically
+    const feederName = key.split("/").filter(Boolean).pop().split("_").pop();
+
     return {
-      name: "Feeder" + (index+1),
+      name: feederName.charAt(0).toUpperCase() + feederName.slice(1), // Capitalize first letter
       value: item["average data"]?.app_energy_export || 0,
-      fill: color_array[index]
-    }
-  })
+      fill: color_array[index],
+    };
+  });
 
   // Handle click event
   const handleClick = (e) => {
     if (e && e.activePayload) {
       const clickedData = e.activePayload[0].payload;
+      console.log("clicked", clickedData);
       setSelectedFeeder(clickedData.name);
     }
   };
@@ -113,10 +127,13 @@ const AMFgaugeStacked = ({ feederData }) => {
             {selectedFeeder ? (
               <>
                 {selectedFeeder} <br />
-                {data.find((d) => d.name === selectedFeeder)?.value || 0} kW
+                {(
+                  data.find((d) => d.name === selectedFeeder)?.value || 0
+                ).toFixed(2)}{" "}
+                kW
               </>
             ) : (
-              <>Total: {totalPower.toLocaleString()} kW</>
+              <>Total: {totalPower.toFixed(2)} kW</>
             )}
           </CenterText>
         </CenterText>

@@ -216,13 +216,11 @@ const OverviewHeader = () => {
       <Container
         style={{ display: "flex", gap: "2%", maxHeight: "fit-content" }}
       >
-        {feederData.length > 0 ? (
-          <AMFgaugeStacked feeders={feederData} />
-        ) : error ? (
-          <div style={{ color: "red" }}>{error}</div>
-        ) : (
-          <div>Loading...</div>
-        )}
+        <AMFgaugeStacked
+          startDate={startDate}
+          endDate={endDate}
+          timeperiod={timeperiod}
+        />
 
         {/* KPI & Weather Widgets */}
         <KPI data={Object.values(data)[2]} />

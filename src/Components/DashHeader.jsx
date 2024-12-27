@@ -184,30 +184,42 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
     <div style={{ marginBottom: "4vh" }}>
       <DashboardHeader>
         <DashboardTitle>{apikey.toUpperCase()}</DashboardTitle>
-        <TimeBar
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
-          dateRange={dateRange}
-          setDateRange={setDateRange}
-          setTimeperiod={setTimeperiod} // Pass setTimeperiod to TimeBar
-          startDate={startDate} // Pass startDate
-          endDate={endDate} // Pass endDate
-        />
-        <DateRangeSelector
-          startDate={startDate}
-          setStartDate={setStartDate}
-          endDate={endDate}
-          setEndDate={setEndDate}
-        />
-        <button onClick={handleGenerateReportClick} className="emsbutton">
-          <i className="emsbuttonicon">
-            <CloudDownload />
-          </i>
-          <span>Generate Report</span>
-        </button>
+        <div
+          style={{
+            display: "flex",
+            gap: "1vw",
+            height: "min-content",
+            width: "50vw",
+            marginRight: "0",
+            marginLeft: "auto",
+            alignItems: "right",
+          }}
+        >
+          <TimeBar
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
+            setTimeperiod={setTimeperiod} // Pass setTimeperiod to TimeBar
+            startDate={startDate} // Pass startDate
+            endDate={endDate} // Pass endDate
+          />
+          <DateRangeSelector
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+          />
+          <button onClick={handleGenerateReportClick} className="emsbutton">
+            <i className="emsbuttonicon">
+              <CloudDownload />
+            </i>
+            <span>Generate Report</span>
+          </button>
+        </div>
       </DashboardHeader>
       <KPIContainer>
-        <AMFgauge kpidata={data}/>
+        <AMFgauge kpidata={data} />
         <KPI data={data} />
         <div>
           <PowerFactorGauge

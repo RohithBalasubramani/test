@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import dayjs from "dayjs";
-import TimeBar from "../TRFF/TimePeriod";
-import ToggleButtons from "./Togglesampling";
-import DateRangeSelector from "./Daterangeselector";
-import "./StackedBarDGEB.css";
+// import TimeBar from "../TRFF/TimePeriod"; // Ensure this path is correct
+// import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
+import "../Dashboard/StackedBarDGEB.css";
 import { OverviewSource } from "../../phasedata";
+import ToggleButtons from "../Togglesampling";
+import TimeBar from "../TRFF/TimePeriod";
 
-const CostChart = ({
+const StackedBarDGEB = ({
   data,
   startDate,
   setStartDate,
@@ -24,13 +25,13 @@ const CostChart = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const costFactor = 10; // Define cost factor for energy-to-cost conversion
+  console.log("Data:", data);
 
   useEffect(() => {
     if (data && data["resampled data"]) {
       try {
         const resampledData = data["resampled data"];
-        console.log("Original Resampled Data:", resampledData);
+        console.log("Resampled Data:", resampledData);
 
         // 🔄 Normalize keys in resampled data
         const normalizedResampledData = resampledData.map((item) => {
@@ -41,7 +42,7 @@ const CostChart = ({
           return normalizedItem;
         });
 
-        // 🔄 Aggregate Data for EB, DG, and Solar with cost calculation
+        // 🔄 Aggregate Data for EB, DG, and Solar
         const categories = ["EB", "DG", "Solar"];
         const aggregatedData = categories.map((category) => {
           const apis =
@@ -54,7 +55,7 @@ const CostChart = ({
                   .split("/api/")[1]
                   ?.replace(/\//g, "")
                   .toLowerCase();
-                return sum + (entry[key] || 0) * costFactor;
+                return sum + (entry[key] || 0);
               }, 0)
             ),
             backgroundColor:
@@ -65,7 +66,7 @@ const CostChart = ({
           };
         });
 
-        console.log("Aggregated Cost Data:", aggregatedData);
+        console.log("Aggregated Data:", aggregatedData);
 
         // 📊 Generate X-axis Labels
         const xAxisLabels = generateXAxisLabels(resampledData);
@@ -75,7 +76,7 @@ const CostChart = ({
           datasets: aggregatedData,
         });
       } catch (error) {
-        console.error("Error processing data:", error);
+        console.error("Error processing chart data:", error);
         setError(error.message || "Error processing data.");
       } finally {
         setLoading(false);
@@ -100,25 +101,6 @@ const CostChart = ({
         return resampledData.map((item) =>
           dayjs(item.timestamp).format("MMM D, YYYY")
         );
-      case "W": // Weekly
-        return resampledData.map((item) => {
-          const weekNumber = dayjs(item.timestamp).week();
-          return `Week ${weekNumber} - ${dayjs(item.timestamp).format("MMM")}`;
-        });
-      case "M": // Monthly
-        return resampledData.map((item) =>
-          dayjs(item.timestamp).format("MMM YYYY")
-        );
-      case "Q": // Quarterly
-        return resampledData.map((item) => {
-          const month = dayjs(item.timestamp).month();
-          const quarter = Math.floor(month / 3) + 1;
-          return `Q${quarter} ${dayjs(item.timestamp).format("YYYY")}`;
-        });
-      case "Y": // Yearly
-        return resampledData.map((item) =>
-          dayjs(item.timestamp).format("YYYY")
-        );
       default:
         return resampledData.map((item) =>
           dayjs(item.timestamp).format("MMM D, YYYY")
@@ -139,7 +121,9 @@ const CostChart = ({
       <div className="card shadow mb-4">
         <div className="card-body">
           <div className="row">
-            <div className="title">Energy Cost by Source (Rs)</div>
+            <div className="title">
+              Energy Consumption by Source (EB, DG, Solar)
+            </div>
             <div className="controls">
               <TimeBar
                 setStartDate={setStartDate}
@@ -149,12 +133,6 @@ const CostChart = ({
                 setTimeperiod={setTimeperiod}
                 startDate={startDate}
                 endDate={endDate}
-              />
-              <DateRangeSelector
-                startDate={startDate}
-                setStartDate={setStartDate}
-                endDate={endDate}
-                setEndDate={setEndDate}
               />
             </div>
           </div>
@@ -171,8 +149,8 @@ const CostChart = ({
               <Bar
                 data={chartData}
                 options={{
-                  responsive: true,
                   maintainAspectRatio: false,
+                  responsive: true,
                   plugins: {
                     legend: {
                       display: true,
@@ -191,13 +169,15 @@ const CostChart = ({
                     },
                   },
                   scales: {
-                    x: { stacked: true },
+                    x: {
+                      stacked: true,
+                      grid: {
+                        color: "rgba(0, 0, 0, 0.05)",
+                        borderDash: [8, 4],
+                      },
+                    },
                     y: {
                       stacked: true,
-                      title: {
-                        display: true,
-                        text: "Cost (Rs)",
-                      },
                     },
                   },
                 }}
@@ -212,4 +192,4 @@ const CostChart = ({
   );
 };
 
-export default CostChart;
+export default StackedBarDGEB;

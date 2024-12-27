@@ -232,23 +232,25 @@ const SankeyChart = ({
     <div className="stacked-bar-container">
       <div className="card shadow mb-4">
         <div className="card-body">
-          <div className="title">Energy Flow Chart [kWh]</div>
-          <div className="controls">
-            <TimeBar
-              setStartDate={setStartDate}
-              setEndDate={setEndDate}
-              dateRange={dateRange}
-              setDateRange={setDateRange}
-              setTimeperiod={setTimeperiod}
-              startDate={startDate}
-              endDate={endDate}
-            />
-            <DateRangeSelector
-              startDate={startDate}
-              setStartDate={setStartDate}
-              endDate={endDate}
-              setEndDate={setEndDate}
-            />
+          <div className="row">
+            <div className="title">Energy Flow Chart [kWh]</div>
+            <div className="controls">
+              <TimeBar
+                setStartDate={setStartDate}
+                setEndDate={setEndDate}
+                dateRange={dateRange}
+                setDateRange={setDateRange}
+                setTimeperiod={setTimeperiod}
+                startDate={startDate}
+                endDate={endDate}
+              />
+              <DateRangeSelector
+                startDate={startDate}
+                setStartDate={setStartDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
+              />
+            </div>
           </div>
 
           <RadioGroup

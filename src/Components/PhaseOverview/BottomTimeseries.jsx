@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import StackedBarChart from "../Dashboard/StackedChart";
-import StackedBarDGEB from "../Dashboard/StackTest";
 import CostChart from "../Dashboard/CostChart";
 import HorizontalChart from "../Dashboard/BarchartVertical";
 import dayjs from "dayjs";
@@ -8,6 +7,7 @@ import { OverviewArray } from "../../phasedata";
 import DataTable from "../TableDGEB";
 import DonutChart from "../Dashboard/DonutDash";
 import SankeyChart from "./Sankee";
+import StackedBarDGEB from "./StackChart";
 
 // 📌 Extract Keys and Format Them Properly
 const extractKeys = () => {

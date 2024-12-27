@@ -46,7 +46,7 @@ export const OverviewSource = [
   },
   {
     id: "Solar",
-    label: "AMF 2a",
+    label: "Solar",
     apis: [
       "http://14.96.26.26:8080/api/p1_inverter1/",
       "http://14.96.26.26:8080/api/p1_inverter2/",
