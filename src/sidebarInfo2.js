@@ -21,7 +21,7 @@ export const sideBarTreeArray = {
       apis: ["http://14.96.26.26:8080/api/p1_amfs_transformer1/"],
     },
     {
-      id: "apfc_1",
+      id: "p1_amfs_apfc1",
       label: "APFC-1",
       apis: ["http://14.96.26.26:8080/api/p1_amfs_apfc1/"],
     },

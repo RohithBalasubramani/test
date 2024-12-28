@@ -31,7 +31,7 @@ const KPI = ({ data }) => {
   console.log("KPI data", data);
 
   useEffect(() => {
-    if (data && data["results"] && data["today"]) {
+    if (data && data["results"] && data["today"] && data["resampled data"]) {
       const topResult = data["results"][0];
       const today = data["today"];
       const resampled = data["resampled data"];
@@ -85,7 +85,7 @@ const KPI = ({ data }) => {
             <div style={{ display: "inline" }}>
               <span className="kpi-val">
                 {" "}
-                {kpiData?.peakTemp?.toFixed(2)}{" "}
+                {kpiData?.temp?.toFixed(2)}{" "}
               </span>
               <span className="kpi-units"> Deg C </span>
             </div>

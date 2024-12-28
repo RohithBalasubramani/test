@@ -238,7 +238,8 @@ const HorizontalChart = ({
           .join("/");
         const newPath = `${currentPath}/${fieldKey}`;
 
-        navigate(newPath);
+        navigate(-1)
+        navigate(`/${fieldKey}`);
         console.log("Redirecting to:", newPath);
       }
     },

@@ -114,6 +114,8 @@ const ParentOverviewComponent = ({
   };
 
   useEffect(() => {
+    setError(null)
+    setRawData(null)
     if (!apiKey) {
       console.error("apiKey is required but not provided.");
       setError("apiKey is required.");
@@ -126,7 +128,7 @@ const ParentOverviewComponent = ({
     }, 5000); // Poll every 5 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
-  }, [apiKey]);
+  }, [apiKey, parentName, parentName2]);
 
   return (
     <div>
