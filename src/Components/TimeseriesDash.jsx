@@ -23,6 +23,7 @@ import CurrentHistorical from "./CurrentHist";
 import PowerfactorAndFreqHistorical from "./PowerFactorAndFreqHist";
 import sidbarInfo from "../sidbarInfo";
 import { sideBarTreeArray } from "../sidebarInfo2";
+import HistoricalLoader from "./LoadingScreens/HistoricalLoader";
 
 const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
   // Initialize state with default values
@@ -147,7 +148,7 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
         </LocalizationProvider>
       </div> */}
 
-      {data && (
+      {data ? (
         <>
           <div>
             <StackedBarDGEB
@@ -210,92 +211,7 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
               setDateRange={setDateRange}
               backgroundColors={bgsource}
             />
-
-            {/* <div className="row">
-              <div className="col-lg-4 mb-4">
-                <div>
-                  <DonutChart
-                    data={data}
-                    startDate={startDate}
-                    setStartDate={setStartDate}
-                    endDate={endDate}
-                    setEndDate={setEndDate}
-                    timeperiod={timeperiod}
-                    setTimeperiod={setTimeperiod}
-                    dateRange={dateRange}
-                    setDateRange={setDateRange}
-                    backgroundColors={backgroundColors}
-                  />
-                </div>
-              </div>
-              <div className="col-lg-8 mb-3">
-                <VerticalChart
-                  data={data}
-                  startDate={startDate}
-                  setStartDate={setStartDate}
-                  endDate={endDate}
-                  setEndDate={setEndDate}
-                  timeperiod={timeperiod}
-                  setTimeperiod={setTimeperiod}
-                  dateRange={dateRange}
-                  setDateRange={setDateRange}
-                  backgroundColors={backgroundColors}
-                />
-              </div>
-            </div> */}
           </div>
-          {/* 
-          <Powercut
-            timeperiod={timeperiod}
-            startDate={startDate}
-            endDate={endDate}
-          /> */}
-          {/* <StackedBarChart
-            data={data}
-            startDate={startDate}
-            setStartDate={setStartDate}
-            endDate={endDate}
-            setEndDate={setEndDate}
-            timeperiod={timeperiod}
-            setTimeperiod={setTimeperiod}
-            dateRange={dateRange}
-            setDateRange={setDateRange}
-            backgroundColors={backgroundColors2}
-          />
-          <div>
-            <div className="row">
-              <div className="col-lg-6 mb-4" style={{}}>
-                <EnergyComp
-                  data={data}
-                  dateRange={dateRange}
-                  setDateRange={setDateRange}
-                  startDate={startDate}
-                  setStartDate={setStartDate}
-                  endDate={endDate}
-                  setEndDate={setEndDate}
-                  timeperiod={timeperiod}
-                  setTimeperiod={setTimeperiod}
-                />
-              </div>
-              <div className="col-lg-6 mb-4">
-                <PowerOutageChart />
-              </div>
-            </div>
-          </div>
-
-          <MySankeyChart
-            data={data}
-            dateRange={dateRange}
-            setDateRange={setDateRange}
-            startDate={startDate}
-            setStartDate={setStartDate}
-            endDate={endDate}
-            setEndDate={setEndDate}
-            timeperiod={timeperiod}
-            setTimeperiod={setTimeperiod}
-            backgroundColors={backgroundColorsWithOpacity}
-          /> */}
-
           <div style={{ marginTop: "5vh" }}>
             {data && (
               <DataTable
@@ -319,8 +235,12 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
               />
             )}
           </div>
-        </>
-      )}
+        </>)
+        :
+        (
+          <HistoricalLoader />
+        )
+      }
     </div>
   );
 };

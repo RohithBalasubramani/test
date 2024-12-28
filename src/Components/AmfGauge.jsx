@@ -67,9 +67,9 @@ const AMFgauge = ({ kpidata }) => {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 5000); // Update every 5 seconds
-    return () => clearInterval(interval);
-  }, []);
+    // const interval = setInterval(fetchData, 5000); // Update every 5 seconds
+    // return () => clearInterval(interval);
+  }, [kpidata]);
 
   return (
     <Container>

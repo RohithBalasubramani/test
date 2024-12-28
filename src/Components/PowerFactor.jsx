@@ -78,9 +78,7 @@ const PowerFactorGauge = ({ apikey, topBar, parentName, parentName2 }) => {
           const apiEndPoint = apiEndpointsArray.apis[0];
           if (apiEndPoint) {
             const response = await axios.get(apiEndPoint);
-            const powerFactorValue = Math.floor(
-              response.data["recent data"].avg_power_factor * 100
-            );
+            const powerFactorValue = response.data["recent data"].avg_power_factor
             setPowerFactor(powerFactorValue);
 
             if (powerFactorValue >= 0.95) {
@@ -121,7 +119,7 @@ const PowerFactorGauge = ({ apikey, topBar, parentName, parentName2 }) => {
             textColor="#333333"
             needleColor="gray"
             needleBaseColor="gray"
-            formatTextValue={(value) => `${value.toFixed(2) / 100}`} // Display as percentage
+            formatTextValue={(value) => `${value.toFixed(2)}`} // Display as percentage
             style={{ height: "", width: "150px" }} // Adjust as needed
           />
           <div className="figuretext">Power Quality: {powerQuality}</div>
