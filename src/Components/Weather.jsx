@@ -64,12 +64,12 @@ const Address = styled.div`
 `;
 
 const AlertsContainer = styled.div`
-  border-radius: 16px;
+  border-radius: 4px;
   background: #ffffff;
   display: flex;
   flex: 3;
 
-  padding: 16px;
+  padding: 10px;
   flex-direction: column;
   align-items: flex-start;
   gap: 16px;
@@ -93,7 +93,7 @@ const AlertsContainer = styled.div`
 const AlertItem = styled.div`
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 9px;
   border-bottom: 1px solid #eee;
   width: 95%;
   justify-content: center;

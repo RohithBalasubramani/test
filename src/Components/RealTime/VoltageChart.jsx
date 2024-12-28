@@ -34,9 +34,9 @@ const VoltageChart = ({ rawData }) => {
     if (rawData) {
       const {
         timestamp,
-        r_phase_voltage,
-        y_phase_voltage,
-        b_phase_voltage,
+        r_voltage,
+        y_voltage,
+        b_voltage,
         ry_voltage,
         yb_voltage,
         br_voltage,
@@ -44,9 +44,9 @@ const VoltageChart = ({ rawData }) => {
 
       const newEntry = {
         time: timestamp,
-        rVoltage: r_phase_voltage,
-        yVoltage: y_phase_voltage,
-        bVoltage: b_phase_voltage,
+        rVoltage: r_voltage,
+        yVoltage: y_voltage,
+        bVoltage: b_voltage,
         ryVoltage: ry_voltage,
         ybVoltage: yb_voltage,
         brVoltage: br_voltage,

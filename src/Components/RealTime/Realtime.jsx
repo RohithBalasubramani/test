@@ -5,6 +5,7 @@ import RealTimeVoltageChart from "./VoltageChart";
 import RealTimeChart from "./Composite";
 import RealTimeCurrentChart from "./CurrentChart";
 import styled from "styled-components";
+import RealTimeLoader from "../LoadingScreens/RealTimeLoader";
 
 const Container = styled.div`
   display: flex;
@@ -54,7 +55,9 @@ const ParentRealTimeComponent = ({
             const response = await axios.get(apiEndpoints);
             setRawData(response.data);
           }
-        }
+        } 
+      } else {
+        throw new Error("Something Went Wrong")
       }
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -63,6 +66,7 @@ const ParentRealTimeComponent = ({
   };
 
   useEffect(() => {
+    setRawData(null)
     const interval = setInterval(() => {
       fetchData();
     }, 5000); // Poll every 5 seconds
@@ -73,17 +77,17 @@ const ParentRealTimeComponent = ({
   return (
     <div>
       {error && <div>Error fetching data: {error}</div>}
-      {rawData ? (
+      {(rawData && rawData["recent data"]) ? (
         <Container>
           {/* Pass rawData as props to the child components */}
-          <RealTimeVoltageChart rawData={rawData} />
-          <RealTimeChart rawData={rawData} />
-          <RealTimeCurrentChart rawData={rawData} />
+          <RealTimeVoltageChart rawData={rawData["recent data"]} />
+          <RealTimeChart rawData={rawData["recent data"]} />
+          <RealTimeCurrentChart rawData={rawData["recent data"]} />
           {/* Add other components here */}
           {/* Example: <RealTimeCurrentChart rawData={rawData} /> */}
         </Container>
       ) : (
-        <div>Loading...</div>
+        <RealTimeLoader />
       )}
     </div>
   );

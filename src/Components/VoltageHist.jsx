@@ -181,7 +181,7 @@ const VoltageHistorical = ({
     },
     plugins: {
       legend: {
-        display: false, // Hide default legend
+        display: true, // Hide default legend
       },
     },
   };
