@@ -11,6 +11,7 @@ import Alerts from "../Dashboard/Alerts";
 import DateRangeSelector from "../Dashboard/Daterangeselector";
 import { CloudDownload } from "@mui/icons-material";
 import ReportModal from "../Reports";
+import OverviewGaugeLoader from "../LoadingScreens/OverviewGaugeLoader";
 
 const DashboardHeader = styled.div`
   display: flex;
@@ -48,6 +49,7 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reportData, setReportData] = useState([]);
   const [error, setError] = useState(null);
+  const [kpiKey, setKpiKey] = useState(0)
 
   const fetchData = async (start, end, period) => {
     try {
@@ -115,6 +117,7 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
   };
 
   useEffect(() => {
+    setData({})
     if (startDate && endDate && apiKey && sectionName) {
       fetchData(startDate, endDate, timeperiod);
     }
@@ -178,14 +181,14 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
         style={{ display: "flex", gap: "2%", maxHeight: "fit-content" }}
       >
         {Object.keys(data)?.length > 0 ? (
-          <AMFgaugeStacked feederData={data} />
+          <AMFgaugeStacked feederData={data} setKpiKey={setKpiKey}/>
         ) : error ? (
           <div style={{ color: "red" }}>{error}</div>
         ) : (
-          <div>Loading...</div>
+          <OverviewGaugeLoader />
         )}
 
-        <KPI data={Object.values(data)[2]} />
+        <KPI data={Object.values(data)[kpiKey]} />
         <Alerts />
       </Container>
       {/* <ReportModal

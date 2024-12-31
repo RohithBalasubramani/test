@@ -9,6 +9,7 @@ import {
 import { styled } from "@mui/system";
 import "./RealTimeStyle.css";
 import "chartjs-adapter-date-fns";
+import OverviewRealTimeEnergyLoader from "../LoadingScreens/OverviewRealTimeEnergyLoader";
 
 // --- Styled Radio Components ---
 const StyledRadioGroup = styled(RadioGroup)({
@@ -137,7 +138,7 @@ const RealTimeChart = ({
 
   // Set up data fetching interval
   useEffect(() => {
-    setData([])
+    setData([]);
     const interval = setInterval(() => {
       fetchData();
     }, pollingInterval);
@@ -194,38 +195,41 @@ const RealTimeChart = ({
 
   return (
     <div className="containerchart">
-      {/* Chart Container */}
-      <div className="chart-cont">
-        <div className="title">Real-Time Energy Consumption</div>
-        <div className="chart-size">
-          <Line data={chartData} options={options} />
-        </div>
-      </div>
-
-      {/* Value-Cont Redesigned */}
-      <div className="value-cont">
-        <div className="value-heading">Power Status</div>
-        <div className="current-value">{powerStatus}</div>
-        <div className="legend-container">
-          {normalizedFeeders.map((feeder, index) => (
-            <div className="legend-item-two" key={index}>
-              <div className="value-name">
-                <span
-                  className="legend-color-box"
-                  style={{ backgroundColor: feeder.color || "#000" }}
-                />
-                {feeder.label}
-              </div>
-              <div className="value">
-                {data.length > 0
-                  ? data[data.length - 1].feeders[index]?.value?.toFixed(2)
-                  : "0.00"}{" "}
-                <span className="value-span">kWh</span>
-              </div>
+      {data?.length ? (
+        <>
+          <div className="chart-cont">
+            <div className="title">Real-Time Energy Consumption</div>
+            <div className="chart-size">
+              <Line data={chartData} options={options} />
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+          <div className="value-cont">
+            <div className="value-heading">Power Status</div>
+            <div className="current-value">{powerStatus}</div>
+            <div className="legend-container">
+              {normalizedFeeders.map((feeder, index) => (
+                <div className="legend-item-two" key={index}>
+                  <div className="value-name">
+                    <span
+                      className="legend-color-box"
+                      style={{ backgroundColor: feeder.color || "#000" }}
+                    />
+                    {feeder.label}
+                  </div>
+                  <div className="value">
+                    {data.length > 0
+                      ? data[data.length - 1].feeders[index]?.value?.toFixed(3)
+                      : "0.00"}{" "}
+                    <span className="value-span">kWh</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <OverviewRealTimeEnergyLoader />
+      )}
     </div>
   );
 };

@@ -5,6 +5,7 @@ import RealTimeVoltageChart from "./VoltageChart";
 import RealTimeChart from "./Composite";
 import RealTimeCurrentChart from "./CurrentChart";
 import styled from "styled-components";
+import RealTimeLoader from "../LoadingScreens/RealTimeLoader";
 
 const Container = styled.div`
   display: flex;
@@ -104,7 +105,7 @@ const ParentOverviewComponent = ({
 
     if (activeFeeder) {
       setActiveFeeder(activeFeeder.name);
-      setStatus(`Running on ${activeFeeder.name}`);
+      setStatus(`Running on ${activeFeeder?.name?.toUpperCase()?.replaceAll("_", " ")}`);
       setRawData(activeFeeder.data);
     } else {
       setActiveFeeder(null);
@@ -143,7 +144,7 @@ const ParentOverviewComponent = ({
           <RealTimeCurrentChart rawData={rawData} />
         </Container>
       ) : (
-        <div>Loading...</div>
+        <RealTimeLoader />
       )}
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { RadialBarChart, RadialBar, Legend, PolarAngleAxis } from "recharts";
+import { RadialBarChart, RadialBar, Legend, PolarAngleAxis, Tooltip } from "recharts";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -37,7 +37,16 @@ const CenterText = styled.div`
   padding: 2px;
 `;
 
-const AMFgaugeStacked = ({ feederData }) => {
+const ToolTipContainer = styled.div`
+  background-color: lightgray;
+  border-radius: 2px;
+  z-index: 9999;
+  position: fixed;
+  height: 15vh;
+  width: 10vw;
+`
+
+const AMFgaugeStacked = ({ feederData, setKpiKey }) => {
   const totalPowerArray = feederData
     ? Object.values(feederData).map(
         (item) => item["average data"]?.app_energy_export
@@ -82,7 +91,20 @@ const AMFgaugeStacked = ({ feederData }) => {
       const clickedData = e.activePayload[0].payload;
       console.log("clicked", clickedData);
       setSelectedFeeder(clickedData.name);
+      setKpiKey(e.activeLabel)
     }
+  };
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <ToolTipContainer>
+          <p>{payload[0]?.payload?.name}</p>
+          <p>{payload[0]?.payload?.value?.toFixed(2)} kW</p>
+        </ToolTipContainer>
+      );
+    }
+    return null;
   };
 
   return (
@@ -122,6 +144,7 @@ const AMFgaugeStacked = ({ feederData }) => {
               verticalAlign="bottom"
               align="center"
             />
+            <Tooltip content={CustomTooltip}/>
           </RadialBarChart>
           <CenterText onClick={() => setSelectedFeeder(null)}>
             {selectedFeeder ? (
