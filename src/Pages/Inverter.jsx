@@ -41,11 +41,9 @@ const Inverter = ({ apikey, sectionName }) => {
   const [topBar, setTopBar] = useState(sectionName || "");
 
   useEffect(() => {
-    if (!apikey) {
-      const pathSegments = location.pathname.split("/");
-      const derivedKey = pathSegments[pathSegments.length - 1] || "";
-      setKey(derivedKey);
-    }
+    const pathSegments = location.pathname.split("/");
+    const derivedKey = pathSegments[pathSegments.length - 1] || "";
+    setKey(derivedKey);
   }, [location, apikey]);
 
   const handleItemIdChange = (itemId, topBarSelection) => {
