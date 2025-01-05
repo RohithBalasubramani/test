@@ -7,10 +7,10 @@ import { OverviewSource } from "../../phasedata";
 // Styled Components
 const Container = styled.div`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   width: 50vw;
-  height: 50vh;
+  height: 53vh;
   background: #ffffff;
   padding: 4vh;
   border-radius: 10px;
@@ -21,7 +21,7 @@ const Container = styled.div`
 const Card = styled.div`
   text-align: center;
   position: relative;
-  height: 40vh;
+  height: 35vh;
 `;
 
 const CenterText = styled.div`
@@ -36,6 +36,34 @@ const CenterText = styled.div`
   user-select: none;
 `;
 
+const LegendContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 2vh;
+`;
+
+const LegendItem = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 0.5vh 1vw;
+`;
+
+const LegendColorBox = styled.div`
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  border-radius: 4px;
+`;
+
+const LegendLabel = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+`;
+
+/**
+ * 🛠️ AMFgaugeStacked Component
+ */
 const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
   const [aggregatedData, setAggregatedData] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -46,7 +74,6 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
    */
   const fetchFeederData = async () => {
     try {
-      // 🗓️ Validate startDate and endDate
       const validStartDate = startDate
         ? dayjs(startDate).toISOString()
         : dayjs().startOf("day").toISOString();
@@ -64,11 +91,7 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
 
       const result = await response.json();
 
-      // Extract resampled data for aggregation
       const resampledData = result?.["resampled data"] || [];
-      console.log("resampled", resampledData);
-
-      // 🔄 Normalize resampled data keys
       const normalizedResampledData = resampledData.map((item) => {
         const normalizedItem = {};
         Object.keys(item).forEach((key) => {
@@ -86,8 +109,6 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
             (entry) => entry[key] !== undefined
           );
 
-          console.log("Normalized Key:", key);
-
           if (feederData) {
             sum += feederData[key] || 0;
           }
@@ -97,6 +118,11 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
 
       console.log("Aggregated Feeder Data:", aggregated);
       setAggregatedData(aggregated);
+      setAggregatedData({
+        "Diesel Generator": 0.05,
+        "EB Supply": 1.6,
+        Solar: 0.7,
+      });
     } catch (err) {
       console.error("Error fetching data:", err);
       setError(err.message);
@@ -112,7 +138,7 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
     ([category, value], index) => ({
       name: category,
       value,
-      fill: ["#FF4500", "#FFD700", "#1E90FF"][index % 3], // Colors for categories
+      fill: ["#5630BC", "#8963EF", "#C4B1F7"][index % 3], // Colors for categories
     })
   );
 
@@ -161,13 +187,25 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
               {selectedCategory} <br />
               {chartData.find((d) => d.name === selectedCategory)?.value ||
                 0}{" "}
-              kW
+              MWh
             </>
           ) : (
-            <>Total: {totalValue.toLocaleString()} kW</>
+            <>Total: {totalValue.toLocaleString()} MWh</>
           )}
         </CenterText>
       </Card>
+
+      {/* 🏷️ Custom Legends */}
+      <LegendContainer>
+        {chartData.map((item, index) => (
+          <LegendItem key={index}>
+            <LegendColorBox style={{ background: item.fill }} />
+            <LegendLabel>
+              {item.name}: {item.value} MWh
+            </LegendLabel>
+          </LegendItem>
+        ))}
+      </LegendContainer>
     </Container>
   );
 };

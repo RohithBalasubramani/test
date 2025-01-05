@@ -177,7 +177,7 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
             dateRange={dateRange}
             setDateRange={setDateRange}
             fields={fieldsStacked}
-            backgroundColors={["#FF0000", "#00FF00", "#0000FF"]}
+            backgroundColors={["#5630BC", "#8963EF", "#C4B1F7"]}
           />
           <CostChart
             data={data}
@@ -190,7 +190,7 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
             dateRange={dateRange}
             setDateRange={setDateRange}
             fields={fieldsStacked}
-            backgroundColors={["#FF0000", "#00FF00", "#0000FF"]}
+            backgroundColors={["#5630BC", "#8963EF", "#C4B1F7"]}
           />
         </>
       )}
@@ -209,7 +209,13 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
                 dateRange={dateRange}
                 setDateRange={setDateRange}
                 fields={fieldsDonut}
-                backgroundColors={["#ED75A3", "#017EF3", "#FFC550"]}
+                backgroundColors={[
+                  "#ED75A3",
+                  "#017EF3",
+                  "#FFC550",
+                  "#4BC0C0",
+                  "#9966FF",
+                ]}
               />
             </div>
             <div style={{ width: "46%" }}>
@@ -264,7 +270,13 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
             setTimeperiod={setTimeperiod}
             dateRange={dateRange}
             setDateRange={setDateRange}
-            backgroundColors={["#ED75A3", "#017EF3", "#FFC550"]}
+            backgroundColors={[
+              "#ED75A3",
+              "#017EF3",
+              "#FFC550",
+              "#4BC0C0",
+              "#9966FF",
+            ]}
             topBar={topBar}
             parentName={parentName}
             parentName2={parentName2}

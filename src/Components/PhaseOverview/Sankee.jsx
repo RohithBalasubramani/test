@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
 import dayjs from "dayjs";
 import "../Dashboard/StackedBarDGEB.css";
-import { sideBarTreeArray } from "../../sidebarInfo2";
+import { sideBarTreeArray } from "../../sidebarInfotest";
 import TimeBar from "../TRFF/TimePeriod";
 import ToggleButtons from "../Togglesampling";
 import DateRangeSelector from "../Dashboard/Daterangeselector";

@@ -70,7 +70,7 @@ const BottomTimeSeries = () => {
             dateRange={dateRange}
             setDateRange={setDateRange}
             fields={fields} // Ensure fields are passed as objects
-            backgroundColors={["#FF0000", "#00FF00", "#0000FF"]}
+            backgroundColors={["#5630BC", "#8963EF", "#C4B1F7"]}
           />
 
           <CostChart
@@ -84,7 +84,7 @@ const BottomTimeSeries = () => {
             dateRange={dateRange}
             setDateRange={setDateRange}
             fields={fields}
-            backgroundColors={["#FF0000", "#00FF00", "#0000FF"]}
+            backgroundColors={["#5630BC", "#8963EF", "#C4B1F7"]}
           />
 
           <div>
@@ -101,7 +101,18 @@ const BottomTimeSeries = () => {
                   dateRange={dateRange}
                   setDateRange={setDateRange}
                   fields={fields}
-                  backgroundColors={["#ED75A3", "#017EF3", "#FFC550"]}
+                  backgroundColors={[
+                    "#ED75A3",
+                    "#017EF3",
+                    "#FFC550",
+                    "#4BC0C0",
+                    "#9966FF",
+                    "#ED75A3",
+                    "#017EF3",
+                    "#FFC550",
+                    "#4BC0C0",
+                    "#9966FF",
+                  ]}
                 />
               </div>
               <div style={{ width: "46%" }}>
@@ -116,6 +127,11 @@ const BottomTimeSeries = () => {
                   dateRange={dateRange}
                   setDateRange={setDateRange}
                   backgroundColors={[
+                    "#ED75A3",
+                    "#017EF3",
+                    "#FFC550",
+                    "#4BC0C0",
+                    "#9966FF",
                     "#ED75A3",
                     "#017EF3",
                     "#FFC550",
@@ -142,6 +158,11 @@ const BottomTimeSeries = () => {
                 "#FFC550",
                 "#F09773",
                 "#BF72D5",
+                "#ED75A3",
+                "#017EF3",
+                "#FFC550",
+                "#4BC0C0",
+                "#9966FF",
               ]}
               fields={fields}
             />
@@ -156,7 +177,13 @@ const BottomTimeSeries = () => {
               setTimeperiod={setTimeperiod}
               dateRange={dateRange}
               setDateRange={setDateRange}
-              backgroundColors={["#ED75A3", "#017EF3", "#FFC550"]}
+              backgroundColors={[
+                "#ED75A3",
+                "#017EF3",
+                "#FFC550",
+                "#F09773",
+                "#BF72D5",
+              ]}
             />
 
             <div style={{ marginTop: "5vh" }}>

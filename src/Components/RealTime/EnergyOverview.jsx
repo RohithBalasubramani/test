@@ -157,13 +157,11 @@ const RealTimeChart = ({
           entry.feeders.find((f) => f.label === feeder.label)?.value || 0
       ),
       fill: true,
-      borderColor: feeder.color || `hsl(${index * 60}, 70%, 50%)`,
-      backgroundColor: feeder.color
-        ? `${feeder.color}33`
-        : `hsl(${index * 60}, 70%, 70%, 0.2)`,
+      borderColor: `rgba(86, 48, 188, 0.6)`,
+      backgroundColor: `rgba(86, 48, 188, 0.6)`,
       borderWidth: 2,
       pointRadius: 4,
-      pointBackgroundColor: feeder.color || `hsl(${index * 60}, 70%, 50%)`,
+      pointBackgroundColor: `rgba(86, 48, 188, 0.6)`,
       pointHoverRadius: 6,
       tension: 0.4,
     })),
@@ -212,7 +210,7 @@ const RealTimeChart = ({
                   <div className="value-name">
                     <span
                       className="legend-color-box"
-                      style={{ backgroundColor: feeder.color || "#000" }}
+                      style={{ backgroundColor: "rgba(86, 48, 188, 0.6)" }}
                     />
                     {feeder.label}
                   </div>

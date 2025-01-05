@@ -4,7 +4,7 @@ import TimeBar from "../TRFF/TimePeriod";
 import ToggleButtons from "./Togglesampling";
 import DateRangeSelector from "./Daterangeselector";
 import "./StackedBarDGEB.css";
-import { sideBarTreeArray } from "../../sidebarInfo2";
+import { sideBarTreeArray } from "../../sidebarInfotest";
 
 const SankeyChart = ({
   data,

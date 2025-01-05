@@ -1,17 +1,6 @@
 export const sideBarTreeArray = {
   amf1a: [
     {
-      id: "overview",
-      label: "Overview",
-      apis: ["http://14.96.26.26:8080/api/p1_pepplht_outgoing1/"],
-      feeder_apis: [
-        "http://14.96.26.26:8080/api/p1_amfs_generator1/",
-        "http://14.96.26.26:8080/api/p1_amfs_transformer1/",
-        "http://14.96.26.26:8080/api/p1_amfs_outgoing1/",
-        "http://14.96.26.26:8080/api/p1_amfs_apfc1/",
-      ],
-    },
-    {
       id: "p1_amfs_generator1",
       label: "DG-1",
       apis: ["http://14.96.26.26:8080/api/p1_amfs_generator1/"],
@@ -32,45 +21,15 @@ export const sideBarTreeArray = {
       apis: ["http://14.96.26.26:8080/api/p1_amfs_outgoing1/"],
     },
     {
-      id: "cell_pcc_panel_1_incomer_overview",
-      label: "Cell PCC Panel-1 Incomer Overview",
-      apis: [
-        "http://14.96.26.26:8080/api/p1_amfs_generator1/",
-        "http://14.96.26.26:8080/api/p1_amfs_transformer1/",
-      ],
-      feeder_apis: [
-        "http://14.96.26.26:8080/api/p1_pcc1_ups1a/",
-        "http://14.96.26.26:8080/api/p1_pcc1_ups1b/",
-        "http://14.96.26.26:8080/api/p1_pcc1_ups1c/",
-        "http://14.96.26.26:8080/api/p1_pcc1_ups1d/",
-        "http://14.96.26.26:8080/api/p1_pcc1_ups1e/",
-        "http://14.96.26.26:8080/api/p1_pcc1_ltp1/",
-        "http://14.96.26.26:8080/api/p1_pcc1_ltp2/",
-        "http://14.96.26.26:8080/api/p1_pcc1_chiller2/",
-      ],
+      id: "p1_cell_pcc_panel_1_incomer",
+      label: "Cell PCC Panel-1 Incomer",
+      apis: ["http://14.96.26.26:8080/api/p1_pcc1_cellincomer/"],
+
       children: [
-        {
-          id: "p1_cell_pcc_panel_1_incomer",
-          label: "Cell PCC Panel-1 Incomer",
-          apis: ["http://14.96.26.26:8080/api/p1_pcc1_cellincomer/"],
-        },
         {
           id: "ups_1_overview",
           label: "UPS Overview",
-          apis: [
-            "http://14.96.26.26:8080/api/p1_pcc1_ups1a/",
-            "http://14.96.26.26:8080/api/p1_pcc1_ups1b/",
-            "http://14.96.26.26:8080/api/p1_pcc1_ups1c/",
-            "http://14.96.26.26:8080/api/p1_pcc1_ups1d/",
-            "http://14.96.26.26:8080/api/p1_pcc1_ups1e/",
-          ],
-          feeder_apis: [
-            "http://14.96.26.26:8080/api/p1_ups1_incomer1a/",
-            "http://14.96.26.26:8080/api/p1_ups1_incomer1b/",
-            "http://14.96.26.26:8080/api/p1_ups1_incomer1c/",
-            "http://14.96.26.26:8080/api/p1_ups1_incomer1d/",
-            "http://14.96.26.26:8080/api/p1_ups1_incomer1e/",
-          ],
+          apis: ["http://14.96.26.26:8080/api/p1_pcc1_ups1a/"],
           children: [
             {
               id: "p1_pcc1_ups1a",
@@ -175,16 +134,10 @@ export const sideBarTreeArray = {
           ],
         },
         {
-          id: "og_cell_lt_panel-1_overview",
-          label: "OG Cell LT Panel-1 Overview",
+          id: "p1_og_cell_lt_panel-1",
+          label: "OG Cell LT Panel-1",
           apis: ["http://14.96.26.26:8080/api/p1_pcc1_ltp1/"],
-          feeder_apis: [
-            "http://14.96.26.26:8080/api/p1_cellltp1_hotwatertank1/",
-            "http://14.96.26.26:8080/api/p1_cellltp1_hotwatertank2/",
-            "http://14.96.26.26:8080/api/p1_celltoolltp1_alox1/",
-            "http://14.96.26.26:8080/api/p1_celltoolltp1_alox2/",
-            "http://14.96.26.26:8080/api/p1_celltoolltp1_alox3/",
-          ],
+
           children: [
             {
               id: "p1_og_cell_lt_panel-1",
@@ -224,14 +177,10 @@ export const sideBarTreeArray = {
           ],
         },
         {
-          id: "og_cell_tool_pdb-1_overview",
-          label: "OG Cell Tool PDB-1 Overview",
+          id: "p1_og_cell_tool_pdb-1",
+          label: "OG Cell Tool PDB-1",
           apis: ["http://14.96.26.26:8080/api/p1_pcc1_ltp2/"],
-          feeder_apis: [
-            "http://14.96.26.26:8080/api/p1_celltoolpdb1_diffusion1/",
-            "http://14.96.26.26:8080/api/p1_celltoolpdb1_diffusion2/",
-            "http://14.96.26.26:8080/api/p1_celltoolpdb1_diffusion3/",
-          ],
+
           children: [
             {
               id: "p1_og_cell_tool_pdb-1",
@@ -270,18 +219,6 @@ export const sideBarTreeArray = {
   ],
 
   amf1b: [
-    {
-      id: "overview",
-      label: "Overview",
-      apis: ["http://14.96.26.26:8080/api/p1_pepplht_outgoing2/"],
-      feeder_apis: [
-        "http://14.96.26.26:8080/api/p1_amfs_generator2/",
-        "http://14.96.26.26:8080/api/p1_amfs_transformer2/",
-        "http://14.96.26.26:8080/api/p1_amfs_outgoing2/",
-        "http://14.96.26.26:8080/api/p1_amfs_apfc2/",
-      ],
-    },
-
     {
       id: "p1_amfs_generator2",
       label: "DG-2",
@@ -507,17 +444,6 @@ export const sideBarTreeArray = {
 
   amf2a: [
     {
-      id: "overview",
-      label: "Overview",
-      apis: ["http://14.96.26.26:8080/api/p1_pepplht_outgoing2/"],
-      feeder_apis: [
-        "http://14.96.26.26:8080/api/p1_amfs_generator3/",
-        "http://14.96.26.26:8080/api/p1_amfs_transformer3/",
-        "http://14.96.26.26:8080/api/p1_amfs_outgoing2/",
-        "http://14.96.26.26:8080/api/p1_amfs_apfc2/",
-      ],
-    },
-    {
       id: "p1_amfs_generator3",
       label: "DG-3",
       apis: ["http://14.96.26.26:8080/api/p1_amfs_generator3/"],
@@ -538,28 +464,9 @@ export const sideBarTreeArray = {
       apis: ["http://14.96.26.26:8080/api/p1_amfs_outgoing3/"],
     },
     {
-      id: "cell_pcc_panel_3_incomer_overview",
-      label: "Cell PCC Panel-3 Incomer Overview",
-      apis: [
-        "http://14.96.26.26:8080/api/p1_amfs_generator3/",
-        "http://14.96.26.26:8080/api/p1_amfs_transformer3",
-      ],
-      feeder_apis: [
-        "http://14.96.26.26:8080/api/p1_pcc3_chiller3/",
-        "http://14.96.26.26:8080/api/p1_pcc3_chiller4/",
-        "http://14.96.26.26:8080/api/p1_pcc3_cellltp3/",
-        "http://14.96.26.26:8080/api/p1_pcc3_solarincomer/",
-        "http://14.96.26.26:8080/api/p1_pcc3_meetfp/",
-        "http://14.96.26.26:8080/api/p1_pcc3_concentratoretp/",
-        "http://14.96.26.26:8080/api/p1_pcc3_distream/",
-        "http://14.96.26.26:8080/api/p1_pcc3_rinsestream/",
-        "http://14.96.26.26:8080/api/p1_pcc3_concentratorstream/",
-        "http://14.96.26.26:8080/api/p1_pcc3_mvr/",
-        "http://14.96.26.26:8080/api/p1_pcc3_firehydrant/",
-        "http://14.96.26.26:8080/api/p1_pcc3_dgexhaust/",
-        "http://14.96.26.26:8080/api/p1_pcc3_exhaustutility/",
-        "http://14.96.26.26:8080/api/p1_pcc3_scrubberexhaust/",
-      ],
+      id: "p1_pcc3_cellincomer",
+      label: "Cell PCC Panel-3 Incomer",
+      apis: ["http://14.96.26.26:8080/api/p1_pcc3_cellincomer/"],
 
       children: [
         {
@@ -640,16 +547,10 @@ export const sideBarTreeArray = {
       ],
     },
     {
-      id: "Og_cell_lt_panel-3_overview",
-      label: "OG Cell LT Panel-3 Overview",
-
+      id: "P1_og_cell_lt_panel-3",
+      label: "OG Cell LT Panel-3",
       apis: ["http://14.96.26.26:8080/api/p1_pcc3_cellltp3/"],
-      feeder_apis: [
-        "http://14.96.26.26:8080/api/p1_cellltp3_aircompressor1/",
-        "http://14.96.26.26:8080/api/p1_cellltp3_aircompressor2/",
-        "http://14.96.26.26:8080/api/p1_cellltp3_aircompressor3/",
-        "http://14.96.26.26:8080/api/p1_cellltp3_aircompressor4/",
-      ],
+
       children: [
         {
           id: "P1_og_cell_lt_panel-3",
@@ -687,17 +588,6 @@ export const sideBarTreeArray = {
 
   amf2b: [
     {
-      id: "overview",
-      label: "Overview",
-      apis: ["http://14.96.26.26:8080/api/p1_pepplht_outgoing4/"],
-      feeder_apis: [
-        "http://14.96.26.26:8080/api/p1_amfs_generator4/",
-        "http://14.96.26.26:8080/api/p1_amfs_transformer4/",
-        "http://14.96.26.26:8080/api/p1_amfs_outgoing4/",
-        "http://14.96.26.26:8080/api/p1_amfs_apfc4/",
-      ],
-    },
-    {
       id: "p1_amfs_generator4",
       label: "DG-4",
       apis: ["http://14.96.26.26:8080/api/p1_amfs_generator4/"],
@@ -719,18 +609,9 @@ export const sideBarTreeArray = {
     },
 
     {
-      id: "cell_pcc_panel_4_incomer_overview",
-      label: "Cell PCC Panel-4 Incomer Overview",
-      apis: [
-        "http://14.96.26.26:8080/api/p1_amfs_generator4/",
-        "http://14.96.26.26:8080/api/p1_amfs_transformer4/",
-      ],
-      feeder_apis: [
-        "http://14.96.26.26:8080/api/p1_pcc4_solarincomer/",
-        "http://14.96.26.26:8080/api/p1_pcc4_chiller1/",
-        "http://14.96.26.26:8080/api/p1_pcc4_coolingtower/",
-        "http://14.96.26.26:8080/api/p1_pcc4_cellltp4/",
-      ],
+      id: "p1_pcc4_cellincomer",
+      label: "Cell PCC Panel-4 Incomer",
+      apis: ["http://14.96.26.26:8080/api/p1_pcc4_cellincomer/"],
 
       children: [
         {
@@ -762,22 +643,9 @@ export const sideBarTreeArray = {
     },
 
     {
-      id: "og_cell_lt_panel-4_overview",
-      label: "OG Cell LT Panel-4 Overview",
+      id: "P1_og_cell_lt_panel-4",
+      label: "OG Cell LT Panel-4",
       apis: ["http://14.96.26.26:8080/api/p1_pcc4_cellltp4/"],
-      feeder_apis: [
-        "http://14.96.26.26:8080/api/p1_cellltp4_ahu1/",
-        "http://14.96.26.26:8080/api/p1_cellltp4_ahu2/",
-        "http://14.96.26.26:8080/api/p1_cellltp4_ahu3/",
-        "http://14.96.26.26:8080/api/p1_cellltp4_ahu4/",
-        "http://14.96.26.26:8080/api/p1_cellltp4_ahu5/",
-        "http://14.96.26.26:8080/api/p1_cellltp4_spare/",
-        "http://14.96.26.26:8080/api/p1_cellltp4_ahu6/",
-        "http://14.96.26.26:8080/api/p1_cellltp4_ahu7/",
-        "http://14.96.26.26:8080/api/p1_cellltp4_ahu8/",
-        "http://14.96.26.26:8080/api/p1_cellltp4_ahu9/",
-        "http://14.96.26.26:8080/api/p1_cellltp4_ahu10/",
-      ],
 
       children: [
         {
@@ -846,29 +714,6 @@ export const sideBarTreeArray = {
   ],
 
   inverter: [
-    {
-      id: "overview",
-      label: "Overview",
-      feeder_apis: [
-        "http://14.96.26.26:8080/api/p1_inverter1/",
-        "http://14.96.26.26:8080/api/p1_inverter2/",
-        "http://14.96.26.26:8080/api/p1_inverter3/",
-        "http://14.96.26.26:8080/api/p1_inverter4/",
-        "http://14.96.26.26:8080/api/p1_inverter5/",
-        "http://14.96.26.26:8080/api/p1_inverter6/",
-        "http://14.96.26.26:8080/api/p1_inverter7/",
-        "http://14.96.26.26:8080/api/p1_inverter8/",
-        "http://14.96.26.26:8080/api/p1_inverter9/",
-        "http://14.96.26.26:8080/api/p1_inverter10/",
-        "http://14.96.26.26:8080/api/p1_inverter11/",
-        "http://14.96.26.26:8080/api/p1_inverter12/",
-        "http://14.96.26.26:8080/api/p1_inverter13/",
-        "http://14.96.26.26:8080/api/p1_inverter14/",
-        "http://14.96.26.26:8080/api/p1_inverter15/",
-        "http://14.96.26.26:8080/api/p1_inverter16/",
-        "http://14.96.26.26:8080/api/p1_inverter17/",
-      ],
-    },
     {
       id: "p1_inverter1",
       label: "INVERTER-1",

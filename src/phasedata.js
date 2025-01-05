@@ -4,7 +4,7 @@ export const OverviewArray = [
   {
     id: "amf1a",
     label: "AMF 1a",
-    apis: ["http://14.96.26.26:8080/api/p1_amfs_outgoing1/"],
+    apis: ["http://14.96.26.26:8080/api/p1_amfs_transformer1/"],
   },
   {
     id: "amf1b",
