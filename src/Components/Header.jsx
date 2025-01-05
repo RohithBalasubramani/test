@@ -201,9 +201,9 @@ const Header = () => {
             <Tab label="PEPPL(P1)" value={"/peppl_p1"} />
             <Tab label="PEPPL(P2)" value={"/peppl_p2"} />
             <Tab label="PEPPL(P3)" value={"/peppl_p3"} />
-            <Tab label="HT" value={"/"} />
+            <Tab label="HT" value={"/ht"} />
             <Tab label="Inverters" value={"/inverter"} />
-            <Tab label="Reports" value={"/"} />
+            <Tab label="Reports" value={"/report"} />
             <Tab label="Comparisions" value={"/compare"} />
           </Tabs>
         </TabsContainer>

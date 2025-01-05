@@ -5,6 +5,7 @@ import Overview from "./Pages/Overview";
 import TestPage from "./Pages/TestPage";
 import PhaseOverview from "./Pages/PhaseOverview";
 import Inverter from "./Pages/Inverter";
+import InverterOverview from "./Pages/InverterOverview";
 
 const generateRoutes = (nodes, basePath = "") => {
   // 'nodes' is an array like [ {id: "overview1a", ...}, {id: "dg_1", ...}, ...]
@@ -19,6 +20,9 @@ const generateRoutes = (nodes, basePath = "") => {
 
   const selectPage = (node) => {
     if (node.id.includes("overview")) {
+      if(node.id.includes("inverter")){
+        return <InverterOverview apikey={node.id} sectionName={sectionName}/>
+      }
       return <Overview apikey={node.id} sectionName={sectionName} />;
     } else if (node.id.toLowerCase().includes("inverter")) {
       return <Inverter apikey={node.id} sectionName={sectionName} />;

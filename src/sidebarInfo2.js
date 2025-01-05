@@ -847,7 +847,7 @@ export const sideBarTreeArray = {
 
   inverter: [
     {
-      id: "overview",
+      id: "overview_inverter",
       label: "Overview",
       feeder_apis: [
         "http://14.96.26.26:8080/api/p1_inverter1/",
@@ -871,87 +871,87 @@ export const sideBarTreeArray = {
     },
     {
       id: "p1_inverter1",
-      label: "INVERTER-1",
+      label: "Inverter-1",
       apis: ["http://14.96.26.26:8080/api/p1_inverter1/"],
     },
     {
       id: "p1_inverter2",
-      label: "INVERTER-2",
+      label: "Inverter-2",
       apis: ["http://14.96.26.26:8080/api/p1_inverter2/"],
     },
     {
       id: "p1_inverter3",
-      label: "INVERTER-3",
+      label: "Inverter-3",
       apis: ["http://14.96.26.26:8080/api/p1_inverter3/"],
     },
     {
       id: "p1_inverter4",
-      label: "INVERTER-4",
+      label: "Inverter-4",
       apis: ["http://14.96.26.26:8080/api/p1_inverter4/"],
     },
     {
       id: "p1_inverter5",
-      label: "INVERTER-5",
+      label: "Inverter-5",
       apis: ["http://14.96.26.26:8080/api/p1_inverter5/"],
     },
     {
       id: "p1_inverter6",
-      label: "INVERTER-6",
+      label: "Inverter-6",
       apis: ["http://14.96.26.26:8080/api/p1_inverter6/"],
     },
     {
       id: "p1_inverter7",
-      label: "INVERTER-7",
+      label: "Inverter-7",
       apis: ["http://14.96.26.26:8080/api/p1_inverter7/"],
     },
     {
       id: "p1_inverter8",
-      label: "INVERTER-8",
+      label: "Inverter-8",
       apis: ["http://14.96.26.26:8080/api/p1_inverter8/"],
     },
     {
       id: "p1_inverter9",
-      label: "INVERTER-9",
+      label: "Inverter-9",
       apis: ["http://14.96.26.26:8080/api/p1_inverter9/"],
     },
     {
       id: "p1_inverter10",
-      label: "INVERTER-10",
+      label: "Inverter-10",
       apis: ["http://14.96.26.26:8080/api/p1_inverter10/"],
     },
     {
       id: "p1_inverter11",
-      label: "INVERTER-11",
+      label: "Inverter-11",
       apis: ["http://14.96.26.26:8080/api/p1_inverter11/"],
     },
     {
       id: "p1_inverter12",
-      label: "INVERTER-12",
+      label: "Inverter-12",
       apis: ["http://14.96.26.26:8080/api/p1_inverter12/"],
     },
     {
       id: "p1_inverter13",
-      label: "INVERTER-13",
+      label: "Inverter-13",
       apis: ["http://14.96.26.26:8080/api/p1_inverter13/"],
     },
     {
       id: "p1_inverter14",
-      label: "INVERTER-14",
+      label: "Inverter-14",
       apis: ["http://14.96.26.26:8080/api/p1_inverter14/"],
     },
     {
       id: "p1_inverter15",
-      label: "INVERTER-15",
+      label: "Inverter-15",
       apis: ["http://14.96.26.26:8080/api/p1_inverter15/"],
     },
     {
       id: "p1_inverter16",
-      label: "INVERTER-16",
+      label: "Inverter-16",
       apis: ["http://14.96.26.26:8080/api/p1_inverter16/"],
     },
     {
       id: "p1_inverter17",
-      label: "INVERTER-17",
+      label: "Inverter-17",
       apis: ["http://14.96.26.26:8080/api/p1_inverter17/"],
     },
   ],
