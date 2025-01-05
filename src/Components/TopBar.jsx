@@ -34,7 +34,9 @@ const TopBar = () => {
         {sections.map((section, index) => (
           <Tab
             key={section}
-            value={`/peppl_p1/${section}/overview`}
+            value={
+              section === 'inverter' ? `/peppl_p1/${section}/overview_inverter` : `/peppl_p1/${section}/overview`
+            }
             label={section.toUpperCase().replace(/_/g, " ")}
           />
         ))}
