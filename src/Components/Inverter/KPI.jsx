@@ -26,6 +26,7 @@ const KPI = ({ data }) => {
     energyCost: 0,
     peakCurrent: 0,
     peakPower: 0,
+    temp: 0,
   });
 
   console.log("KPI data", data);

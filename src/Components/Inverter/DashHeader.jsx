@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import PowerFactorGauge from "../PowerFactor";
 import FrequencyComponent from "../Frequency";
 import KPI from "./KPI";
-import AMFgauge from "../AmfGauge";
+import AMFgauge from "./AmfGauge";
 import WeatherWidget from "../Weather";
 import ReportModal from "../Reports";
 import "../emstemp.css";
@@ -187,7 +187,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
         </button>
       </DashboardHeader>
       <KPIContainer>
-        <AMFgauge />
+        <AMFgauge kpidata={data}/>
         <KPI data={data} />
         <div>
           <PowerFactorGauge
