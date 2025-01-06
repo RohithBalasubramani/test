@@ -48,6 +48,16 @@ const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   },
 }));
 
+const AllNodesPlot = styled(Plot)({
+  width: "3000px",
+  height: "200vh",
+});
+
+const SankeyPlot = styled(Plot)({
+  width: "100%",
+  height: "600px",
+});
+
 const extractApiKey = (url) => {
   const segments = url.split("/");
   if (segments.length >= 2) {
@@ -231,7 +241,7 @@ const SankeyChart = ({
   return (
     <div className="stacked-bar-container">
       <div className="card shadow mb-4">
-        <div className="card-body">
+        <div className="card-body" style={{overflow: 'auto'}}>
           <div className="row">
             <div className="title">Energy Flow Chart [kWh]</div>
             <div className="controls">
@@ -273,16 +283,29 @@ const SankeyChart = ({
               />
             ))}
           </RadioGroup>
-
-          <Plot
-            data={plotData}
-            layout={{
-              title: { text: "Energy Flow Chart", font: { size: 18 } },
-              margin: { l: 20, r: 20, t: 40, b: 20 },
-            }}
-            config={{ displayModeBar: false }}
-            style={{ width: "100%", height: "600px" }}
-          />
+          
+          
+          <div className={selectedRoot === 'all' ? 'h-50' : 'h-auto'} >
+            {selectedRoot === "all" ? (
+              <AllNodesPlot
+                data={plotData}
+                layout={{
+                  title: { text: "Energy Flow Chart", font: { size: 18 } },
+                  margin: { l: 20, r: 20, t: 40, b: 20 },
+                }}
+                config={{ displayModeBar: false }}
+              />
+            ) : (
+              <SankeyPlot
+                data={plotData}
+                layout={{
+                  title: { text: "Energy Flow Chart", font: { size: 18 } },
+                  margin: { l: 20, r: 20, t: 40, b: 20 },
+                }}
+                config={{ displayModeBar: false }}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -170,11 +170,15 @@ const Header = () => {
   const [isAlertPanelOpen, setAlertPanelOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const [value, setValue] = useState(location.pathname);
+  const [value, setValue] = useState("/");
 
   const handleAlertButtonClick = () => {
     setAlertPanelOpen(!isAlertPanelOpen);
   };
+
+  useEffect(() => {
+    setValue("/" + location.pathname.split("/")[1])
+  },[location])
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
