@@ -1,5 +1,5 @@
 // Components/TopBar.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tab, Tabs } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { sideBarTreeArray } from "../sidebarInfo2"; // Adjust import path as needed
@@ -9,15 +9,28 @@ const TopBar = () => {
   const location = useLocation();
 
   const sections = Object.keys(sideBarTreeArray); // e.g., ['amf1a', 'amf1b', 'pcc3', 'pcc4']
-  const allTabs = ["/peppl_p1", ...sections.map((sec) => `/peppl_p1/${sec}/overview`)];
 
-  const currentValue =
-    allTabs.find((path) => location.pathname.startsWith(path)) || "/peppl_p1";
-  const [value, setValue] = useState(currentValue);
+  useEffect(() => {
+    if(location.pathname.split('/').length < 4){
+      setValue("/" + location.pathname.split('/')[1])
+    } else {
+      setValue(location.pathname.split('/')[2])
+    }
+  }, [location])
+
+  const [value, setValue] = useState("");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    navigate(newValue);
+    if(sections.indexOf(newValue) < 0){
+      navigate(newValue)
+      return
+    }
+    if(newValue === "inverter"){
+      navigate(`/peppl_p1/${newValue}/overview_inverter`)
+    } else {
+      navigate(`/peppl_p1/${newValue}/overview`);
+    }
   };
 
   return (
@@ -34,9 +47,7 @@ const TopBar = () => {
         {sections.map((section, index) => (
           <Tab
             key={section}
-            value={
-              section === 'inverter' ? `/peppl_p1/${section}/overview_inverter` : `/peppl_p1/${section}/overview`
-            }
+            value={section}
             label={section.toUpperCase().replace(/_/g, " ")}
           />
         ))}

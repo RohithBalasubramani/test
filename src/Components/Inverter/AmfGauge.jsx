@@ -83,7 +83,7 @@ const AMFgauge = ({ kpidata }) => {
       <div className="kpi-cont">
         <div className="kpi-top">
           <Top>
-            <Title>Total EB Usage</Title>
+            <Title>Power Generated</Title>
             <IconButton
               aria-label="open-link"
               size="small"
