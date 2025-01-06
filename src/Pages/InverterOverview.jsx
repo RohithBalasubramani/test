@@ -1,6 +1,7 @@
 import React from "react";
 import OverviewHeader from "../Components/Inverter/OverviewHeaderInv";
 import ParentRealtime from "../Components/Inverter/ParentRealtime";
+import BottomTimeSeries from "../Components/Inverter/BottomTimeSeries";
 
 const InverterOverview = () => {
   return (
@@ -12,6 +13,7 @@ const InverterOverview = () => {
         <span className="emsspan">Status: Running EB power</span>
 
         <ParentRealtime />
+        <BottomTimeSeries />
       </div>
     </div>
   );
