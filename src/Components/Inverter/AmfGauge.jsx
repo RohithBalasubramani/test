@@ -46,18 +46,25 @@ const AMFgauge = ({ kpidata }) => {
   const [dgUsage, setDgUsage] = useState(0);
   const [ebTot, setEbtot] = useState(0);
   const [dgTot, setDgTot] = useState(0);
-  const [energy, setEnergy] = useState(0)
-  const [voltage, setVoltage] = useState(0)
+  const [energy, setEnergy] = useState(0);
+  const [voltage, setVoltage] = useState(0);
 
   const fetchData = async () => {
     try {
-      if(kpidata && kpidata["resampled data"]){
-        const energyArray = kpidata["resampled data"].map((item) => item["total_energy"]);
-        const voltageArray = kpidata["resampled data"].map((item) => Math.max(item["ry_voltage"], item["yb_voltage"], item["br_voltage"]));
-        const sumOfEnergyArray = energyArray.reduce((acc,currentValue) => acc + currentValue, 0);
-        const peakVoltage = Math.max(...voltageArray)
-        setVoltage(peakVoltage)
-        setEnergy(sumOfEnergyArray)
+      if (kpidata && kpidata["resampled data"]) {
+        const energyArray = kpidata["resampled data"].map(
+          (item) => item["total_energy"]
+        );
+        const voltageArray = kpidata["resampled data"].map((item) =>
+          Math.max(item["ry_voltage"], item["yb_voltage"], item["br_voltage"])
+        );
+        const sumOfEnergyArray = energyArray.reduce(
+          (acc, currentValue) => acc + currentValue,
+          0
+        );
+        const peakVoltage = Math.max(...voltageArray);
+        setVoltage(peakVoltage);
+        setEnergy(sumOfEnergyArray);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -105,7 +112,7 @@ const AMFgauge = ({ kpidata }) => {
                   fill: "#2E7D32",
                 },
               }}
-              valueMax={energy*(1.33)}
+              valueMax={energy * 1.33}
             />
             <div className="figuretext">
               <span>{energy.toLocaleString()}</span>

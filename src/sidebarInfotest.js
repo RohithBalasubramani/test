@@ -140,11 +140,6 @@ export const sideBarTreeArray = {
 
           children: [
             {
-              id: "p1_og_cell_lt_panel-1",
-              label: "OG Cell LT Panel-1",
-              apis: ["http://14.96.26.26:8080/api/p1_pcc1_ltp1/"],
-            },
-            {
               id: "p1_cellltp1_hotwatertank1",
               label: "Hot Water Tank-1",
               apis: ["http://14.96.26.26:8080/api/p1_cellltp1_hotwatertank1/"],
@@ -182,11 +177,6 @@ export const sideBarTreeArray = {
           apis: ["http://14.96.26.26:8080/api/p1_pcc1_ltp2/"],
 
           children: [
-            {
-              id: "p1_og_cell_tool_pdb-1",
-              label: "OG Cell Tool PDB-1",
-              apis: ["http://14.96.26.26:8080/api/p1_pcc1_ltp2/"],
-            },
             {
               id: "p1_celltoolpdb1_incomer",
               label: "Cell Tool PDB-1 Incomer",
@@ -241,28 +231,11 @@ export const sideBarTreeArray = {
     },
 
     {
-      id: "cell_pcc_panel_2_incomer_overview",
-      label: "Cell PCC Panel-2 Incomer Overview",
-      apis: [
-        "http://14.96.26.26:8080/api/p1_amfs_generator2/",
-        "http://14.96.26.26:8080/api/p1_amfs_transformer2//",
-      ],
-      feeder_apis: [
-        "http://14.96.26.26:8080/api/p1_pcc2_lighting/",
-        "http://14.96.26.26:8080/api/p1_pcc2_ups2a/",
-        "http://14.96.26.26:8080/api/p1_pcc2_ups2b/",
-        "http://14.96.26.26:8080/api/p1_pcc2_ups2c/",
-        "http://14.96.26.26:8080/api/p1_pcc2_ups2d/",
-        "http://14.96.26.26:8080/api/p1_pcc2_ups2e/",
-        "http://14.96.26.26:8080/api/p1_pcc2_ogcellltp2/",
-        "http://14.96.26.26:8080/api/p1_pcc2_ogcelltoolpdb2/",
-      ],
+      id: "cell_pcc_panel_2_incomer",
+      label: "Cell PCC Panel-2",
+      apis: ["http://14.96.26.26:8080/api/p1_pcc2_cellincomer/"],
+
       children: [
-        {
-          id: "cell_pcc_panel_2_incomer",
-          label: "Cell PCC Panel-2 Incomer",
-          apis: [""],
-        },
         {
           id: "ups_2",
           label: "UPS Overview",
@@ -470,11 +443,6 @@ export const sideBarTreeArray = {
 
       children: [
         {
-          id: "p1_pcc3_cellincomer",
-          label: "Cell PCC Panel-3 Incomer",
-          apis: ["http://14.96.26.26:8080/api/p1_pcc3_cellincomer/"],
-        },
-        {
           id: "p1_pcc3_chiller3",
           label: "CHILLER-3",
           apis: ["http://14.96.26.26:8080/api/p1_pcc3_chiller3/"],
@@ -553,11 +521,6 @@ export const sideBarTreeArray = {
 
       children: [
         {
-          id: "P1_og_cell_lt_panel-3",
-          label: "OG Cell LT Panel-3",
-          apis: ["http://14.96.26.26:8080/api/p1_pcc3_cellltp3/"],
-        },
-        {
           id: "p1_cellltp3_incomer",
           label: "Cell LT PANEL-3 Incomer",
           apis: ["http://14.96.26.26:8080/api/p1_cellltp3_incomer/"],
@@ -615,11 +578,6 @@ export const sideBarTreeArray = {
 
       children: [
         {
-          id: "p1_pcc4_cellincomer",
-          label: "Cell PCC Panel-4 Incomer",
-          apis: ["http://14.96.26.26:8080/api/p1_pcc4_cellincomer/"],
-        },
-        {
           id: "p1_pcc4_solarincomer",
           label: "SOLAR INCOMER",
           apis: ["http://14.96.26.26:8080/api/p1_pcc4_solarincomer/"],
@@ -648,12 +606,6 @@ export const sideBarTreeArray = {
       apis: ["http://14.96.26.26:8080/api/p1_pcc4_cellltp4/"],
 
       children: [
-        {
-          id: "P1_og_cell_lt_panel-4",
-          label: "OG Cell LT Panel-4",
-          apis: ["http://14.96.26.26:8080/api/p1_pcc4_cellltp4/"],
-        },
-
         {
           id: "p1_cellltp4_ahu1",
           label: "AHU-1",
