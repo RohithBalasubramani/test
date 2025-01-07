@@ -43,8 +43,8 @@ const KPI = ({ data }) => {
       //   (today.DG1S12Reading_kwh || 0) +
       //   (today.DG2S3Reading_kwh || 0);
 
-      const temp = resampled.map((item) => item['temp']);
-      const acPower = resampled.map((item) => item['ac_power']);
+      const temp = resampled.map((item) => item["temp"]);
+      const acPower = resampled.map((item) => item["ac_power"]);
       const peakTemp = Math.max(...temp);
       const peakPower = Math.max(...acPower);
 
@@ -84,10 +84,7 @@ const KPI = ({ data }) => {
           <div className="kpi-top">
             <div className="kpi-tit">Inv Temp</div>
             <div style={{ display: "inline" }}>
-              <span className="kpi-val">
-                {" "}
-                {kpiData?.temp?.toFixed(2)}{" "}
-              </span>
+              <span className="kpi-val"> {kpiData?.temp?.toFixed(2)} </span>
               <span className="kpi-units"> Deg C </span>
             </div>
           </div>
@@ -105,7 +102,10 @@ const KPI = ({ data }) => {
           <div className="kpi-top">
             <div className="kpi-tit">Inv AC Power</div>
             <div style={{ display: "inline" }}>
-              <span className="kpi-val"> {kpiData?.peakPower?.toFixed(2)} </span>
+              <span className="kpi-val">
+                {" "}
+                {kpiData?.peakPower?.toFixed(2)}{" "}
+              </span>
               <span className="kpi-units"> kWh </span>
             </div>
           </div>

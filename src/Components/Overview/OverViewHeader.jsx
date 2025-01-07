@@ -21,7 +21,8 @@ const DashboardHeader = styled.div`
 `;
 
 const ContainerBox = styled.div`
-  height: 55vh;
+  height: 57vh;
+  overflow: hidden;
 `;
 
 const DashboardTitle = styled.div`
@@ -49,7 +50,7 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reportData, setReportData] = useState([]);
   const [error, setError] = useState(null);
-  const [kpiKey, setKpiKey] = useState(0)
+  const [kpiKey, setKpiKey] = useState(0);
 
   const fetchData = async (start, end, period) => {
     try {
@@ -117,7 +118,7 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
   };
 
   useEffect(() => {
-    setData({})
+    setData({});
     if (startDate && endDate && apiKey && sectionName) {
       fetchData(startDate, endDate, timeperiod);
     }
@@ -181,7 +182,7 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
         style={{ display: "flex", gap: "2%", maxHeight: "fit-content" }}
       >
         {Object.keys(data)?.length > 0 ? (
-          <AMFgaugeStacked feederData={data} setKpiKey={setKpiKey}/>
+          <AMFgaugeStacked feederData={data} setKpiKey={setKpiKey} />
         ) : error ? (
           <div style={{ color: "red" }}>{error}</div>
         ) : (

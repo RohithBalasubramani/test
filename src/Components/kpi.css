@@ -13,6 +13,22 @@
     66px 22px 42px 0px #c7c7c70d;
 }
 
+.kpi-cont5 {
+  padding: 16px 0px 0px 0px;
+
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  height: 19vh;
+  width: 12vw;
+  gap: 3px;
+  opacity: 1;
+  padding: 3vh;
+  border-radius: 4px;
+  box-shadow: 7px 2px 17px 0px #c7c7c71a, 29px 10px 31px 0px #c7c7c717,
+    66px 22px 42px 0px #c7c7c70d;
+}
+
 .kpi-cont2 {
   padding: 16px 0px 0px 0px;
   gap: 32px;

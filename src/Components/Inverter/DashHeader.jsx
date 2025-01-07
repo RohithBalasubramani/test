@@ -7,12 +7,13 @@ import dayjs from "dayjs";
 import PowerFactorGauge from "../PowerFactor";
 import FrequencyComponent from "../Frequency";
 import KPI from "./KPI";
-import AMFgauge from "./AmfGauge";
+
 import WeatherWidget from "../Weather";
 import ReportModal from "../Reports";
 import "../emstemp.css";
 import DateRangeSelector from "../Dashboard/Daterangeselector";
 import { sideBarTreeArray } from "../../sidebarInfo2";
+import AMFgauge from "../AmfGauge";
 
 const DashboardHeader = styled.div`
   display: flex;
@@ -164,30 +165,42 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
     <div style={{ marginBottom: "4vh" }}>
       <DashboardHeader>
         <DashboardTitle>{apikey.toUpperCase()}</DashboardTitle>
-        <TimeBar
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
-          dateRange={dateRange}
-          setDateRange={setDateRange}
-          setTimeperiod={setTimeperiod} // Pass setTimeperiod to TimeBar
-          startDate={startDate} // Pass startDate
-          endDate={endDate} // Pass endDate
-        />
-        <DateRangeSelector
-          startDate={startDate}
-          setStartDate={setStartDate}
-          endDate={endDate}
-          setEndDate={setEndDate}
-        />
-        <button onClick={handleGenerateReportClick} className="emsbutton">
-          <i className="emsbuttonicon">
-            <CloudDownload />
-          </i>
-          <span>Generate Report</span>
-        </button>
+        <div
+          style={{
+            marginRight: 0,
+            marginLeft: "auto",
+            display: "flex",
+            gap: "1vw",
+            height: "5vh",
+            width: "45vw",
+            marginBottom: "2vh",
+          }}
+        >
+          <TimeBar
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
+            setTimeperiod={setTimeperiod} // Pass setTimeperiod to TimeBar
+            startDate={startDate} // Pass startDate
+            endDate={endDate} // Pass endDate
+          />
+          <DateRangeSelector
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+          />
+          <button onClick={handleGenerateReportClick} className="emsbutton">
+            <i className="emsbuttonicon">
+              <CloudDownload />
+            </i>
+            <span>Generate Report</span>
+          </button>
+        </div>
       </DashboardHeader>
       <KPIContainer>
-        <AMFgauge kpidata={data}/>
+        <AMFgauge kpidata={data} />
         <KPI data={data} />
         <div>
           <PowerFactorGauge

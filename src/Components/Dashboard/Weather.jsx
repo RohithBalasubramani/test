@@ -29,38 +29,32 @@ const WeatherHeader = styled.div`
 const WeatherMain = styled.div`
   color: var(--Gray---Typography-800, #1b2533);
   font-feature-settings: "liga" off, "clig" off;
-
-  /* UI Type/text-4xl/[R] */
   font-family: "DM Sans";
   font-size: 40px;
   font-style: normal;
   font-weight: 400;
-  line-height: 48px; /* 120% */
+  line-height: 48px;
   letter-spacing: -0.5px;
 `;
 
 const Name = styled.span`
   color: var(--Gray---Typography-800, #1b2533);
   font-feature-settings: "liga" off, "clig" off;
-
-  /* UI Type/text-sm/[R] */
   font-family: "DM Sans";
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
-  line-height: 24px; /* 171.429% */
+  line-height: 24px;
 `;
 
 const Address = styled.div`
   color: var(--Gray---Typography-800, #1b2533);
   font-feature-settings: "liga" off, "clig" off;
-
-  /* UI Type/text-2xs/[R] */
   font-family: "DM Sans";
   font-size: 10px;
   font-style: normal;
   font-weight: 400;
-  line-height: 16px; /* 160% */
+  line-height: 16px;
 `;
 
 const AlertsContainer = styled.div`
@@ -68,20 +62,17 @@ const AlertsContainer = styled.div`
   background: #ffffff;
   display: flex;
   flex: 3;
-
   padding: 16px;
   flex-direction: column;
   align-items: flex-start;
   gap: 16px;
   color: var(--Gray---Typography-500, #445164);
   font-feature-settings: "liga" off, "clig" off;
-
-  /* Paragraph/text-md/[R] */
   font-family: "DM Sans";
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 24px; /* 150% */
+  line-height: 24px;
 `;
 
 const AlertItem = styled.div`
@@ -106,25 +97,22 @@ const AlertIcon = styled(DescriptionIcon)`
 const AlertText = styled.div`
   color: #000;
   font-feature-settings: "liga" off, "clig" off;
-
-  /* Paragraph/text-sm/[R] */
   font-family: "DM Sans";
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
-  line-height: 20px; /* 142.857% */
+  line-height: 20px;
 `;
 
-const Date = styled.div`
+// 🚀 Renamed from 'Date' to 'StyledDate'
+const StyledDate = styled.div`
   color: var(--Gray-500, #98a2b3);
   font-feature-settings: "liga" off, "clig" off;
-
-  /* Paragraph/text-xs/[R] */
   font-family: "DM Sans";
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
-  line-height: 16px; /* 133.333% */
+  line-height: 16px;
 `;
 
 const WeatherWidget = () => {
@@ -132,10 +120,10 @@ const WeatherWidget = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const apiKey = "66dc8817c3439e5c408f731143c36a35"; // Use your actual API key
-  const lat = "17.639762355942285"; // Latitude for Chicago
-  const lon = "78.3789324345932"; // Longitude for Chicago
-  const exclude = "minutely,hourly"; // Customize as needed
+  const apiKey = "66dc8817c3439e5c408f731143c36a35";
+  const lat = "17.639762355942285";
+  const lon = "78.3789324345932";
+  const exclude = "minutely,hourly";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -167,13 +155,19 @@ const WeatherWidget = () => {
 
   const { current } = weatherData;
 
+  const currentDate = new Date().toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+
   return (
     <WeatherWidgetContainer>
       <WeatherHeader>
         <WeatherMain>{current.temp?.toFixed(1)}°C</WeatherMain>
         <div>
           <Name>Premier PEPPL(Phase 1)</Name>
-          <Address>23 July 2024</Address>
+          <Address>{currentDate}</Address>
         </div>
       </WeatherHeader>
 
@@ -182,21 +176,21 @@ const WeatherWidget = () => {
         <AlertItem>
           <AlertIcon />
           <AlertText>
-            <Date>July 15, 2024</Date>
+            <StyledDate>Jan 5, 2025</StyledDate>
             <div>A new Monthly report is ready to Download!</div>
           </AlertText>
         </AlertItem>
         <AlertItem>
           <AlertIcon />
           <AlertText>
-            <Date>July 15, 2024</Date>
+            <StyledDate>Jan 5, 2025</StyledDate>
             <div>A new Monthly report is ready to Download!</div>
           </AlertText>
         </AlertItem>
         <AlertItem>
           <AlertIcon />
           <AlertText>
-            <Date>July 15, 2024</Date>
+            <StyledDate>Jan 5, 2025</StyledDate>
             <div>A new Monthly report is ready to Download!</div>
           </AlertText>
         </AlertItem>

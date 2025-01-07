@@ -80,12 +80,12 @@ const KPI = ({ data }) => {
     <>
       <Container>
         {/* Monthly Energy Consumption Card */}
-        <div className="kpi-cont">
+        <div className="kpi-cont5">
           <div className="kpi-top">
-            <div className="kpi-tit">Average Efficiency</div>
+            <div className="kpi-tit">Peak Temparature</div>
             <div style={{ display: "inline" }}>
               <span className="kpi-val"> {kpiData?.temp?.toFixed(2)} </span>
-              <span className="kpi-units"> Deg C </span>
+              <span className="kpi-units"> °C</span>
             </div>
           </div>
           <div className="kpi-bot">
@@ -98,7 +98,7 @@ const KPI = ({ data }) => {
         </div>
 
         {/* Today's Energy Consumption Card */}
-        <div className="kpi-cont">
+        <div className="kpi-cont5">
           <div className="kpi-top">
             <div className="kpi-tit">Inv AC Power</div>
             <div style={{ display: "inline" }}>
@@ -118,8 +118,28 @@ const KPI = ({ data }) => {
           </div>
         </div>
 
+        <div className="kpi-cont5">
+          <div className="kpi-top">
+            <div className="kpi-tit">Efficiency</div>
+            <div style={{ display: "inline" }}>
+              <span className="kpi-val">
+                {" "}
+                {kpiData?.peakPower?.toFixed(2)}{" "}
+              </span>
+              <span className="kpi-units"> kWh </span>
+            </div>
+          </div>
+          <div className="kpi-bot">
+            <span className="percentage-cont">
+              <ArrowUpward sx={{ fontSize: "14px" }} />
+              15%
+            </span>
+            <span className="percentage-span">More than yesterday</span>
+          </div>
+        </div>
+
         {/* Energy Cost Card */}
-        {/* <div className="kpi-cont">
+        {/* <div className="kpi-cont5">
           <div className="kpi-top">
             <div className="kpi-tit">Monthly Energy Cost</div>
             <div style={{ display: "inline" }}>

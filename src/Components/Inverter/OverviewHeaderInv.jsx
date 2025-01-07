@@ -6,11 +6,13 @@ import { OverviewInverter } from "../../invdata";
 import TimeBar from "../TRFF/TimePeriod";
 import OverviewTimeBar from "../Overview/OverviewTimeBar";
 import WeatherWidget from "../Dashboard/Weather";
-import KPI from "./KPI";
+
 import DateRangeSelector from "../Dashboard/Daterangeselector";
 import { CloudDownload } from "@mui/icons-material";
 import ReportModal from "../Reports";
 import AMFgaugeStacked from "./AMFGaugeOverview";
+import Alerts from "../Dashboard/Alerts";
+import KPI from "./KPIOverview";
 // import AMFgaugeStacked from "../PhaseOverview/AMFGauge";
 
 // Styled Components
@@ -179,6 +181,10 @@ const OverviewHeader = () => {
             marginLeft: "auto",
             display: "flex",
             gap: "1vw",
+
+            height: "5vh",
+            width: "45vw",
+            marginBottom: "2vh",
           }}
         >
           <OverviewTimeBar
@@ -220,7 +226,7 @@ const OverviewHeader = () => {
 
         {/* KPI & Weather Widgets */}
         <KPI data={Object.values(data)[2]} />
-        <WeatherWidget />
+        <Alerts />
       </Container>
       <ReportModal
         open={isModalOpen}

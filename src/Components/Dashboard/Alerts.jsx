@@ -67,7 +67,7 @@ const AlertsContainer = styled.div`
   display: flex;
   flex: 3;
   width: 30vw;
-  height: 43vh;
+  min-height: 43vh;
 
   padding: 16px;
   flex-direction: column;
@@ -133,6 +133,13 @@ const Alerts = () => {
     <div>
       <AlertsContainer>
         <div>Alerts</div>
+        <AlertItem>
+          <AlertIcon />
+          <AlertText>
+            <Date>July 15, 2024</Date>
+            <div>A new Monthly report is ready to Download!</div>
+          </AlertText>
+        </AlertItem>
         <AlertItem>
           <AlertIcon />
           <AlertText>

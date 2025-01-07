@@ -955,4 +955,44 @@ export const sideBarTreeArray = {
       apis: ["http://14.96.26.26:8080/api/p1_inverter17/"],
     },
   ],
+
+  HT: [
+    {
+      id: "overview",
+      label: "Overview",
+      apis: [
+        "http://14.96.26.26:8080/api/p1_pepplht_outgoing1/",
+        "http://14.96.26.26:8080/api/p1_pepplht_outgoing2/",
+        "http://14.96.26.26:8080/api/p1_pepplht_outgoing3/",
+        "http://14.96.26.26:8080/api/p1_pepplht_outgoing4/",
+      ],
+      feeder_apis: [
+        "http://14.96.26.26:8080/api/p1_amfs_transformer1/",
+        "http://14.96.26.26:8080/api/p1_amfs_transformer2/",
+        "http://14.96.26.26:8080/api/p1_amfs_transformer3/",
+        "http://14.96.26.26:8080/api/p1_amfs_transformer4/",
+      ],
+    },
+    {
+      id: "p1_pepplht_outgoing1",
+      label: "HT-1",
+
+      apis: ["http://14.96.26.26:8080/api/p1_pepplht_outgoing1/"],
+    },
+    {
+      id: "p1_pepplht_outgoing2",
+      label: "HT-2",
+      apis: ["http://14.96.26.26:8080/api/p1_pepplht_outgoing2/"],
+    },
+    {
+      id: "p1_pepplht_outgoing3",
+      label: "HT-3",
+      apis: ["http://14.96.26.26:8080/api/p1_pepplht_outgoing3/"],
+    },
+    {
+      id: "p1_pepplht_outgoing4",
+      label: "HT-4",
+      apis: ["http://14.96.26.26:8080/api/p1_pepplht_outgoing4/"],
+    },
+  ],
 };

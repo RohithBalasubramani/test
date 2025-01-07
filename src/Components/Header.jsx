@@ -177,8 +177,8 @@ const Header = () => {
   };
 
   useEffect(() => {
-    setValue("/" + location.pathname.split("/")[1])
-  },[location])
+    setValue("/" + location.pathname.split("/")[1]);
+  }, [location]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
