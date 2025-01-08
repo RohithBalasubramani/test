@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import dayjs from "dayjs";
-// import TimeBar from "../TRFF/TimePeriod"; // Ensure this path is correct
-// import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons component
 import "../Dashboard/StackedBarDGEB.css";
 import { OverviewSource } from "../../phasedata";
 import ToggleButtons from "../Togglesampling";
@@ -55,7 +53,14 @@ const StackedBarDGEB = ({
                   .split("/api/")[1]
                   ?.replace(/\//g, "")
                   .toLowerCase();
-                return sum + (entry[key] || 0);
+                let value = entry[key] || 0;
+
+                // 🚀 Divide Solar values by 1000
+                if (category === "Solar") {
+                  value = value / 1000;
+                }
+
+                return sum + value;
               }, 0)
             ),
             backgroundColor:
@@ -178,6 +183,10 @@ const StackedBarDGEB = ({
                     },
                     y: {
                       stacked: true,
+                      title: {
+                        display: true,
+                        text: "(in Mwh)",
+                      },
                     },
                   },
                 }}

@@ -241,69 +241,70 @@ const SankeyChart = ({
   return (
     <div className="stacked-bar-container">
       <div className="card shadow mb-4">
-        <div className="card-body" style={{ overflow: "auto" }}>
-          <div className="row">
-            <div className="title">Energy Flow Chart [kWh]</div>
-            <div className="controls">
-              <TimeBar
-                setStartDate={setStartDate}
-                setEndDate={setEndDate}
-                dateRange={dateRange}
-                setDateRange={setDateRange}
-                setTimeperiod={setTimeperiod}
-                startDate={startDate}
-                endDate={endDate}
-              />
-              <DateRangeSelector
-                startDate={startDate}
-                setStartDate={setStartDate}
-                endDate={endDate}
-                setEndDate={setEndDate}
-              />
+        <div className="card-body">
+          <div style={{ width: "90vw" }}>
+            <div className="row">
+              <div className="title">Energy Flow Chart [kWh]</div>
+              <div className="controls">
+                <TimeBar
+                  setStartDate={setStartDate}
+                  setEndDate={setEndDate}
+                  dateRange={dateRange}
+                  setDateRange={setDateRange}
+                  setTimeperiod={setTimeperiod}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
+                <DateRangeSelector
+                  startDate={startDate}
+                  setStartDate={setStartDate}
+                  endDate={endDate}
+                  setEndDate={setEndDate}
+                />
+              </div>
             </div>
-          </div>
 
-          <RadioGroup
-            row
-            value={selectedRoot}
-            onChange={(e) => setSelectedRoot(e.target.value)}
-            style={{ margin: "20px 0", gap: "1vw" }}
-          >
-            <StyledFormControlLabel
-              value="all"
-              control={<Radio />}
-              label="All Nodes"
-            />
-            {Object.keys(sideBarTreeArray).map((rootKey) => (
+            <RadioGroup
+              row
+              value={selectedRoot}
+              onChange={(e) => setSelectedRoot(e.target.value)}
+              style={{ margin: "20px 0", gap: "1vw" }}
+            >
               <StyledFormControlLabel
-                key={rootKey}
-                value={rootKey}
+                value="all"
                 control={<Radio />}
-                label={rootKey.toUpperCase()}
+                label="All Nodes"
               />
-            ))}
-          </RadioGroup>
-
-          <div className={selectedRoot === "all" ? "h-120" : "h-auto"}>
-            {selectedRoot === "all" ? (
-              <AllNodesPlot
-                data={plotData}
-                layout={{
-                  title: { text: "Energy Flow Chart", font: { size: 18 } },
-                  margin: { l: 20, r: 20, t: 40, b: 20 },
-                }}
-                config={{ displayModeBar: false }}
-              />
-            ) : (
-              <SankeyPlot
-                data={plotData}
-                layout={{
-                  title: { text: "Energy Flow Chart", font: { size: 18 } },
-                  margin: { l: 20, r: 20, t: 40, b: 20 },
-                }}
-                config={{ displayModeBar: false }}
-              />
-            )}
+              {Object.keys(sideBarTreeArray).map((rootKey) => (
+                <StyledFormControlLabel
+                  key={rootKey}
+                  value={rootKey}
+                  control={<Radio />}
+                  label={rootKey.toUpperCase()}
+                />
+              ))}
+            </RadioGroup>
+          </div>
+          <div style={{ overflow: "auto" }}>
+            <div className={selectedRoot === "all" ? "h-120" : "h-auto"}>
+              {selectedRoot === "all" ? (
+                <AllNodesPlot
+                  data={plotData}
+                  layout={{
+                    margin: { l: 20, r: 20, t: 40, b: 20 },
+                  }}
+                  config={{ displayModeBar: false }}
+                />
+              ) : (
+                <SankeyPlot
+                  data={plotData}
+                  layout={{
+                    margin: { l: 20, r: 20, t: 40, b: 20 },
+                  }}
+                  config={{ displayModeBar: false }}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

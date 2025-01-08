@@ -61,6 +61,19 @@ const TitleContainer = styled.div`
   margin-left: 1vw;
   margin-right: 1vw;
 `;
+
+const DashboardTitle = styled.div`
+  color: var(--Gray---Typography-800, #1b2533);
+  font-family: "DM Sans";
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 28px;
+  display: flex;
+  width: 50%;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
 const SelectContainer = styled.div`
   /* margin-left: 23vw; */
   display: flex;
@@ -367,6 +380,7 @@ const Compare = ({ apikey, key }) => {
 
   return (
     <CompareContainer>
+      {/* <DashboardTitle>Compare Screen</DashboardTitle> */}
       <SelectContainer>
         <StyledFormControl style={{ marginLeft: 0 }} variant="standard">
           <StyledInputLabel>First Feeder</StyledInputLabel>

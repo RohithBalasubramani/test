@@ -20,6 +20,7 @@ import {
 import { styled } from "@mui/system";
 import "chartjs-adapter-date-fns";
 
+// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -69,39 +70,43 @@ const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
 }));
 
 const RealTimeChart = ({
-  rawData, // Object with the most recent fetched data
-  amfOptions, // Filtered array (ltpanel, pcc3, ahus)
-  selectedAPI, // Currently selected API URL
-  onRadioChange, // Function to notify parent when user switches radio
+  rawData, // Single { timestamp, value } object from ParentRealtime
+  amfOptions, // Array of API options (e.g., AHU, PCC-3, etc.)
+  selectedAPI, // Currently selected option (e.g., "AHU")
+  onRadioChange, // Function triggered when user selects a different API
 }) => {
   const [chartDataEntries, setChartDataEntries] = useState([]);
 
-  // When rawData changes, create a new chart data entry
+  // When `rawData` changes, we add a new data point
   useEffect(() => {
     if (!rawData) return;
 
+    // Deconstruct the single data object
     const { timestamp, value } = rawData;
 
+    // Convert to the format this chart uses:
+    // { time: Date, energy: number }
     const newEntry = {
       time: timestamp ? new Date(timestamp) : new Date(),
-      energy: value,
+      energy: value || 0,
     };
 
     setChartDataEntries((prevData) => {
       const updatedData = [...prevData, newEntry];
+      // Keep the latest 15 data points
       return updatedData.length > 15
         ? updatedData.slice(updatedData.length - 15)
         : updatedData;
     });
   }, [rawData]);
 
-  // Handle Radio Button Change - calls parent
+  // Handle user clicking a different radio button
   const handleRadioChange = (event) => {
     onRadioChange(event.target.value);
-    setChartDataEntries([]); // Clear old data on source switch
+    setChartDataEntries([]); // Clear chart data when switching
   };
 
-  // Calculate total energy
+  // Calculate total energy from all displayed points
   const totalEnergy = chartDataEntries.reduce(
     (sum, entry) => sum + (entry.energy || 0),
     0
@@ -117,13 +122,13 @@ const RealTimeChart = ({
         borderColor: "#4E46B4",
         borderWidth: 2,
         pointRadius: 0,
-        pointHoverRadius: 0,
+        pointHoverRadius: 4,
         tension: 0.4,
       },
     ],
   };
 
-  // Chart.js options
+  // Chart.js configuration
   const options = {
     maintainAspectRatio: false,
     responsive: true,
@@ -136,6 +141,10 @@ const RealTimeChart = ({
         grid: {
           color: "rgba(0, 0, 0, 0.05)",
           borderDash: [5, 5],
+        },
+        title: {
+          display: true,
+          text: "Time",
         },
       },
       y: {
@@ -152,13 +161,13 @@ const RealTimeChart = ({
     plugins: {
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: (context) => {
             let label = context.dataset.label || "";
             if (label) {
               label += ": ";
             }
             if (context.parsed.y !== null) {
-              label += context.parsed.y + " kWh";
+              label += context.parsed.y.toFixed(2) + " kWh";
             }
             return label;
           },
@@ -171,16 +180,16 @@ const RealTimeChart = ({
   };
 
   return (
-    <div className="containerchart">
-      {/* Styled Radio Button Group */}
-      <div className="chart-cont">
+    <div className="containerchart" style={{ display: "flex" }}>
+      {/* Title and Radio Button Group */}
+      <div className="chart-cont" style={{ flex: 3 }}>
         <div className="formcontrol">
           <div className="title">Energy Consumption</div>
           <FormControl component="fieldset">
             <StyledRadioGroup
               value={selectedAPI}
               onChange={handleRadioChange}
-              aria-label="Select AMF Source"
+              aria-label="Select API Source"
             >
               {amfOptions.map((item) => (
                 <StyledFormControlLabel
@@ -193,39 +202,57 @@ const RealTimeChart = ({
             </StyledRadioGroup>
           </FormControl>
         </div>
-        <div className="chart-size">
+        <div className="chart-size" style={{ height: "400px", width: "100%" }}>
           <Line data={chartData} options={options} />
         </div>
       </div>
 
-      {/* Simplified Recent Values */}
-      <div className="value-cont">
-        <div className="value-heading">Recent Values</div>
-        <div className="legend-container">
-          {/* Energy */}
+      {/* Recent / Aggregated Values */}
+      <div className="value-cont" style={{ flex: 1 }}>
+        <div className="value-heading" style={{ marginBottom: "10px" }}>
+          Recent Values
+        </div>
+        <div
+          className="legend-container"
+          style={{ display: "flex", gap: "20px" }}
+        >
+          {/* Most Recent Energy Value */}
           <div className="legend-item-two">
-            <div className="value-name">
+            <div className="value-name" style={{ marginBottom: "4px" }}>
               <span
                 className="legend-color-box"
-                style={{ backgroundColor: "#4E46B4" }}
+                style={{
+                  display: "inline-block",
+                  width: "12px",
+                  height: "12px",
+                  backgroundColor: "#4E46B4",
+                  marginRight: "5px",
+                }}
               />
               Energy Consumption
             </div>
             <div className="value">
               {chartDataEntries.length > 0
-                ? chartDataEntries[chartDataEntries.length - 1].energy?.toFixed(
+                ? chartDataEntries[chartDataEntries.length - 1].energy.toFixed(
                     2
                   )
                 : "0.00"}{" "}
               <span className="value-span">kWh</span>
             </div>
           </div>
+
           {/* Total Energy */}
           <div className="legend-item-two">
-            <div className="value-name">
+            <div className="value-name" style={{ marginBottom: "4px" }}>
               <span
                 className="legend-color-box"
-                style={{ backgroundColor: "#FFC107" }}
+                style={{
+                  display: "inline-block",
+                  width: "12px",
+                  height: "12px",
+                  backgroundColor: "#FFC107",
+                  marginRight: "5px",
+                }}
               />
               Total Energy
             </div>

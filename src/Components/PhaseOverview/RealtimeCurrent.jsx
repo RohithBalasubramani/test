@@ -202,6 +202,7 @@ const RealTimeCurrentChart = ({
       {/* Recent Values */}
       <div className="value-cont">
         <div className="value-heading">Current</div>
+        <div className="current-value">Recent Value</div>
         <div className="legend-container">
           {[
             { label: "Avg Current", color: "#6036D4", key: "avgCurrent" },

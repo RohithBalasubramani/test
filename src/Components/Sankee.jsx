@@ -174,7 +174,6 @@ const MySankeyChart = ({
             data={plotData}
             layout={{
               title: {
-                text: "Sankey Energy Flow",
                 font: {
                   size: 24,
                   color: "#ffffff",

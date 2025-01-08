@@ -198,7 +198,8 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
 
       {/* Chart Container */}
       <div className="chart-cont">
-        <div className="title">Voltage</div>
+        <div className="value-heading">Voltage</div>
+        <div className="current-value">Recent Value</div>
         <div className="formcontrol">
           <FormControl component="fieldset">
             <StyledRadioGroup

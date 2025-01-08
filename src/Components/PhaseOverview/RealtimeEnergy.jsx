@@ -240,7 +240,8 @@ const RealTimeChart = ({
 
       {/* Recent Values (unchanged) */}
       <div className="value-cont">
-        <div className="value-heading">Recent Values</div>
+        <div className="value-heading">Power</div>
+        <div className="current-value">Recent Value</div>
         <div className="legend-container">
           {[
             { label: "R Active", color: "#C72F08", key: "rActiveRecent" },
@@ -261,7 +262,7 @@ const RealTimeChart = ({
                       2
                     )
                   : "0.00"}{" "}
-                <span className="value-span">kWh</span>
+                <span className="value-span">kW</span>
               </div>
             </div>
           ))}

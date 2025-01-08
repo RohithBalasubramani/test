@@ -54,7 +54,14 @@ const CostChart = ({
                   .split("/api/")[1]
                   ?.replace(/\//g, "")
                   .toLowerCase();
-                return sum + (entry[key] || 0) * costFactor;
+                let value = entry[key] || 0;
+
+                // 🚀 Divide Solar values by 1000 before cost calculation
+                if (category === "Solar") {
+                  value = value / 1000;
+                }
+
+                return sum + value * costFactor;
               }, 0)
             ),
             backgroundColor:

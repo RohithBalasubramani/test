@@ -4,7 +4,9 @@ import styled from "styled-components";
 import dayjs from "dayjs";
 import { OverviewArray } from "../../invdata";
 
+// ──────────────────────────────────────────────────────────────────────────────
 // Styled Components
+// ──────────────────────────────────────────────────────────────────────────────
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -63,6 +65,11 @@ const LegendLabel = styled.span`
 
 /**
  * 🛠️ AMFgaugeStacked Component
+ *
+ * Props:
+ *  - startDate    : start date/time for the API
+ *  - endDate      : end date/time for the API
+ *  - timeperiod   : resampling period (e.g., "5min", "15min", "1H")
  */
 const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
   const [aggregatedData, setAggregatedData] = useState({});
@@ -70,20 +77,22 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
   const [error, setError] = useState(null);
 
   /**
-   * 🛠️ Fetch and Aggregate Feeder Data from API
+   * 🛠️ Fetch and Aggregate Feeder Data from API, using "resampled data"
    */
   const fetchFeederData = async () => {
     try {
+      // 1. Validate or fallback to entire day
       const validStartDate = startDate
         ? dayjs(startDate).toISOString()
         : dayjs().startOf("day").toISOString();
+
       const validEndDate = endDate
         ? dayjs(endDate).endOf("day").toISOString()
         : dayjs().endOf("day").toISOString();
 
-      const response = await fetch(
-        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${validStartDate}&end_date_time=${validEndDate}&resample_period=${timeperiod}`
-      );
+      // 2. Call the delta consolidated endpoint
+      const url = `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${validStartDate}&end_date_time=${validEndDate}&resample_period=${timeperiod}`;
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -91,60 +100,74 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
 
       const result = await response.json();
 
+      // 3. Extract "resampled data" and normalize keys to lowercase
       const resampledData = result?.["resampled data"] || [];
-      const normalizedResampledData = resampledData.map((item) => {
-        const normalizedItem = {};
-        Object.keys(item).forEach((key) => {
-          normalizedItem[key.toLowerCase()] = item[key];
+      const normalizedResampledData = resampledData.map((row) => {
+        const normalizedRow = {};
+        Object.keys(row).forEach((key) => {
+          normalizedRow[key.toLowerCase()] = row[key];
         });
-        return normalizedItem;
+        return normalizedRow;
       });
 
+      // 4. For each label in OverviewArray, sum the relevant columns
+      //    across the entire "resampled data" array
       const aggregated = {};
 
       OverviewArray.forEach((source) => {
-        aggregated[source.label] = source.apis.reduce((sum, api) => {
-          const key = api.split("/api/")[1]?.replace(/\//g, "").toLowerCase();
-          const feederData = normalizedResampledData.find(
-            (entry) => entry[key] !== undefined
-          );
+        let totalForSource = 0;
 
-          if (feederData) {
-            sum += feederData[key] || 0;
-          }
-          console.log("feederdata", feederData);
-          return sum;
-        }, 0);
+        source.apis.forEach((api) => {
+          // Example: https://neuract.org/api/p1_inverter1/
+          // We'll extract the second-to-last segment => "p1_inverter1"
+          const segments = api.split("/");
+          const col = segments[segments.length - 2]?.toLowerCase();
+
+          // Sum across the entire normalizedResampledData array
+          normalizedResampledData.forEach((row) => {
+            if (row[col] !== undefined) {
+              totalForSource += Number(row[col]) || 0;
+            }
+          });
+        });
+
+        aggregated[source.label] = totalForSource;
       });
 
       console.log("Aggregated Feeder Data:", aggregated);
       setAggregatedData(aggregated);
-      // setAggregatedData({
-      //   "Diesel Generator": 0.05,
-      //   "EB Supply": 1.6,
-      //   Solar: 0.7,
-      // });
     } catch (err) {
       console.error("Error fetching data:", err);
       setError(err.message);
     }
   };
 
+  // ──────────────────────────────────────────────────────────────────────────────
+  //   useEffect: Run fetchFeederData whenever the date or timeperiod changes
+  // ──────────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     fetchFeederData();
+    // eslint-disable-next-line
   }, [startDate, endDate, timeperiod]);
 
-  // Map aggregated data to chart format
+  // ──────────────────────────────────────────────────────────────────────────────
+  //   Prepare Chart Data
+  // ──────────────────────────────────────────────────────────────────────────────
   const chartData = Object.entries(aggregatedData).map(
-    ([category, value], index) => ({
-      name: category,
-      value,
-      fill: ["#5630BC", "#8963EF", "#C4B1F7"][index % 3], // Colors for categories
-    })
+    ([category, value], i) => {
+      return {
+        name: category,
+        value,
+        // You can define a color palette as needed
+        fill: ["#5630BC", "#8963EF", "#C4B1F7"][i % 3],
+      };
+    }
   );
 
+  // Sum all categories to define the domain for radial chart
   const totalValue = chartData.reduce((sum, item) => sum + item.value, 0);
 
+  // When user clicks on a portion of the chart
   const handleClick = (e) => {
     if (e && e.activePayload) {
       const clickedData = e.activePayload[0]?.payload;
@@ -154,6 +177,7 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
 
   return (
     <Container>
+      {/* Main Radial Chart */}
       <Card>
         <RadialBarChart
           width={400}
@@ -170,7 +194,7 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
         >
           <PolarAngleAxis
             type="number"
-            domain={[0, totalValue || 1]} // Prevent division by zero
+            domain={[0, totalValue || 1]} // Prevent zero domain
             tick={false}
           />
           <RadialBar
@@ -182,6 +206,7 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
           />
           <Tooltip />
         </RadialBarChart>
+
         <CenterText onClick={() => setSelectedCategory(null)}>
           {selectedCategory ? (
             <>
@@ -196,17 +221,22 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
         </CenterText>
       </Card>
 
-      {/* 🏷️ Custom Legends */}
+      {/* Legend Section */}
       <LegendContainer>
         {chartData.map((item, index) => (
           <LegendItem key={index}>
             <LegendColorBox style={{ background: item.fill }} />
             <LegendLabel>
-              {item.name}: {item.value} MWh
+              {item.name}: {item.value.toFixed(2)} MWh
             </LegendLabel>
           </LegendItem>
         ))}
       </LegendContainer>
+
+      {/* Error Handling */}
+      {error && (
+        <div style={{ color: "red", marginTop: "1vh" }}>Error: {error}</div>
+      )}
     </Container>
   );
 };
