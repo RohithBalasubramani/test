@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import StackedBarChart from "../Dashboard/StackedChart";
-import CostChart from "../Dashboard/CostChart";
+
 import HorizontalChart from "../Dashboard/BarchartVertical";
 import dayjs from "dayjs";
 import { OverviewArray } from "../../invdata";
 import DataTable from "../TableDGEB";
 import DonutChart from "../Dashboard/DonutDash";
-import StackedBarDGEB from "../PhaseOverview/StackChart";
+import StackedBarDGEB from "../PhaseOverview/Stack";
 import SankeyChart from "./Sankey";
+
 // import StackedBarDGEB from "../Dashboard/StackChart";
 
 // 📌 Extract Keys and Format Them Properly
@@ -40,7 +41,7 @@ const BottomTimeSeries = () => {
   const fetchData = async (start, end, period) => {
     try {
       const response = await fetch(
-        `http://14.96.26.26:8080/analytics/deltaconsolidated/?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
       );
       const result = await response.json();
       setData(result);
@@ -74,7 +75,7 @@ const BottomTimeSeries = () => {
             backgroundColors={["#5630BC", "#8963EF", "#C4B1F7"]}
           />
 
-          <CostChart
+          {/* <CostChart
             data={data}
             startDate={startDate}
             setStartDate={setStartDate}
@@ -86,7 +87,7 @@ const BottomTimeSeries = () => {
             setDateRange={setDateRange}
             fields={fields}
             backgroundColors={["#5630BC", "#8963EF", "#C4B1F7"]}
-          />
+          /> */}
 
           <div>
             <div style={{ display: "flex", gap: "5%" }}>

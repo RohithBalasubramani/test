@@ -25,7 +25,7 @@ const ParentRealtime = () => {
   const fetchData = async (start, end, period, selectedOption) => {
     try {
       const response = await fetch(
-        `http://14.96.26.26:8080/analytics/deltaconsolidated/?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
       );
       const result = await response.json();
 

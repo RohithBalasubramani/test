@@ -177,7 +177,7 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
             dateRange={dateRange}
             setDateRange={setDateRange}
             fields={fieldsStacked}
-            backgroundColors={["#5630BC", "#8963EF", "#C4B1F7"]}
+            backgroundColors={["#5630BC", "#8963EF", "#C4B1F7", "#dbcffe"]}
           />
           <CostChart
             data={data}

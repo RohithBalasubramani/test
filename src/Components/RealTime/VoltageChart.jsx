@@ -176,7 +176,8 @@ const VoltageChart = ({ rawData }) => {
         </div>
       </div>
       <div className="value-cont">
-        <div className="value-heading">Recent Values</div>
+        <div className="value-heading">Voltage</div>
+        <div className="current-value">Recent Value</div>
         <div className="legend-container">
           {[
             { label: "R Voltage", color: "#D33030", key: "rVoltage" },

@@ -60,6 +60,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reportData, setReportData] = useState([]);
   const [data, setData] = useState(null);
+  const [label, setLabel] = useState("");
 
   const transformData = (tablesData) => {
     return tablesData.map((row) => {
@@ -117,42 +118,46 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
     });
   };
 
+  // Fetch Data Logic
   const fetchData = async (start, end, period) => {
     try {
       if (apikey && topBar) {
-        let apiEndpointsArray = undefined;
+        let apiEndpointsArray;
+        let tempLabel = "";
+
         if (parentName && !parentName2) {
-          apiEndpointsArray = sideBarTreeArray[topBar].find(
-            (arr) => arr.id === parentName
-          );
-          apiEndpointsArray = apiEndpointsArray.children.find(
-            (arr) => arr.id === apikey
-          );
+          apiEndpointsArray = sideBarTreeArray[topBar]
+            ?.find((arr) => arr.id === parentName)
+            ?.children?.find((arr) => arr.id === apikey);
         } else if (parentName && parentName2) {
-          apiEndpointsArray = sideBarTreeArray[topBar].find(
-            (arr) => arr.id === parentName
-          );
-          apiEndpointsArray = apiEndpointsArray.children.find(
-            (arr) => arr.id === parentName2
-          );
-          apiEndpointsArray = apiEndpointsArray.children.find(
-            (arr) => arr.id === apikey
-          );
-        } else if (!parentName && !parentName2) {
-          apiEndpointsArray = sideBarTreeArray[topBar].find(
+          apiEndpointsArray = sideBarTreeArray[topBar]
+            ?.find((arr) => arr.id === parentName)
+            ?.children?.find((arr) => arr.id === parentName2)
+            ?.children?.find((arr) => arr.id === apikey);
+        } else {
+          apiEndpointsArray = sideBarTreeArray[topBar]?.find(
             (arr) => arr.id === apikey
           );
         }
+
+        tempLabel = apiEndpointsArray?.label || "N/A";
+
         if (apiEndpointsArray) {
-          const apiEndPoint = apiEndpointsArray.apis[0];
+          const apiEndPoint = apiEndpointsArray.apis?.[0];
           if (apiEndPoint) {
             const response = await fetch(
               `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
             );
             const result = await response.json();
             setData(result);
-            const transformedData = transformData(result["resampled data"]); // Fixed transformation
-            setReportData(transformedData);
+
+            const transformedData = transformData(result["resampled data"]);
+            setReportData({
+              data: transformedData,
+              label: tempLabel,
+            });
+
+            setLabel(tempLabel); // Update the label in state
           }
         }
       }
@@ -183,7 +188,8 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
   return (
     <div style={{ marginBottom: "4vh" }}>
       <DashboardHeader>
-        <DashboardTitle>{apikey.toUpperCase()}</DashboardTitle>
+        <DashboardTitle>{label}</DashboardTitle>
+
         <div
           style={{
             display: "flex",

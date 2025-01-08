@@ -82,7 +82,7 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
         : dayjs().endOf("day").toISOString();
 
       const response = await fetch(
-        `http://14.96.26.26:8080/analytics/deltaconsolidated/?start_date_time=${validStartDate}&end_date_time=${validEndDate}&resample_period=${timeperiod}`
+        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${validStartDate}&end_date_time=${validEndDate}&resample_period=${timeperiod}`
       );
 
       if (!response.ok) {
@@ -112,6 +112,7 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
           if (feederData) {
             sum += feederData[key] || 0;
           }
+          console.log("feederdata", feederData);
           return sum;
         }, 0);
       });

@@ -124,9 +124,9 @@ const KPI = ({ data }) => {
             <div style={{ display: "inline" }}>
               <span className="kpi-val">
                 {" "}
-                {kpiData?.peakPower?.toFixed(2)}{" "}
+                {kpiData?.efficiency?.toFixed(2)}{" "}
               </span>
-              <span className="kpi-units"> kWh </span>
+              <span className="kpi-units"> % </span>
             </div>
           </div>
           <div className="kpi-bot">

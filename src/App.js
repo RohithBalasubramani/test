@@ -12,6 +12,7 @@ import generateRoutes from "./generateRoutes.js"; // Ensure correct path
 import PhaseOverviewPage from "./Pages/PhaseOverviewPage.jsx";
 import Inverter from "./Pages/Inverter.jsx";
 import IndiLayout from "./Pages/IndiLayout.jsx";
+import ComingSoon from "./Pages/Empty.jsx";
 
 function App() {
   console.log("sideBarTreeArray:", sideBarTreeArray); // Debugging line
@@ -40,14 +41,13 @@ function App() {
             </Route>
           </Route> */}
           {/* Additional Phases */}
-          <Route path="peppl_p2/*" element={<PhaseOverview />}>
-            {sideBarTreeArray["peppl_p2"] &&
-              generateRoutes(sideBarTreeArray["peppl_p2"], "peppl_p2")}
-          </Route>
-          <Route path="peppl_p3/*" element={<PhaseOverview />}>
-            {sideBarTreeArray["peppl_p3"] &&
-              generateRoutes(sideBarTreeArray["peppl_p3"], "peppl_p3")}
-          </Route>{" "}
+          <Route path="peipl_p2/" element={<ComingSoon />} />
+          <Route path="peppl_p3/" element={<ComingSoon />} />
+
+          <Route path="ht/" element={<ComingSoon />} />
+          <Route path="inverter/" element={<ComingSoon />} />
+          <Route path="report/" element={<ComingSoon />} />
+
           {/* Compare Page */}
           <Route path="compare" element={<Compare />} />
           <Route path="inverter" element={<Inverter />} />

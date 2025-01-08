@@ -130,14 +130,29 @@ const UserAvatar = styled(Avatar)`
 `;
 
 const Logo = styled.div`
-  color: #1b2533;
-  font-feature-settings: "liga" off, "clig" off;
-  font-family: "Red Hat Display";
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 20px; /* 100% */
-  letter-spacing: -1px;
+  font-family: "DM sans", sans-serif;
+  font-size: 20px; /* Slightly larger for better visibility */
+  font-weight: 800; /* Bolder for stronger emphasis */
+  letter-spacing: -0.5px; /* Tighter spacing for a sleek look */
+  line-height: 1.2; /* Better readability */
+  color: #1b2533; /* Brand primary color */
+  text-transform: uppercase; /* Adds a professional feel */
+  cursor: pointer; /* Indicates interactivity */
+  user-select: none; /* Prevents accidental text selection */
+  transition: color 0.3s ease-in-out; /* Smooth transition for hover effect */
+
+  &:hover {
+    color: #4f6ef7; /* Highlight color on hover */
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    font-size: 20px; /* Adjust size for smaller devices */
+  }
+
+  @media (max-width: 480px) {
+    font-size: 18px; /* Further reduction for mobile */
+  }
 `;
 
 const SearchBarContainer = styled.div`
@@ -189,7 +204,7 @@ const Header = () => {
     <>
       <TopbarContainer>
         <SearchBarContainer>
-          <Logo>Therion</Logo>
+          <Logo>NEURACT</Logo>
           <InputContainer>
             <Search />
             <SearchInput type="text" placeholder="Search Module, Panel , Etc" />
@@ -203,7 +218,7 @@ const Header = () => {
           >
             <Tab label="Dashboard" value={"/"} />
             <Tab label="PEPPL(P1)" value={"/peppl_p1"} />
-            <Tab label="PEPPL(P2)" value={"/peppl_p2"} />
+            <Tab label="PEIPL(P2)" value={"/peipl_p2"} />
             <Tab label="PEPPL(P3)" value={"/peppl_p3"} />
             <Tab label="HT" value={"/ht"} />
             <Tab label="Inverters" value={"/inverter"} />

@@ -59,7 +59,7 @@ const TestPage = ({ apikey, sectionName, parentName, parentName2 }) => {
         />
         <div className="emstit">
           <span className="emstitle">Real - Time Consumption</span>
-          <span className="emsspan">Status: Running EB power</span>
+          {/* <span className="emsspan">Status: Running EB power</span> */}
         </div>
         <ChartContainer
           className="realtimeflex"

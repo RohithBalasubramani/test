@@ -16,7 +16,7 @@ import TimeBar from "./TRFF/TimePeriod";
 import DateRangeSelector from "./Dashboard/Daterangeselector";
 import ToggleButtons from "./Togglesampling";
 import { exportToExcel } from "./exportToExcel"; // Import the utility function
-import "./EnergyComp.css"; // Import the CSS file 
+import "./EnergyComp.css"; // Import the CSS file
 
 const ReportModal = ({
   open,

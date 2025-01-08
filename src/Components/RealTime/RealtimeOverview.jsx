@@ -105,7 +105,9 @@ const ParentOverviewComponent = ({
 
     if (activeFeeder) {
       setActiveFeeder(activeFeeder.name);
-      setStatus(`Running on ${activeFeeder?.name?.toUpperCase()?.replaceAll("_", " ")}`);
+      setStatus(
+        `Running on ${activeFeeder?.name?.toUpperCase()?.replaceAll("_", " ")}`
+      );
       setRawData(activeFeeder.data);
     } else {
       setActiveFeeder(null);
@@ -115,8 +117,8 @@ const ParentOverviewComponent = ({
   };
 
   useEffect(() => {
-    setError(null)
-    setRawData(null)
+    setError(null);
+    setRawData(null);
     if (!apiKey) {
       console.error("apiKey is required but not provided.");
       setError("apiKey is required.");
@@ -134,9 +136,9 @@ const ParentOverviewComponent = ({
   return (
     <div>
       {error && <div style={{ color: "red" }}>Error: {error}</div>}
-      <div style={{ margin: "10px 0", fontWeight: "bold" }}>
+      {/* <div style={{ margin: "10px 0", fontWeight: "bold" }}>
         Status: {status}
-      </div>
+      </div> */}
       {rawData ? (
         <Container>
           <RealTimeVoltageChart rawData={rawData} />

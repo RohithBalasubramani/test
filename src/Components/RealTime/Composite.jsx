@@ -202,13 +202,14 @@ const RealTimeChart = ({ rawData }) => {
   return (
     <div className="containerchart">
       <div className="chart-cont">
-        <div className="title">Energy Consumption</div>
+        <div className="title">Power Consumption</div>
         <div className="chart-size">
           <Line data={chartData} options={options} />
         </div>
       </div>
       <div className="value-cont">
-        <div className="value-heading">Recent Values</div>
+        <div className="value-heading">Power Consumption</div>
+        <div className="current-value">Recent Value</div>
         <div className="legend-container">
           {[
             { label: "R Active", color: "#C72F08", key: "rActiveRecent" },
@@ -233,7 +234,7 @@ const RealTimeChart = ({ rawData }) => {
                 {data.length > 0
                   ? data[data.length - 1][key]?.toFixed(2)
                   : "0.00"}{" "}
-                <span className="value-span">kWh</span>
+                <span className="value-span">kW</span>
               </div>
             </div>
           ))}

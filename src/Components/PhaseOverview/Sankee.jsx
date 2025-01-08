@@ -241,7 +241,7 @@ const SankeyChart = ({
   return (
     <div className="stacked-bar-container">
       <div className="card shadow mb-4">
-        <div className="card-body" style={{overflow: 'auto'}}>
+        <div className="card-body" style={{ overflow: "auto" }}>
           <div className="row">
             <div className="title">Energy Flow Chart [kWh]</div>
             <div className="controls">
@@ -283,9 +283,8 @@ const SankeyChart = ({
               />
             ))}
           </RadioGroup>
-          
-          
-          <div className={selectedRoot === 'all' ? 'h-50' : 'h-auto'} >
+
+          <div className={selectedRoot === "all" ? "h-120" : "h-auto"}>
             {selectedRoot === "all" ? (
               <AllNodesPlot
                 data={plotData}

@@ -110,6 +110,7 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
       );
 
       setData(aggregatedData);
+      setReportData(Object.values(results[0])[0]["resampled data"]);
       console.log("Fetched and Aggregated Data:", aggregatedData);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -192,7 +193,7 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
         <KPI data={Object.values(data)[kpiKey]} />
         <Alerts />
       </Container>
-      {/* <ReportModal
+      <ReportModal
         open={isModalOpen}
         onClose={handleModalClose}
         onSubmit={handleModalSubmit}
@@ -204,9 +205,9 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
         setTimeperiod={setTimeperiod}
         dateRange={dateRange}
         setDateRange={setDateRange}
-        data={data} // Pass the processed reportData directly
+        data={reportData} // Pass the processed reportData directly
         filename="OverviewReport.xlsx"
-      /> */}
+      />
     </ContainerBox>
   );
 };
