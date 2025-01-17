@@ -59,14 +59,18 @@ const RealTimeCurrentChart = ({
   useEffect(() => {
     if (!rawData) return;
 
-    const { timestamp, avg_current, r_current, y_current, b_current } = rawData;
+    let timestamp = Object.values(rawData)[0].timestamp
+
+    let amfsAvgCurrentValues = Object.values(rawData).map((value) => value.avg_current)
+
+    //const { timestamp, avg_current, r_current, y_current, b_current } = rawData;
 
     const newEntry = {
       time: timestamp ? new Date(timestamp) : new Date(),
-      avgCurrent: avg_current,
-      rCurrent: r_current,
-      yCurrent: y_current,
-      bCurrent: b_current,
+      amf1a_avg_current: amfsAvgCurrentValues[0],
+      amf1b_avg_current: amfsAvgCurrentValues[1],
+      amf2a_avg_current: amfsAvgCurrentValues[2],
+      amf2b_avg_current: amfsAvgCurrentValues[3],
     };
 
     setData((prevData) => {
@@ -78,10 +82,10 @@ const RealTimeCurrentChart = ({
   }, [rawData]);
 
   // Handle Radio Button Change
-  const handleRadioChange = (event) => {
-    onRadioChange(event.target.value);
-    setData([]); // Clear data on source switch
-  };
+  // const handleRadioChange = (event) => {
+  //   onRadioChange(event.target.value);
+  //   setData([]); // Clear data on source switch
+  // };
 
   const labels = data.map((item) => item.time);
 
@@ -89,8 +93,8 @@ const RealTimeCurrentChart = ({
     labels,
     datasets: [
       {
-        label: "Avg Current",
-        data: data.map((item) => item.avgCurrent),
+        label: "AMF1A Avg Current",
+        data: data.map((item) => item.amf1a_avg_current),
         borderColor: "#6036D4",
         borderWidth: 2,
         pointRadius: 0,
@@ -98,8 +102,8 @@ const RealTimeCurrentChart = ({
         tension: 0.4,
       },
       {
-        label: "R Current",
-        data: data.map((item) => item.rCurrent),
+        label: "AMF1B Avg Current",
+        data: data.map((item) => item.amf1b_avg_current),
         borderColor: "#D33030",
         borderWidth: 2,
         pointRadius: 0,
@@ -107,8 +111,8 @@ const RealTimeCurrentChart = ({
         tension: 0.4,
       },
       {
-        label: "Y Current",
-        data: data.map((item) => item.yCurrent),
+        label: "AMF2A Avg Current",
+        data: data.map((item) => item.amf2a_avg_current),
         borderColor: "#FFB319",
         borderWidth: 2,
         pointRadius: 0,
@@ -116,8 +120,8 @@ const RealTimeCurrentChart = ({
         tension: 0.4,
       },
       {
-        label: "B Current",
-        data: data.map((item) => item.bCurrent),
+        label: "AMF2B Avg Current",
+        data: data.map((item) => item.amf2b_avg_current),
         borderColor: "#017EF3",
         borderWidth: 2,
         pointRadius: 0,
@@ -176,7 +180,7 @@ const RealTimeCurrentChart = ({
       {/* Chart Container */}
       <div className="chart-cont">
         <div className="title">Current</div>
-        <div className="formcontrol">
+        {/* <div className="formcontrol">
           <FormControl component="fieldset">
             <StyledRadioGroup
               value={selectedAPI}
@@ -193,7 +197,7 @@ const RealTimeCurrentChart = ({
               ))}
             </StyledRadioGroup>
           </FormControl>
-        </div>
+        </div> */}
         <div className="chart-size">
           <Line data={currentChartData} options={options} />
         </div>
@@ -205,10 +209,10 @@ const RealTimeCurrentChart = ({
         <div className="current-value">Recent Value</div>
         <div className="legend-container">
           {[
-            { label: "Avg Current", color: "#6036D4", key: "avgCurrent" },
-            { label: "R Current", color: "#D33030", key: "rCurrent" },
-            { label: "Y Current", color: "#FFB319", key: "yCurrent" },
-            { label: "B Current", color: "#017EF3", key: "bCurrent" },
+            { label: "AMF1A Avg", color: "#6036D4", key: "amf1a_avg_current" },
+            { label: "AMF1B Avg", color: "#D33030", key: "amf1b_avg_current" },
+            { label: "AMF2A Avg", color: "#FFB319", key: "amf2a_avg_current" },
+            { label: "AMF2B Avg", color: "#017EF3", key: "amf2b_avg_current" },
           ].map(({ label, color, key }) => (
             <div className="legend-item-two" key={key}>
               <div className="value-name">

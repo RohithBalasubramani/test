@@ -73,42 +73,55 @@ const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
 // Legend Items
 const legendItems = [
   {
-    label: "R Active",
+    label: "AMF1A Avg Active",
     color: "#C72F08",
-    key: "rActiveRecent",
+    key: "amf1a_avg_active_power",
     group: "active",
   },
   {
-    label: "Y Active",
+    label: "AMF1B Avg Active",
     color: "#E6B148",
-    key: "yActiveRecent",
+    key: "amf1b_avg_active_power",
     group: "active",
   },
   {
-    label: "B Active",
+    label: "AMF2A Avg Active",
     color: "#0171DB",
-    key: "bActiveRecent",
+    key: "amf2a_avg_active_power",
     group: "active",
   },
-  { label: "R App", color: "#E45D3A", key: "rAppRecent", group: "apparent" },
-  { label: "Y App", color: "#B38A38", key: "yAppRecent", group: "apparent" },
-  { label: "B App", color: "#0158AA", key: "bAppRecent", group: "apparent" },
   {
-    label: "R Reactive",
+    label: "AMF2B Avg Active",
+    color: "#0171DB",
+    key: "amf2b_avg_active_power",
+    group: "active",
+  },
+  { label: "AMF1A Avg App", color: "#E45D3A", key: "amf1a_avg_app_power", group: "apparent" },
+  { label: "AMF1B Avg App", color: "#B38A38", key: "amf1b_avg_app_power", group: "apparent" },
+  { label: "AMF2A Avg App", color: "#0158AA", key: "amf2a_avg_app_power", group: "apparent" },
+  { label: "AMF2B Avg App", color: "#0158AA", key: "amf2b_avg_app_power", group: "apparent" },
+  {
+    label: "AMF1A Avg Reactive",
     color: "#9B2406",
-    key: "rReactiveRecent",
+    key: "amf1a_avg_reactive_power",
     group: "reactive",
   },
   {
-    label: "Y Reactive",
+    label: "AMF1B Avg Reactive",
     color: "#FFD173",
-    key: "yReactiveRecent",
+    key: "amf1b_avg_reactive_power",
     group: "reactive",
   },
   {
-    label: "B Reactive",
+    label: "AMF2A Avg Reactive",
     color: "#3498F5",
-    key: "bReactiveRecent",
+    key: "amf2a_avg_reactive_power",
+    group: "reactive",
+  },
+  {
+    label: "AMF2B Avg Reactive",
+    color: "#3498F5",
+    key: "amf2b_avg_reactive_power",
     group: "reactive",
   },
 ];
@@ -121,30 +134,47 @@ const RealTimeChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
   useEffect(() => {
     if (!rawData) return;
 
-    const {
-      timestamp,
-      b_ac_power,
-      r_ac_power,
-      y_ac_power,
-      b_app_power,
-      r_app_power,
-      y_app_power,
-      b_reactive_power,
-      r_reactive_power,
-      y_reactive_power,
-    } = rawData;
+    let timestamp = Object.values(rawData)[0].timestamp
+
+    let amfsAvgActivePowerValues = Object.values(rawData).map((value) => {
+      return (value.b_ac_power + value.r_ac_power + value.y_ac_power)/3
+    })
+
+    let amfsAvgAppPowerValues = Object.values(rawData).map((value) => {
+      return (value.b_app_power + value.r_app_power + value.y_app_power)/3
+    })
+
+    let amfsAvgReactivePowerValues = Object.values(rawData).map((value) => {
+      return (value.b_reactive_power + value.r_reactive_power + value.y_reactive_power)/3
+    })
+
+    // const {
+    //   timestamp,
+    //   b_ac_power,
+    //   r_ac_power,
+    //   y_ac_power,
+    //   b_app_power,
+    //   r_app_power,
+    //   y_app_power,
+    //   b_reactive_power,
+    //   r_reactive_power,
+    //   y_reactive_power,
+    // } = rawData;
 
     const newEntry = {
       time: timestamp ? new Date(timestamp) : new Date(),
-      bActiveRecent: b_ac_power,
-      rActiveRecent: r_ac_power,
-      yActiveRecent: y_ac_power,
-      bAppRecent: b_app_power,
-      rAppRecent: r_app_power,
-      yAppRecent: y_app_power,
-      bReactiveRecent: b_reactive_power,
-      rReactiveRecent: r_reactive_power,
-      yReactiveRecent: y_reactive_power,
+      amf1a_avg_active_power: amfsAvgActivePowerValues[0],
+      amf1b_avg_active_power: amfsAvgActivePowerValues[1],
+      amf2a_avg_active_power: amfsAvgActivePowerValues[2],
+      amf2b_avg_active_power: amfsAvgActivePowerValues[3],
+      amf1a_avg_app_power: amfsAvgAppPowerValues[0],
+      amf1b_avg_app_power: amfsAvgAppPowerValues[1],
+      amf2a_avg_app_power: amfsAvgAppPowerValues[2],
+      amf2b_avg_app_power: amfsAvgAppPowerValues[3],
+      amf1a_avg_reactive_power: amfsAvgReactivePowerValues[0],
+      amf1b_avg_reactive_power: amfsAvgReactivePowerValues[1],
+      amf2a_avg_reactive_power: amfsAvgReactivePowerValues[2],
+      amf2b_avg_reactive_power: amfsAvgReactivePowerValues[3],
     };
 
     setChartDataEntries((prevData) => {
@@ -220,7 +250,7 @@ const RealTimeChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
       <div className="chart-cont">
         <div className="formcontrol">
           <div className="title">
-            <div> Energy Consumption </div>
+            <div> Power </div>
             <FormControl
               component="fieldset"
               className="power-type-formcontrol"
@@ -248,7 +278,7 @@ const RealTimeChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
               </StyledRadioGroup>
             </FormControl>
           </div>
-          <FormControl component="fieldset">
+          {/* <FormControl component="fieldset">
             <StyledRadioGroup value={selectedAPI} onChange={onRadioChange}>
               {amfOptions.map((item) => (
                 <StyledFormControlLabel
@@ -259,7 +289,7 @@ const RealTimeChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
                 />
               ))}
             </StyledRadioGroup>
-          </FormControl>
+          </FormControl> */}
         </div>
 
         <div className="chart-size">

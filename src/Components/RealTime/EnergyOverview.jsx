@@ -7,7 +7,7 @@ import {
   FormControl,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import "./RealTimeStyle.css";
+import "./realtimestyle.css";
 import "chartjs-adapter-date-fns";
 import OverviewRealTimeEnergyLoader from "../LoadingScreens/OverviewRealTimeEnergyLoader";
 
@@ -73,7 +73,7 @@ const RealTimeChart = ({
 
     try {
       const response = await fetch(
-        `http://14.96.26.26:8080/analytics/deltaconsolidated/?start_date_time=${params.start_date_time}&end_date_time=${params.end_date_time}&resample_period=${params.resample_period}`
+        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${params.start_date_time}&end_date_time=${params.end_date_time}&resample_period=${params.resample_period}`
       );
 
       if (!response.ok) {
