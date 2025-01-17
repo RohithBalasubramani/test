@@ -3,7 +3,7 @@ import styled from "styled-components";
 import dayjs from "dayjs";
 import TimeBar from "../TRFF/TimePeriod";
 import AMFgaugeStacked from "./AmfGaugeStacked";
-import KPI from "../KPI";
+import KPI from "./KPI";
 import WeatherWidget from "../Weather";
 import { sideBarTreeArray } from "../../sidebarInfo2"; // Assuming this is your Treeview array
 import OverviewTimeBar from "./OverviewTimeBar";
@@ -21,7 +21,7 @@ const DashboardHeader = styled.div`
 `;
 
 const ContainerBox = styled.div`
-  height: 57vh;
+  height: 62vh;
   overflow: hidden;
 `;
 
@@ -191,6 +191,7 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
         )}
 
         <KPI data={Object.values(data)[kpiKey]} />
+
         <Alerts />
       </Container>
       <ReportModal

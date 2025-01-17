@@ -67,7 +67,8 @@ const AlertsContainer = styled.div`
   display: flex;
   flex: 3;
   width: 30vw;
-  min-height: 43vh;
+  /* min-height: 43vh; */
+  height: 50vh;
 
   padding: 16px;
   flex-direction: column;
@@ -161,13 +162,13 @@ const Alerts = () => {
             <div>A new Monthly report is ready to Download!</div>
           </AlertText>
         </AlertItem>
-        <AlertItem>
+        {/* <AlertItem>
           <AlertIcon />
           <AlertText>
             <Date>July 15, 2024</Date>
             <div>A new Monthly report is ready to Download!</div>
           </AlertText>
-        </AlertItem>
+        </AlertItem> */}
       </AlertsContainer>
     </div>
   );

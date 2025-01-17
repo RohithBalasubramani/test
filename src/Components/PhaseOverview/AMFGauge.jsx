@@ -63,6 +63,48 @@ const LegendLabel = styled.span`
   font-weight: 500;
 `;
 
+// Styled component for the custom tooltip
+const CustomTooltipContainer = styled.div`
+  background: #ffffff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+`;
+
+const CustomTooltipLabel = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #5630bc;
+`;
+
+const CustomTooltipValue = styled.div`
+  font-size: 14px;
+  color: #555;
+`;
+
+/**
+ * Custom Tooltip for RadialBarChart
+ */
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <CustomTooltipContainer>
+        <CustomTooltipLabel>{data.name}</CustomTooltipLabel>
+        <CustomTooltipValue>
+          Value: {data.value.toFixed(2)} MWh
+        </CustomTooltipValue>
+      </CustomTooltipContainer>
+    );
+  }
+  return null;
+};
+
 /**
  * 🛠️ AMFgaugeStacked Component
  *
@@ -208,15 +250,16 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
             cornerRadius={10}
             background
           />
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} />
         </RadialBarChart>
 
         <CenterText onClick={() => setSelectedCategory(null)}>
           {selectedCategory ? (
             <>
               {selectedCategory} <br />
-              {chartData.find((d) => d.name === selectedCategory)?.value ||
-                0}{" "}
+              {chartData
+                .find((d) => d.name === selectedCategory)
+                ?.value.toFixed(2) || 0}{" "}
               MWh
             </>
           ) : (
