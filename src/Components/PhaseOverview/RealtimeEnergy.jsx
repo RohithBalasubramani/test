@@ -90,9 +90,24 @@ const legendItems = [
     key: "bActiveRecent",
     group: "active",
   },
-  { label: "R App", color: "#E45D3A", key: "rAppRecent", group: "apparent" },
-  { label: "Y App", color: "#B38A38", key: "yAppRecent", group: "apparent" },
-  { label: "B App", color: "#0158AA", key: "bAppRecent", group: "apparent" },
+  {
+    label: "R Apparent",
+    color: "#E45D3A",
+    key: "rAppRecent",
+    group: "apparent",
+  },
+  {
+    label: "Y Apparent",
+    color: "#B38A38",
+    key: "yAppRecent",
+    group: "apparent",
+  },
+  {
+    label: "B Apparent",
+    color: "#0158AA",
+    key: "bAppRecent",
+    group: "apparent",
+  },
   {
     label: "R Reactive",
     color: "#9B2406",

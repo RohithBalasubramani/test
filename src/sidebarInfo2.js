@@ -327,7 +327,7 @@ export const sideBarTreeArray = {
           apis: ["https://neuract.org/api/p1_pcc2_cellincomer/"],
         },
         {
-          id: "ups_2",
+          id: "ups_2_overview",
           label: "UPS Overview",
           apis: [
             "https://neuract.org/api/p1_pcc2_ups2a/",

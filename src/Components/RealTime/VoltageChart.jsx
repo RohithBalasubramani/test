@@ -313,7 +313,9 @@ const VoltageChart = ({ rawData }) => {
                   {data.length > 0
                     ? data[data.length - 1][key]?.toFixed(2)
                     : "0.00"}{" "}
-                  <span className="value-span">V</span>
+                  <span className="value-span" style={{ color: textColor }}>
+                    V
+                  </span>
                 </div>
               </div>
             );
