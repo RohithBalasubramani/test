@@ -150,7 +150,9 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
         `http://14.96.26.26:8080/analytics/deltaconsolidated/?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
       );
       const result = await response.json();
+      console.log("results raw", result);
       setData(result);
+      console.log("overview data", data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }

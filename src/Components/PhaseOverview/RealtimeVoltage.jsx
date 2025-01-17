@@ -198,8 +198,8 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
 
       {/* Chart Container */}
       <div className="chart-cont">
-        <div className="value-heading">Voltage</div>
-        <div className="current-value">Recent Value</div>
+        <div className="title">Voltage</div>
+
         <div className="formcontrol">
           <FormControl component="fieldset">
             <StyledRadioGroup
@@ -226,7 +226,8 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
 
       {/* Recent Values */}
       <div className="value-cont">
-        <div className="value-heading">Recent Values</div>
+        <div className="value-heading">Voltage</div>
+        <div className="current-value">Recent Value</div>
         <div className="legend-container">
           {[
             { label: "R Voltage", color: "#D33030", key: "rVoltage" },
@@ -248,7 +249,7 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
                 {data.length > 0
                   ? data[data.length - 1][key]?.toFixed(2)
                   : "0.00"}{" "}
-                V
+                <span className="value-span">V</span>
               </div>
             </div>
           ))}

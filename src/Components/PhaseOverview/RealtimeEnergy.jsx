@@ -33,7 +33,7 @@ ChartJS.register(
   ...registerables
 );
 
-// --- Styled Radio Components (Toggle Bar Style) ---
+// --- Styled Radio Components ---
 const StyledRadioGroup = styled(RadioGroup)({
   display: "flex",
   gap: "16px",
@@ -70,19 +70,57 @@ const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   },
 }));
 
-const RealTimeChart = ({
-  // Props passed down from parent
-  rawData, // Object with the most recent fetched data
-  amfOptions, // Filtered array (amf1a, amf1b, amf2a, amf2b)
-  selectedAPI, // Currently selected API URL
-  onRadioChange, // Function to notify parent when user switches radio
-}) => {
-  // Local state for chartable data
-  const [chartDataEntries, setChartDataEntries] = useState([]);
+// Legend Items
+const legendItems = [
+  {
+    label: "R Active",
+    color: "#C72F08",
+    key: "rActiveRecent",
+    group: "active",
+  },
+  {
+    label: "Y Active",
+    color: "#E6B148",
+    key: "yActiveRecent",
+    group: "active",
+  },
+  {
+    label: "B Active",
+    color: "#0171DB",
+    key: "bActiveRecent",
+    group: "active",
+  },
+  { label: "R App", color: "#E45D3A", key: "rAppRecent", group: "apparent" },
+  { label: "Y App", color: "#B38A38", key: "yAppRecent", group: "apparent" },
+  { label: "B App", color: "#0158AA", key: "bAppRecent", group: "apparent" },
+  {
+    label: "R Reactive",
+    color: "#9B2406",
+    key: "rReactiveRecent",
+    group: "reactive",
+  },
+  {
+    label: "Y Reactive",
+    color: "#FFD173",
+    key: "yReactiveRecent",
+    group: "reactive",
+  },
+  {
+    label: "B Reactive",
+    color: "#3498F5",
+    key: "bReactiveRecent",
+    group: "reactive",
+  },
+];
 
-  // When rawData changes, create a new chart data entry
+const RealTimeChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
+  const [chartDataEntries, setChartDataEntries] = useState([]);
+  const [selectedPower, setSelectedPower] = useState("active");
+
+  // Update chart data when rawData changes
   useEffect(() => {
     if (!rawData) return;
+
     const {
       timestamp,
       b_ac_power,
@@ -97,7 +135,6 @@ const RealTimeChart = ({
     } = rawData;
 
     const newEntry = {
-      // Convert timestamp to a valid Date so the x-axis is dynamic
       time: timestamp ? new Date(timestamp) : new Date(),
       bActiveRecent: b_ac_power,
       rActiveRecent: r_ac_power,
@@ -112,55 +149,32 @@ const RealTimeChart = ({
 
     setChartDataEntries((prevData) => {
       const updatedData = [...prevData, newEntry];
-      // Keep only the last 15 entries
-      return updatedData.length > 15
-        ? updatedData.slice(updatedData.length - 15)
-        : updatedData;
+      return updatedData.length > 15 ? updatedData.slice(-15) : updatedData;
     });
   }, [rawData]);
 
-  // Handle Radio Button Change - calls parent
-  const handleRadioChange = (event) => {
-    // Pass the newly selected API up to the parent
-    onRadioChange(event.target.value);
-    setChartDataEntries([]); // Clear old data on source switch
+  // Handle Power Type Change (no data clearing)
+  const handlePowerTypeChange = (event) => {
+    setSelectedPower(event.target.value);
   };
 
-  // Prepare data for Chart.js
+  // Prepare datasets dynamically based on selected power type
+  const chartDatasets = legendItems
+    .filter((item) => item.group === selectedPower)
+    .map(({ label, color, key }) => ({
+      label,
+      data: chartDataEntries.map((entry) => entry[key]),
+      borderColor: color,
+      borderWidth: 2,
+      pointRadius: 0,
+      tension: 0.4,
+    }));
+
   const chartData = {
-    labels: chartDataEntries.map((item) => item.time),
-    datasets: [
-      {
-        label: "R Active",
-        data: chartDataEntries.map((item) => item.rActiveRecent),
-        borderColor: "#C72F08",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4,
-      },
-      {
-        label: "Y Active",
-        data: chartDataEntries.map((item) => item.yActiveRecent),
-        borderColor: "#E6B148",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4,
-      },
-      {
-        label: "B Active",
-        data: chartDataEntries.map((item) => item.bActiveRecent),
-        borderColor: "#0171DB",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4,
-      },
-    ],
+    labels: chartDataEntries.map((entry) => entry.time),
+    datasets: chartDatasets,
   };
 
-  // Chart.js options
   const options = {
     maintainAspectRatio: false,
     responsive: true,
@@ -168,7 +182,6 @@ const RealTimeChart = ({
       x: {
         type: "time",
         time: {
-          // Show date/time in tooltip
           tooltipFormat: "PP HH:mm",
         },
         grid: {
@@ -190,15 +203,9 @@ const RealTimeChart = ({
     plugins: {
       tooltip: {
         callbacks: {
-          label: function (context) {
-            let label = context.dataset.label || "";
-            if (label) {
-              label += ": ";
-            }
-            if (context.parsed.y !== null) {
-              label += context.parsed.y + " kWh";
-            }
-            return label;
+          label: (context) => {
+            const label = context.dataset.label || "";
+            return `${label}: ${context.parsed.y?.toFixed(2)} kWh`;
           },
         },
       },
@@ -210,18 +217,39 @@ const RealTimeChart = ({
 
   return (
     <div className="containerchart">
-      {/* Styled Radio Button Group */}
-
-      {/* Chart Container */}
       <div className="chart-cont">
         <div className="formcontrol">
-          <div className="title">Energy Consumption</div>
-          <FormControl component="fieldset">
-            <StyledRadioGroup
-              value={selectedAPI}
-              onChange={handleRadioChange}
-              aria-label="Select AMF Source"
+          <div className="title">
+            <div> Energy Consumption </div>
+            <FormControl
+              component="fieldset"
+              className="power-type-formcontrol"
             >
+              <StyledRadioGroup
+                value={selectedPower}
+                onChange={handlePowerTypeChange}
+                aria-label="Select Power Type"
+              >
+                <StyledFormControlLabel
+                  value="active"
+                  control={<Radio />}
+                  label="Active Power"
+                />
+                <StyledFormControlLabel
+                  value="apparent"
+                  control={<Radio />}
+                  label="Apparent Power"
+                />
+                <StyledFormControlLabel
+                  value="reactive"
+                  control={<Radio />}
+                  label="Reactive Power"
+                />
+              </StyledRadioGroup>
+            </FormControl>
+          </div>
+          <FormControl component="fieldset">
+            <StyledRadioGroup value={selectedAPI} onChange={onRadioChange}>
               {amfOptions.map((item) => (
                 <StyledFormControlLabel
                   key={item.id}
@@ -233,39 +261,43 @@ const RealTimeChart = ({
             </StyledRadioGroup>
           </FormControl>
         </div>
+
         <div className="chart-size">
           <Line data={chartData} options={options} />
         </div>
       </div>
 
-      {/* Recent Values (unchanged) */}
       <div className="value-cont">
         <div className="value-heading">Power</div>
         <div className="current-value">Recent Value</div>
         <div className="legend-container">
-          {[
-            { label: "R Active", color: "#C72F08", key: "rActiveRecent" },
-            { label: "Y Active", color: "#E6B148", key: "yActiveRecent" },
-            { label: "B Active", color: "#0171DB", key: "bActiveRecent" },
-          ].map(({ label, color, key }) => (
-            <div className="legend-item-two" key={key}>
-              <div className="value-name">
-                <span
-                  className="legend-color-box"
-                  style={{ backgroundColor: color }}
-                />
-                {label}
+          {legendItems.map(({ label, color, key, group }) => {
+            const isSelectedGroup = group === selectedPower;
+            const textColor = isSelectedGroup ? "#000" : "#999";
+            const boxColor = isSelectedGroup ? color : "#999";
+
+            return (
+              <div className="legend-item-two" key={key}>
+                <div className="value-name" style={{ color: textColor }}>
+                  <span
+                    className="legend-color-box"
+                    style={{ backgroundColor: boxColor }}
+                  />
+                  {label}
+                </div>
+                <div className="value" style={{ color: textColor }}>
+                  {chartDataEntries.length > 0
+                    ? chartDataEntries[chartDataEntries.length - 1][
+                        key
+                      ]?.toFixed(2)
+                    : "0.00"}{" "}
+                  <span className="value-span" style={{ color: textColor }}>
+                    kW
+                  </span>
+                </div>
               </div>
-              <div className="value">
-                {chartDataEntries.length > 0
-                  ? chartDataEntries[chartDataEntries.length - 1][key]?.toFixed(
-                      2
-                    )
-                  : "0.00"}{" "}
-                <span className="value-span">kW</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

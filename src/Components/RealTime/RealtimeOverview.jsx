@@ -141,8 +141,8 @@ const ParentOverviewComponent = ({
       </div> */}
       {rawData ? (
         <Container>
-          <RealTimeVoltageChart rawData={rawData} />
           <RealTimeChart rawData={rawData} />
+          <RealTimeVoltageChart rawData={rawData} />
           <RealTimeCurrentChart rawData={rawData} />
         </Container>
       ) : (

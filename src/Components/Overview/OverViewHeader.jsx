@@ -141,7 +141,7 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
   return (
     <ContainerBox>
       <DashboardHeader>
-        <DashboardTitle>Overview Page</DashboardTitle>
+        <DashboardTitle>Overview </DashboardTitle>
         <div
           style={{
             display: "flex",

@@ -21,7 +21,7 @@
 }
 
 .chart-size {
-  height: 50vh;
+  height: 60vh;
 }
 
 /* Value Container Styling */
@@ -47,6 +47,8 @@
   font-weight: 400;
   line-height: 28px; /* 155.556% */
   margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
 }
 
 /* Legend Container Styling */
@@ -103,17 +105,14 @@
 /* Value Heading and Content Styling */
 .value-heading {
   color: var(--Gray---Typography-700, #242f3e);
-  font-family: "DM Sans";
+
+  font-family: DM Sans;
   font-size: 14px;
   font-weight: 700;
   line-height: 20px;
   text-align: left;
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
-  justify-content: left;
-  margin-left: 0%;
-  margin-right: auto;
-  width: 100%;
 }
 
 .current-value {

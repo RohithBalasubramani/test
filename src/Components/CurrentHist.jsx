@@ -153,7 +153,7 @@ const CurrentHistorical = ({
       y: {
         title: {
           display: true,
-          text: "Volatage (V)",
+          text: "Current (A)",
         },
         grid: {
           color: "rgba(0, 0, 0, 0.05)",

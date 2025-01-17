@@ -6,6 +6,7 @@ import "../Dashboard/StackedBarDGEB.css";
 import { OverviewSource } from "../../phasedata";
 import ToggleButtons from "../Togglesampling";
 import TimeBar from "../TRFF/TimePeriod";
+import DateRangeSelector from "../Dashboard/Daterangeselector";
 
 const StackedBarDGEB = ({
   data,
@@ -138,6 +139,12 @@ const StackedBarDGEB = ({
                 setTimeperiod={setTimeperiod}
                 startDate={startDate}
                 endDate={endDate}
+              />
+              <DateRangeSelector
+                startDate={startDate}
+                setStartDate={setStartDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
               />
             </div>
           </div>
