@@ -54,24 +54,36 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
   useEffect(() => {
     if (!rawData) return;
 
-    const {
-      timestamp,
-      r_voltage,
-      y_voltage,
-      b_voltage,
-      ry_voltage,
-      yb_voltage,
-      br_voltage,
-    } = rawData;
+    let timestamp = Object.values(rawData)[0].timestamp
+
+    let amfsAvgLineVoltageValues = Object.values(rawData).map((value) => {
+      return (value.r_voltage + value.y_voltage + value.b_voltage)/3
+    })
+
+    let amfsAvgPhaseVoltageValues = Object.values(rawData).map((value) => {
+      return (value.ry_voltage + value.yb_voltage + value.br_voltage)/3
+    })
+
+    // const {
+    //   timestamp,
+    //   r_voltage,
+    //   y_voltage,
+    //   b_voltage,
+    //   ry_voltage,
+    //   yb_voltage,
+    //   br_voltage,
+    // } = rawData;
 
     const newEntry = {
       time: timestamp ? new Date(timestamp) : new Date(),
-      rVoltage: r_voltage,
-      yVoltage: y_voltage,
-      bVoltage: b_voltage,
-      ryVoltage: ry_voltage,
-      ybVoltage: yb_voltage,
-      brVoltage: br_voltage,
+      amf1a_avg_line_voltage: amfsAvgLineVoltageValues[0],
+      amf1b_avg_line_voltage: amfsAvgLineVoltageValues[1],
+      amf2a_avg_line_voltage: amfsAvgLineVoltageValues[2],
+      amf2b_avg_line_voltage: amfsAvgLineVoltageValues[3],
+      amf1a_avg_phase_voltage: amfsAvgPhaseVoltageValues[0],
+      amf1b_avg_phase_voltage: amfsAvgPhaseVoltageValues[1],
+      amf2a_avg_phase_voltage: amfsAvgPhaseVoltageValues[2],
+      amf2b_avg_phase_voltage: amfsAvgPhaseVoltageValues[3],
     };
 
     setData((prevData) => {
@@ -94,8 +106,8 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
     labels,
     datasets: [
       {
-        label: "R Voltage",
-        data: data.map((item) => item.rVoltage),
+        label: "AMF1A Avg Line Voltage",
+        data: data.map((item) => item.amf1a_avg_line_voltage),
         borderColor: "#D33030",
         borderWidth: 2,
         pointRadius: 0,
@@ -103,8 +115,8 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
         tension: 0.4,
       },
       {
-        label: "Y Voltage",
-        data: data.map((item) => item.yVoltage),
+        label: "AMF1B Avg Line Voltage",
+        data: data.map((item) => item.amf1b_avg_line_voltage),
         borderColor: "#FFB319",
         borderWidth: 2,
         pointRadius: 0,
@@ -112,8 +124,8 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
         tension: 0.4,
       },
       {
-        label: "B Voltage",
-        data: data.map((item) => item.bVoltage),
+        label: "AMF2A Avg Line Voltage",
+        data: data.map((item) => item.amf2a_avg_line_voltage),
         borderColor: "#017EF3",
         borderWidth: 2,
         pointRadius: 0,
@@ -121,8 +133,8 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
         tension: 0.4,
       },
       {
-        label: "RY Voltage",
-        data: data.map((item) => item.ryVoltage),
+        label: "AMF2B Avg Line Voltage",
+        data: data.map((item) => item.amf2b_avg_line_voltage),
         borderColor: "#DC8006",
         borderWidth: 2,
         pointRadius: 0,
@@ -130,8 +142,8 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
         tension: 0.4,
       },
       {
-        label: "YB Voltage",
-        data: data.map((item) => item.ybVoltage),
+        label: "AMF1A Avg Phase Voltage",
+        data: data.map((item) => item.amf1a_avg_phase_voltage),
         borderColor: "#16896B",
         borderWidth: 2,
         pointRadius: 0,
@@ -139,8 +151,26 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
         tension: 0.4,
       },
       {
-        label: "BR Voltage",
-        data: data.map((item) => item.brVoltage),
+        label: "AMF1B Avg Phase Voltage",
+        data: data.map((item) => item.amf1b_avg_phase_voltage),
+        borderColor: "#6036D4",
+        borderWidth: 2,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        tension: 0.4,
+      },
+      {
+        label: "AMF2A Avg Phase Voltage",
+        data: data.map((item) => item.amf2a_avg_phase_voltage),
+        borderColor: "#16896B",
+        borderWidth: 2,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        tension: 0.4,
+      },
+      {
+        label: "AMF2B Avg Phase Voltage",
+        data: data.map((item) => item.amf2b_avg_phase_voltage),
         borderColor: "#6036D4",
         borderWidth: 2,
         pointRadius: 0,
@@ -200,7 +230,7 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
       <div className="chart-cont">
         <div className="title">Voltage</div>
 
-        <div className="formcontrol">
+        {/* <div className="formcontrol">
           <FormControl component="fieldset">
             <StyledRadioGroup
               value={selectedAPI}
@@ -217,7 +247,7 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
               ))}
             </StyledRadioGroup>
           </FormControl>
-        </div>
+        </div> */}
 
         <div className="chart-size">
           <Line data={voltageChartData} options={options} />
@@ -230,12 +260,14 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
         <div className="current-value">Recent Value</div>
         <div className="legend-container">
           {[
-            { label: "R Voltage", color: "#D33030", key: "rVoltage" },
-            { label: "Y Voltage", color: "#FFB319", key: "yVoltage" },
-            { label: "B Voltage", color: "#017EF3", key: "bVoltage" },
-            { label: "RY Voltage", color: "#DC8006", key: "ryVoltage" },
-            { label: "YB Voltage", color: "#16896B", key: "ybVoltage" },
-            { label: "BR Voltage", color: "#6036D4", key: "brVoltage" },
+            { label: "AMF1A Avg Line Voltage", color: "#D33030", key: "amf1a_avg_line_voltage" },
+            { label: "AMF1B Avg Line Voltage", color: "#FFB319", key: "amf1b_avg_line_voltage" },
+            { label: "AMF2A Avg Line Voltage", color: "#017EF3", key: "amf2a_avg_line_voltage" },
+            { label: "AMF2B Avg Line Voltage", color: "#DC8006", key: "amf2b_avg_line_voltage" },
+            { label: "AMF1A Avg Phase Voltage", color: "#16896B", key: "amf1a_avg_phase_voltage" },
+            { label: "AMF1B Avg Phase Voltage", color: "#6036D4", key: "amf1b_avg_phase_voltage" },
+            { label: "AMF2A Avg Phase Voltage", color: "#16896B", key: "amf2a_avg_phase_voltage" },
+            { label: "AMF2B Avg Phase Voltage", color: "#6036D4", key: "amf2b_avg_phase_voltage" },
           ].map(({ label, color, key }) => (
             <div className="legend-item-two" key={key}>
               <div className="value-name">

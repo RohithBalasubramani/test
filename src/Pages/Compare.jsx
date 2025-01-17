@@ -85,7 +85,8 @@ const SelectContainer = styled.div`
 
 // ✅ Styled FormControl
 const StyledFormControl = styled(FormControl)`
-  && {
+  width: 170px;
+  /* && {
     min-width: 170px;
     margin: 1vw;
     background: #f9fafc;
@@ -111,7 +112,7 @@ const StyledFormControl = styled(FormControl)`
     .Mui-focused {
       border-color: #5630bc !important;
     }
-  }
+  } */
 `;
 
 // ✅ Styled InputLabel
