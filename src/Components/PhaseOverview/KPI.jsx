@@ -11,7 +11,7 @@ const Container = styled.div`
   gap: 2%;
 `;
 
-const KPI = ({ data, startDate, endDate, timeperiod }) => {
+const KPI = ({ data, startDate, endDate, timeperiod, realTimePower }) => {
   const [kpiData, setKpiData] = useState({
     peakCurrent: 0,
     peakFeeder: "",
@@ -69,11 +69,11 @@ const KPI = ({ data, startDate, endDate, timeperiod }) => {
         {/* 📊 Peak Current Card */}
         <div className="kpi-cont3">
           <div className="kpi-top">
-            <div className="kpi-tit">Peak Current</div>
+            <div className="kpi-tit">Power</div>
 
             <div style={{ display: "inline" }}>
-              <span className="kpi-val">{kpiData.peakCurrent.toFixed(2)}</span>
-              <span className="kpi-units"> A </span>
+              <span className="kpi-val">{realTimePower.toFixed(2)}</span>
+              <span className="kpi-units"> kW </span>
             </div>
             {/* <div className="kpi-subtext">Feeder: {kpiData.peakFeeder}</div> */}
           </div>

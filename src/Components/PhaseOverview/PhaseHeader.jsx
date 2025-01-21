@@ -41,7 +41,7 @@ const Container = styled.div`
   height: 60vh;
 `;
 
-const OverviewHeader = () => {
+const OverviewHeader = ({ realTimePower }) => {
   const [startDate, setStartDate] = useState(dayjs().startOf("day"));
   const [endDate, setEndDate] = useState(dayjs());
   const [timeperiod, setTimeperiod] = useState("H");
@@ -228,6 +228,7 @@ const OverviewHeader = () => {
           startDate={startDate}
           endDate={endDate}
           timeperiod={timeperiod}
+          realTimePower={realTimePower}
         />
         <WeatherWidget />
       </Container>

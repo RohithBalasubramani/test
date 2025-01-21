@@ -202,7 +202,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
             alignItems: "right",
           }}
         >
-          <TimeBar
+          {/* <TimeBar
             setStartDate={setStartDate}
             setEndDate={setEndDate}
             dateRange={dateRange}
@@ -211,7 +211,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
             startDate={startDate} // Pass startDate
             endDate={endDate} // Pass endDate
             setPeriod={setPeriod}
-          />
+          /> */}
           <DateRangeSelector
             startDate={startDate}
             setStartDate={setStartDate}

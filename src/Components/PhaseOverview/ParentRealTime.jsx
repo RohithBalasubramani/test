@@ -5,7 +5,7 @@ import RealTimeCurrentChart from "./RealtimeCurrent";
 import VoltageChart from "./RealtimeVoltage";
 import axios from "axios";
 
-const ParentRealtime = () => {
+const ParentRealtime = ({ setRealTimePower }) => {
   // Filter out "overview" so we only have AMF1a, AMF1b, AMF2a, AMF2b
   const amfOptions = OverviewArray.filter((item) => item.id !== "overview");
 
@@ -73,6 +73,7 @@ const ParentRealtime = () => {
         selectedAPI={selectedAPIs}
         //onRadioChange={handleRadioChange}
         rawData={rawData}
+        setRealTimePower={setRealTimePower}
       />
       <VoltageChart
         amfOptions={amfOptions}
