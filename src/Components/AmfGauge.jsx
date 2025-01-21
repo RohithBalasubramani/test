@@ -1,13 +1,13 @@
-import { Gauge, gaugeClasses } from "@mui/x-charts";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import styled from "styled-components";
-import { ArrowUpward, Launch } from "@mui/icons-material";
+import { VictoryPie, VictoryLabel } from "victory";
+import { Launch } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
-import PowerFactorGauge from "./PowerFactor";
 import { Link } from "react-router-dom";
 
-// Styled components for layout and styling
+// ──────────────────────────────────────────────────────────────────────────────
+// Styled Components
+// ──────────────────────────────────────────────────────────────────────────────
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -18,162 +18,248 @@ const Top = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  width: 100%;
+  height: 10vh;
+`;
+
+const RatingContainer = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #f0f0f0;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
+  line-height: 1.4;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const GaugeCont = styled.div`
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-const Card = styled.div`
-  background: #ffffff;
-  height: 32vh;
-  width: 20vw;
-  padding: 16px 0px 0px 0px;
-  padding: 3vh;
-  box-shadow: 7px 2px 17px 0px #c7c7c71a, 29px 10px 31px 0px #c7c7c717,
-    66px 22px 42px 0px #c7c7c70d;
+  margin: 0 auto;
   text-align: center;
-  position: relative;
 `;
 
 const Title = styled.div`
   font-weight: bold;
   color: #333;
+  margin-right: 8px;
+  text-align: center;
+  margin-bottom: 2vh;
 `;
 
-const AMFgauge = ({ kpidata }) => {
-  const [ebUsage, setEbUsage] = useState(0);
-  const [dgUsage, setDgUsage] = useState(0);
-  const [ebTot, setEbtot] = useState(0);
-  const [dgTot, setDgTot] = useState(0);
-  const [energy, setEnergy] = useState(0)
-  const [voltage, setVoltage] = useState(0)
+const FigureText = styled.div`
+  font-size: 14px;
+  margin-top: -8vh;
+  line-height: 1.2;
+  text-align: center;
+  span:first-child {
+    font-weight: bold;
+    font-size: 18px;
+  }
+`;
 
-  const fetchData = async () => {
+const KPIContainer = styled.div`
+  background: #ffffff;
+  width: 20vw;
+  height: 59vh;
+  min-width: 220px;
+  padding: 2vh;
+  box-shadow: 7px 2px 17px 0px #c7c7c71a, 29px 10px 31px 0px #c7c7c717,
+    66px 22px 42px 0px #c7c7c70d;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+`;
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Utility function: Returns multiplier for rated energy based on `period`
+// ──────────────────────────────────────────────────────────────────────────────
+function getMultiplier(period) {
+  switch (period) {
+    case "D": // Day
+      return 24;
+    case "W": // Week
+      return 24 * 7;
+    case "M": // Month (approx. 30 days)
+      return 24 * 30;
+    case "Y": // Year (approx. 365 days)
+      return 24 * 365;
+    default: // Hour or fallback
+      return 1;
+  }
+}
+
+/**
+ * AMFgauge Component
+ *    - Displays total usage vs. a maximum rating that depends on time `period`.
+ *    - Marker adjusts dynamically with the period.
+ *    - Center shows percentage, usage, and remaining capacity.
+ */
+const AMFgauge = ({ kpidata, feederRatings, period }) => {
+  const [energy, setEnergy] = useState(0); // actual usage from API
+  const baseRating = feederRatings?.energy || 50; // fallback if not provided
+  const multiplier = getMultiplier(period);
+  const maxRating = baseRating * multiplier; // max capacity for the given period
+  const markerValue = 35 * multiplier; // Marker position dynamically scaled
+
+  // Fetch data
+  const fetchData = () => {
     try {
-      if(kpidata && kpidata["resampled data"]){
-        const energyArray = kpidata["resampled data"].map((item) => item["app_energy_export"]);
-        const voltageArray = kpidata["resampled data"].map((item) => Math.max(item["ry_voltage"], item["yb_voltage"], item["br_voltage"]));
-        const sumOfEnergyArray = energyArray.reduce((acc,currentValue) => acc + currentValue, 0);
-        const peakVoltage = Math.max(...voltageArray)
-        setVoltage(peakVoltage)
-        setEnergy(sumOfEnergyArray)
+      if (
+        kpidata &&
+        kpidata["resampled data"] &&
+        Array.isArray(kpidata["resampled data"])
+      ) {
+        const energyArray = kpidata["resampled data"].map(
+          (item) => item["app_energy_export"] || 0
+        );
+        const sumOfEnergyArray = energyArray.reduce((acc, val) => acc + val, 0);
+        setEnergy(sumOfEnergyArray);
+      } else {
+        setEnergy(0);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+      setEnergy(0);
     }
   };
 
   useEffect(() => {
     fetchData();
-    // const interval = setInterval(fetchData, 5000); // Update every 5 seconds
-    // return () => clearInterval(interval);
   }, [kpidata]);
+
+  // Convert usage to a percentage for the gauge (cap at 100%)
+  const usagePercentage = Math.min((energy / maxRating) * 100, 100);
+  const remaining = maxRating - energy;
 
   return (
     <Container>
-      {/* EB Usage Card */}
-      <div className="kpi-cont">
-        <div className="kpi-top">
-          <Top>
-            <Title>Total EB Usage</Title>
-            <IconButton
-              aria-label="open-link"
-              size="small"
-              component={Link}
-              to="/eb"
-            >
-              <Launch fontSize="inherit" />
-            </IconButton>
-          </Top>
-          <GaugeCont>
-            <Gauge
-              width={95}
-              height={95}
-              startAngle={-130}
-              endAngle={130}
-              innerRadius="75%"
-              outerRadius="110%"
-              value={energy}
-              text={({ value }) => `${value.toFixed(2)} ${" %"}`}
-              cornerRadius="50%"
-              sx={{
-                [`& .${gaugeClasses.valueText}`]: {
-                  fontSize: "14px", // Adjust the font size here
-                },
-                [`& .${gaugeClasses.valueArc}`]: {
-                  fill: "#2E7D32",
-                },
-              }}
-            />
-            <div className="figuretext">
-              <span>{energy.toLocaleString()}</span>
-              <span> kWh </span>
-            </div>
-          </GaugeCont>
-        </div>
-      </div>
+      <KPIContainer>
+        <Title>Total Energy Usage</Title>
+        <Top>
+          {/* Ratings Section */}
+          <RatingContainer>
+            {feederRatings && (
+              <>
+                <div>Rated Energy: {feederRatings.energy} kWh /hr</div>
+                <div>Voltage: {feederRatings.voltage} V</div>
+                <div>Current: {feederRatings.current} A</div>
+                <div>
+                  Subsidized Limit: {markerValue}
+                  {"kWh"}
+                  {/* e.g., "D", "W", "M", "H" */}
+                </div>
+              </>
+            )}
+          </RatingContainer>
 
-      <div className="kpi-cont">
-        <div className="kpi-top">
-          <div className="kpi-tit">Peak Voltage</div>
-          <div style={{ display: "inline" }}>
-            <span className="kpi-val"> {voltage?.toFixed(2)} </span>
-            <span className="kpi-units"> V </span>
-          </div>
-        </div>
-        <div className="kpi-bot">
-          <span className="percentage-cont">
-            <ArrowUpward sx={{ fontSize: "14px" }} />
-            25%
-          </span>
-          <span className="percentage-span">More than last month</span>
-        </div>
-      </div>
+          {/* <IconButton
+            aria-label="open-link"
+            size="small"
+            component={Link}
+            to="/eb"
+          >
+            <Launch fontSize="inherit" />
+          </IconButton> */}
+        </Top>
 
-      {/* DG Usage Card */}
-      {/* <div className="kpi-cont">
-        <div className="kpi-top">
-          <Top>
-            <Title>Total DG Usage</Title>
-            <IconButton
-              aria-label="open-link"
-              size="small"
-              component={Link}
-              to="/dg1"
-            >
-              <Launch fontSize="inherit" />
-            </IconButton>
-          </Top>
-          <GaugeCont>
-            <Gauge
-              width={95}
-              height={95}
-              startAngle={-130}
-              endAngle={130}
-              innerRadius="75%"
-              outerRadius="110%"
-              value={dgUsage}
-              text={({ value }) => `${value.toFixed(2)} ${" %"}`}
-              cornerRadius="50%"
-              sx={{
-                [`& .${gaugeClasses.valueText}`]: {
-                  fontSize: "14px", // Adjust the font size here
-                },
-                [`& .${gaugeClasses.valueArc}`]: {
-                  fill: "#ffd900",
-                },
-              }}
+        {/* Gauge */}
+        <GaugeCont>
+          <svg viewBox="0 0 400 400" width="300" height="300">
+            {/* Main gauge using VictoryPie (2-slice approach) */}
+            <VictoryPie
+              standalone={false}
+              innerRadius={140}
+              radius={180}
+              startAngle={-120}
+              endAngle={120}
+              data={[
+                { x: "Usage", y: usagePercentage },
+                { x: "Remaining", y: 100 - usagePercentage },
+              ]}
+              labels={() => null}
+              colorScale={["#2E7D32", "#e0e0e0"]}
             />
-            <div className="figuretext">
-              <span>{dgTot.toLocaleString()}</span>
-              <span> kWh </span>
-            </div>
-          </GaugeCont>
-        </div>
-      </div> */}
-      {/* <PowerFactorGauge /> */}
+
+            {/* Marker line (orange) */}
+            <line
+              x1="200"
+              y1="200"
+              x2={
+                200 +
+                180 *
+                  Math.cos(
+                    (180 - (markerValue / maxRating) * 180) * (Math.PI / 180)
+                  )
+              }
+              y2={
+                200 -
+                180 *
+                  Math.sin(
+                    (180 - (markerValue / maxRating) * 180) * (Math.PI / 180)
+                  )
+              }
+              stroke="orange"
+              strokeWidth={3}
+            />
+
+            {/* Marker label ("35 kWh") */}
+            <text
+              x={
+                200 +
+                200 *
+                  Math.cos(
+                    (180 - (markerValue / maxRating) * 180) * (Math.PI / 180)
+                  )
+              }
+              y={
+                200 -
+                200 *
+                  Math.sin(
+                    (180 - (markerValue / maxRating) * 180) * (Math.PI / 180)
+                  )
+              }
+              fill="orange"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="12"
+            >
+              {markerValue.toFixed(2)} kWh
+            </text>
+
+            {/* Center text (VictoryLabel) showing percentage and usage details */}
+            <VictoryLabel
+              textAnchor="middle"
+              style={{ fontSize: 16, fontWeight: "bold" }}
+              x={200}
+              y={180}
+              text={`Usage: ${usagePercentage.toFixed(1)}%`}
+            />
+            <VictoryLabel
+              textAnchor="middle"
+              style={{ fontSize: 14, fill: "#555" }}
+              x={200}
+              y={200}
+              text={`Consumed: ${energy.toFixed(2)} kWh`}
+            />
+            <VictoryLabel
+              textAnchor="middle"
+              style={{ fontSize: 14, fill: "#999" }}
+              x={200}
+              y={220}
+              text={`Remaining: ${remaining.toFixed(2)} kWh`}
+            />
+          </svg>
+        </GaugeCont>
+
+        {/* Usage text */}
+        <FigureText>
+          <span>{energy.toFixed(2)}</span> <span>kWh</span>
+        </FigureText>
+      </KPIContainer>
     </Container>
   );
 };

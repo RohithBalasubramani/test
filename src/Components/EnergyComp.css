@@ -163,6 +163,7 @@
 .edit-button {
   display: flex;
   gap: 0;
+  width: 14vw;
 }
 
 .stat-box {

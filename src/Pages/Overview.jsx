@@ -7,6 +7,7 @@ import ParentOverviewComponent from "../Components/RealTime/RealtimeOverview";
 import BottomTimeSeries from "../Components/Dashboard/TimeseriesDash.jsx";
 import RealTimeChart from "../Components/RealTime/EnergyOverview";
 import { sideBarTreeArray } from "../sidebarInfo2";
+import HorizontalHeatmapChart from "../Components/Overview/TopConsuming.jsx";
 
 const ContainerBox = styled.div`
   display: flex;

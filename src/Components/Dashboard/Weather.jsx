@@ -59,7 +59,8 @@ const Address = styled.div`
 
 const AlertsContainer = styled.div`
   border-radius: 16px;
-  background: #ffffff;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex: 3;
   padding: 16px;

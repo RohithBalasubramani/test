@@ -66,7 +66,7 @@ const AlertsContainer = styled.div`
   background: #ffffff;
   display: flex;
   flex: 3;
-  width: 30vw;
+  width: 32vw;
   /* min-height: 43vh; */
   height: 50vh;
 

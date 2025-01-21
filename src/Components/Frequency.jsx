@@ -16,7 +16,7 @@ const Container = styled.div`
 
 const Card = styled.div`
   background: #ffffff;
-  height: 22vh;
+  height: 25vh;
   width: 20vw;
   padding: 3vh;
   box-shadow: 7px 2px 17px 0px #c7c7c71a, 29px 10px 31px 0px #c7c7c717,

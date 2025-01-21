@@ -2,6 +2,7 @@ import { ArrowUpward } from "@mui/icons-material";
 import React, { useState, useEffect } from "react";
 import "../kpi.css";
 import styled from "styled-components";
+import AMFgaugeLinear from "./CostChart";
 
 // Styled Components
 const Container = styled.div`
@@ -10,7 +11,7 @@ const Container = styled.div`
   gap: 2%;
 `;
 
-const KPI = ({ data }) => {
+const KPI = ({ data, startDate, endDate, timeperiod }) => {
   const [kpiData, setKpiData] = useState({
     peakCurrent: 0,
     peakFeeder: "",
@@ -69,6 +70,7 @@ const KPI = ({ data }) => {
         <div className="kpi-cont3">
           <div className="kpi-top">
             <div className="kpi-tit">Peak Current</div>
+
             <div style={{ display: "inline" }}>
               <span className="kpi-val">{kpiData.peakCurrent.toFixed(2)}</span>
               <span className="kpi-units"> A </span>
@@ -85,7 +87,7 @@ const KPI = ({ data }) => {
         </div>
 
         {/* 📊 Total Consumption Card */}
-        <div className="kpi-cont3">
+        {/* <div className="kpi-cont3">
           <div className="kpi-top">
             <div className="kpi-tit">Total Consumption</div>
             <div style={{ display: "inline" }}>
@@ -102,10 +104,9 @@ const KPI = ({ data }) => {
             </span>
             <span className="percentage-span">More than yesterday</span>
           </div>
-        </div>
-
+        </div> */}
         {/* 💵 Total Energy Cost Card */}
-        <div className="kpi-cont3">
+        {/* <div className="kpi-cont3">
           <div className="kpi-top">
             <div className="kpi-tit">Total Energy Cost</div>
             <div style={{ display: "inline" }}>
@@ -120,7 +121,13 @@ const KPI = ({ data }) => {
             </span>
             <span className="percentage-span">More than last month</span>
           </div>
-        </div>
+        </div> */}
+
+        <AMFgaugeLinear
+          startDate={startDate}
+          endDate={endDate}
+          timeperiod={timeperiod}
+        />
       </Container>
     </>
   );

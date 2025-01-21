@@ -9,6 +9,7 @@ import HorizontalChart from "./BarchartVertical";
 import StackedBarChart from "./StackedChart";
 import MySankeyChart from "../Sankee";
 import SankeyChart from "./Sankee";
+import HorizontalHeatmapChart from "../Overview/TopConsuming";
 
 const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
   const [startDate, setStartDate] = useState(dayjs().startOf("day"));
@@ -242,6 +243,7 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
               />
             </div>
           </div>
+          <HorizontalHeatmapChart data={data} fields={fieldsDonut} />
           <StackedBarChart
             data={data}
             startDate={startDate}

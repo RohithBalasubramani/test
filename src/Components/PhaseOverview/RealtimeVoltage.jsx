@@ -47,139 +47,136 @@ const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   },
 }));
 
-const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
+const VoltageChart = ({ rawData }) => {
   const [data, setData] = useState([]);
+  const [selectedVoltageType, setSelectedVoltageType] = useState("line"); // "line" or "phase"
 
   // Update chart data when rawData changes
   useEffect(() => {
     if (!rawData) return;
 
-    let timestamp = Object.values(rawData)[0].timestamp
+    // Extract the first entry's timestamp
+    let timestamp = Object.values(rawData)[0]?.timestamp;
 
-    let amfsAvgLineVoltageValues = Object.values(rawData).map((value) => {
-      return (value.r_voltage + value.y_voltage + value.b_voltage)/3
-    })
+    // Calculate average line voltage array
+    let avgLineVoltages = Object.values(rawData).map((value) => {
+      return (value.r_voltage + value.y_voltage + value.b_voltage) / 3;
+    });
 
-    let amfsAvgPhaseVoltageValues = Object.values(rawData).map((value) => {
-      return (value.ry_voltage + value.yb_voltage + value.br_voltage)/3
-    })
+    // Calculate average phase voltage array
+    let avgPhaseVoltages = Object.values(rawData).map((value) => {
+      return (value.ry_voltage + value.yb_voltage + value.br_voltage) / 3;
+    });
 
-    // const {
-    //   timestamp,
-    //   r_voltage,
-    //   y_voltage,
-    //   b_voltage,
-    //   ry_voltage,
-    //   yb_voltage,
-    //   br_voltage,
-    // } = rawData;
-
+    // Build a new data entry
     const newEntry = {
       time: timestamp ? new Date(timestamp) : new Date(),
-      amf1a_avg_line_voltage: amfsAvgLineVoltageValues[0],
-      amf1b_avg_line_voltage: amfsAvgLineVoltageValues[1],
-      amf2a_avg_line_voltage: amfsAvgLineVoltageValues[2],
-      amf2b_avg_line_voltage: amfsAvgLineVoltageValues[3],
-      amf1a_avg_phase_voltage: amfsAvgPhaseVoltageValues[0],
-      amf1b_avg_phase_voltage: amfsAvgPhaseVoltageValues[1],
-      amf2a_avg_phase_voltage: amfsAvgPhaseVoltageValues[2],
-      amf2b_avg_phase_voltage: amfsAvgPhaseVoltageValues[3],
+      amf1a_avg_line_voltage: avgLineVoltages[0],
+      amf1b_avg_line_voltage: avgLineVoltages[1],
+      amf2a_avg_line_voltage: avgLineVoltages[2],
+      amf2b_avg_line_voltage: avgLineVoltages[3],
+      amf1a_avg_phase_voltage: avgPhaseVoltages[0],
+      amf1b_avg_phase_voltage: avgPhaseVoltages[1],
+      amf2a_avg_phase_voltage: avgPhaseVoltages[2],
+      amf2b_avg_phase_voltage: avgPhaseVoltages[3],
     };
 
     setData((prevData) => {
       const updatedData = [...prevData, newEntry];
+      // Keep only the last 15 entries
       return updatedData.length > 15
         ? updatedData.slice(updatedData.length - 15)
         : updatedData;
     });
   }, [rawData]);
 
-  // Handle Radio Button Change
-  const handleRadioChange = (event) => {
-    onRadioChange(event.target.value);
-    setData([]); // Clear data on source switch
+  // Handle Voltage Type Change
+  const handleVoltageTypeChange = (event) => {
+    setSelectedVoltageType(event.target.value);
   };
 
+  // Prepare chart labels
   const labels = data.map((item) => item.time);
 
+  // Decide which datasets to show based on the selected voltage type
+  const datasets =
+    selectedVoltageType === "line"
+      ? [
+          {
+            label: "AMF1A Avg Line Voltage",
+            data: data.map((item) => item.amf1a_avg_line_voltage),
+            borderColor: "#D33030",
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.4,
+          },
+          {
+            label: "AMF1B Avg Line Voltage",
+            data: data.map((item) => item.amf1b_avg_line_voltage),
+            borderColor: "#FFB319",
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.4,
+          },
+          {
+            label: "AMF2A Avg Line Voltage",
+            data: data.map((item) => item.amf2a_avg_line_voltage),
+            borderColor: "#017EF3",
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.4,
+          },
+          {
+            label: "AMF2B Avg Line Voltage",
+            data: data.map((item) => item.amf2b_avg_line_voltage),
+            borderColor: "#DC8006",
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.4,
+          },
+        ]
+      : [
+          {
+            label: "AMF1A Avg Phase Voltage",
+            data: data.map((item) => item.amf1a_avg_phase_voltage),
+            borderColor: "#16896B",
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.4,
+          },
+          {
+            label: "AMF1B Avg Phase Voltage",
+            data: data.map((item) => item.amf1b_avg_phase_voltage),
+            borderColor: "#6036D4",
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.4,
+          },
+          {
+            label: "AMF2A Avg Phase Voltage",
+            data: data.map((item) => item.amf2a_avg_phase_voltage),
+            borderColor: "#16896B",
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.4,
+          },
+          {
+            label: "AMF2B Avg Phase Voltage",
+            data: data.map((item) => item.amf2b_avg_phase_voltage),
+            borderColor: "#6036D4",
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.4,
+          },
+        ];
+
+  // Final chart data
   const voltageChartData = {
     labels,
-    datasets: [
-      {
-        label: "AMF1A Avg Line Voltage",
-        data: data.map((item) => item.amf1a_avg_line_voltage),
-        borderColor: "#D33030",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4,
-      },
-      {
-        label: "AMF1B Avg Line Voltage",
-        data: data.map((item) => item.amf1b_avg_line_voltage),
-        borderColor: "#FFB319",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4,
-      },
-      {
-        label: "AMF2A Avg Line Voltage",
-        data: data.map((item) => item.amf2a_avg_line_voltage),
-        borderColor: "#017EF3",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4,
-      },
-      {
-        label: "AMF2B Avg Line Voltage",
-        data: data.map((item) => item.amf2b_avg_line_voltage),
-        borderColor: "#DC8006",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4,
-      },
-      {
-        label: "AMF1A Avg Phase Voltage",
-        data: data.map((item) => item.amf1a_avg_phase_voltage),
-        borderColor: "#16896B",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4,
-      },
-      {
-        label: "AMF1B Avg Phase Voltage",
-        data: data.map((item) => item.amf1b_avg_phase_voltage),
-        borderColor: "#6036D4",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4,
-      },
-      {
-        label: "AMF2A Avg Phase Voltage",
-        data: data.map((item) => item.amf2a_avg_phase_voltage),
-        borderColor: "#16896B",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4,
-      },
-      {
-        label: "AMF2B Avg Phase Voltage",
-        data: data.map((item) => item.amf2b_avg_phase_voltage),
-        borderColor: "#6036D4",
-        borderWidth: 2,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        tension: 0.4,
-      },
-    ],
+    datasets,
   };
 
+  // Chart.js options
   const options = {
     maintainAspectRatio: false,
     responsive: true,
@@ -208,11 +205,9 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
     plugins: {
       tooltip: {
         callbacks: {
-          label: function (context) {
-            let label = context.dataset.label || "";
-            if (label) label += ": ";
-            if (context.parsed.y !== null) label += context.parsed.y + " V";
-            return label;
+          label: (context) => {
+            const label = context.dataset.label || "";
+            return `${label}: ${context.parsed.y?.toFixed(2)} V`;
           },
         },
       },
@@ -224,67 +219,119 @@ const VoltageChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
 
   return (
     <div className="containerchart">
-      {/* Styled Radio Button Group */}
-
       {/* Chart Container */}
       <div className="chart-cont">
-        <div className="title">Voltage</div>
-
-        {/* <div className="formcontrol">
-          <FormControl component="fieldset">
-            <StyledRadioGroup
-              value={selectedAPI}
-              onChange={handleRadioChange}
-              aria-label="Select AMF Source"
-            >
-              {amfOptions.map((item) => (
+        <div className="title">
+          <div>
+            {" "}
+            <div> Voltage </div>
+            <FormControl component="fieldset">
+              <StyledRadioGroup
+                value={selectedVoltageType}
+                onChange={handleVoltageTypeChange}
+              >
                 <StyledFormControlLabel
-                  key={item.id}
-                  value={item.apis[0]}
+                  value="line"
                   control={<Radio />}
-                  label={item.label}
+                  label="Line Voltage"
                 />
-              ))}
-            </StyledRadioGroup>
-          </FormControl>
-        </div> */}
+                <StyledFormControlLabel
+                  value="phase"
+                  control={<Radio />}
+                  label="Phase Voltage"
+                />
+              </StyledRadioGroup>
+            </FormControl>
+          </div>
+        </div>
+
+        {/* Radio to toggle between Line Voltage and Phase Voltage */}
 
         <div className="chart-size">
           <Line data={voltageChartData} options={options} />
         </div>
       </div>
 
-      {/* Recent Values */}
+      {/* Value Container (Legend) */}
       <div className="value-cont">
         <div className="value-heading">Voltage</div>
         <div className="current-value">Recent Value</div>
         <div className="legend-container">
           {[
-            { label: "AMF1A Avg Line Voltage", color: "#D33030", key: "amf1a_avg_line_voltage" },
-            { label: "AMF1B Avg Line Voltage", color: "#FFB319", key: "amf1b_avg_line_voltage" },
-            { label: "AMF2A Avg Line Voltage", color: "#017EF3", key: "amf2a_avg_line_voltage" },
-            { label: "AMF2B Avg Line Voltage", color: "#DC8006", key: "amf2b_avg_line_voltage" },
-            { label: "AMF1A Avg Phase Voltage", color: "#16896B", key: "amf1a_avg_phase_voltage" },
-            { label: "AMF1B Avg Phase Voltage", color: "#6036D4", key: "amf1b_avg_phase_voltage" },
-            { label: "AMF2A Avg Phase Voltage", color: "#16896B", key: "amf2a_avg_phase_voltage" },
-            { label: "AMF2B Avg Phase Voltage", color: "#6036D4", key: "amf2b_avg_phase_voltage" },
-          ].map(({ label, color, key }) => (
-            <div className="legend-item-two" key={key}>
-              <div className="value-name">
-                <span
-                  className="legend-color-box"
-                  style={{ backgroundColor: color }}
-                />
-                {label}
+            {
+              label: "AMF1A Avg Line Voltage",
+              color: "#D33030",
+              key: "amf1a_avg_line_voltage",
+              group: "line",
+            },
+            {
+              label: "AMF1B Avg Line Voltage",
+              color: "#FFB319",
+              key: "amf1b_avg_line_voltage",
+              group: "line",
+            },
+            {
+              label: "AMF2A Avg Line Voltage",
+              color: "#017EF3",
+              key: "amf2a_avg_line_voltage",
+              group: "line",
+            },
+            {
+              label: "AMF2B Avg Line Voltage",
+              color: "#DC8006",
+              key: "amf2b_avg_line_voltage",
+              group: "line",
+            },
+            {
+              label: "AMF1A Avg Phase Voltage",
+              color: "#16896B",
+              key: "amf1a_avg_phase_voltage",
+              group: "phase",
+            },
+            {
+              label: "AMF1B Avg Phase Voltage",
+              color: "#6036D4",
+              key: "amf1b_avg_phase_voltage",
+              group: "phase",
+            },
+            {
+              label: "AMF2A Avg Phase Voltage",
+              color: "#16896B",
+              key: "amf2a_avg_phase_voltage",
+              group: "phase",
+            },
+            {
+              label: "AMF2B Avg Phase Voltage",
+              color: "#6036D4",
+              key: "amf2b_avg_phase_voltage",
+              group: "phase",
+            },
+          ].map(({ label, color, key, group }) => {
+            // Only selected group is colored; the others are grayscale
+            const isSelectedGroup = group === selectedVoltageType;
+            const textColor = isSelectedGroup ? "#000" : "#999";
+            const boxColor = isSelectedGroup ? color : "#999";
+
+            return (
+              <div className="legend-item-two" key={key}>
+                <div className="value-name" style={{ color: textColor }}>
+                  <span
+                    className="legend-color-box"
+                    style={{ backgroundColor: boxColor }}
+                  />
+                  {label}
+                </div>
+                <div className="value" style={{ color: textColor }}>
+                  {data.length > 0
+                    ? data[data.length - 1][key]?.toFixed(2)
+                    : "0.00"}{" "}
+                  <span className="value-span" style={{ color: textColor }}>
+                    V
+                  </span>
+                </div>
               </div>
-              <div className="value">
-                {data.length > 0
-                  ? data[data.length - 1][key]?.toFixed(2)
-                  : "0.00"}{" "}
-                <span className="value-span">V</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

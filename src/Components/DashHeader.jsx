@@ -61,6 +61,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
   const [reportData, setReportData] = useState([]);
   const [data, setData] = useState(null);
   const [label, setLabel] = useState("");
+  const [period, setPeriod] = useState("H");
 
   const transformData = (tablesData) => {
     return tablesData.map((row) => {
@@ -195,7 +196,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
             display: "flex",
             gap: "1vw",
             height: "min-content",
-            width: "50vw",
+            width: "68vw",
             marginRight: "0",
             marginLeft: "auto",
             alignItems: "right",
@@ -209,6 +210,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
             setTimeperiod={setTimeperiod} // Pass setTimeperiod to TimeBar
             startDate={startDate} // Pass startDate
             endDate={endDate} // Pass endDate
+            setPeriod={setPeriod}
           />
           <DateRangeSelector
             startDate={startDate}
@@ -225,9 +227,17 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
         </div>
       </DashboardHeader>
       <KPIContainer>
-        <AMFgauge kpidata={data} />
+        <AMFgauge
+          kpidata={data}
+          feederRatings={{
+            energy: 50,
+            voltage: 400,
+            current: 100,
+          }}
+          period={period}
+        />
         <KPI data={data} />
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "2vh" }}>
           <PowerFactorGauge
             apikey={apikey}
             topBar={topBar}

@@ -67,8 +67,8 @@ const Inverter = ({ apikey, sectionName }) => {
           style={{ gap: "10px", display: "flex" }}
         >
           <RealTimeChart apiKey={key} topBar={topBar} />
-          <RealTimeCurrentChart apiKey={key} topBar={topBar} />
           <RealTimeVoltageChart apiKey={key} topBar={topBar} />
+          <RealTimeCurrentChart apiKey={key} topBar={topBar} />
         </ChartContainer>
         <div className="emstit">
           <span className="emstitle">Energy Consumption History</span>

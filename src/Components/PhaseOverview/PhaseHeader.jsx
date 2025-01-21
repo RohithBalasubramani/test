@@ -10,6 +10,7 @@ import KPI from "./KPI";
 import DateRangeSelector from "../Dashboard/Daterangeselector";
 import { CloudDownload } from "@mui/icons-material";
 import ReportModal from "../Reports";
+import AMFgaugeLinear from "./CostChart";
 
 // Styled Components
 const DashboardHeader = styled.div`
@@ -215,9 +216,19 @@ const OverviewHeader = () => {
           endDate={endDate}
           timeperiod={timeperiod}
         />
+        {/* <AMFgaugeLinear
+          startDate={startDate}
+          endDate={endDate}
+          timeperiod={timeperiod}
+        /> */}
 
         {/* KPI & Weather Widgets */}
-        <KPI data={Object.values(data)[2]} />
+        <KPI
+          data={Object.values(data)[2]}
+          startDate={startDate}
+          endDate={endDate}
+          timeperiod={timeperiod}
+        />
         <WeatherWidget />
       </Container>
       <ReportModal

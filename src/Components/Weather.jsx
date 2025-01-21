@@ -215,13 +215,13 @@ const WeatherWidget = () => {
             <div>A new Monthly report is ready to Download!</div>
           </AlertText>
         </AlertItem>
-        <AlertItem>
+        {/* <AlertItem>
           <AlertIcon />
           <AlertText>
             <Date>July 15, 2024</Date>
             <div>A new Monthly report is ready to Download!</div>
           </AlertText>
-        </AlertItem>
+        </AlertItem> */}
       </AlertsContainer>
     </WeatherWidgetContainer>
   );

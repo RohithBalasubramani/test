@@ -80,6 +80,10 @@ const StackedBarDGEB = ({
     if (!resampledData || resampledData.length === 0) return [];
 
     switch (timeperiod) {
+      case "T": // Minute
+        return resampledData.map((item) =>
+          dayjs(item.timestamp).format("H:mm")
+        );
       case "H": // Hourly
         return resampledData.map((item) =>
           dayjs(item.timestamp).format("MMM D, H:mm")

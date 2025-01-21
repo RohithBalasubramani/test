@@ -12,6 +12,7 @@ import DateRangeSelector from "../Dashboard/Daterangeselector";
 import { CloudDownload } from "@mui/icons-material";
 import ReportModal from "../Reports";
 import OverviewGaugeLoader from "../LoadingScreens/OverviewGaugeLoader";
+import HorizontalHeatmapChart from "./TopConsuming";
 
 const DashboardHeader = styled.div`
   display: flex;
@@ -147,7 +148,7 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
             display: "flex",
             gap: "1vw",
             height: "min-content",
-            width: "50vw",
+            width: "45vw",
             marginRight: "0",
             marginLeft: "auto",
             alignItems: "right",
@@ -194,6 +195,7 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
 
         <Alerts />
       </Container>
+
       <ReportModal
         open={isModalOpen}
         onClose={handleModalClose}

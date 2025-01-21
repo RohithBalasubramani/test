@@ -16,16 +16,17 @@ const Container = styled.div`
 
 const Card = styled.div`
   background: #ffffff;
-  height: 32vh;
-  width: 20vw;
+  height: 24vh;
+  width: 11vw;
   padding: 3vh;
+  align-items: center;
   box-shadow: 7px 2px 17px 0px #c7c7c71a, 29px 10px 31px 0px #c7c7c717,
     66px 22px 42px 0px #c7c7c70d;
   text-align: center;
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 4vh;
 `;
 
 const Top = styled.div`
@@ -78,7 +79,8 @@ const PowerFactorGauge = ({ apikey, topBar, parentName, parentName2 }) => {
           const apiEndPoint = apiEndpointsArray.apis[0];
           if (apiEndPoint) {
             const response = await axios.get(apiEndPoint);
-            const powerFactorValue = response.data["recent data"].avg_power_factor
+            const powerFactorValue =
+              response.data["recent data"].avg_power_factor;
             setPowerFactor(powerFactorValue);
 
             if (powerFactorValue >= 0.95) {
@@ -104,7 +106,7 @@ const PowerFactorGauge = ({ apikey, topBar, parentName, parentName2 }) => {
 
   return (
     <>
-      <div className="kpi-cont" style={{ marginBottom: "1vh" }}>
+      <Card>
         <Top>
           <Title>Power Factor</Title>
         </Top>
@@ -124,7 +126,7 @@ const PowerFactorGauge = ({ apikey, topBar, parentName, parentName2 }) => {
           />
           <div className="figuretext">Power Quality: {powerQuality}</div>
         </GaugeCont>
-      </div>
+      </Card>
     </>
   );
 };

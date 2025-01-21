@@ -50,6 +50,14 @@ const ToggleButtons = ({ dateRange, timeperiod, setTimeperiod }) => {
 
   const renderRadioButtons = () => {
     switch (dateRange) {
+      case "lastHour": // Last hour case
+        return (
+          <StyledFormControlLabel
+            value="M"
+            control={<Radio />}
+            label="Minute"
+          />
+        );
       case "today":
         return (
           <StyledFormControlLabel value="H" control={<Radio />} label="Hour" />
@@ -79,22 +87,6 @@ const ToggleButtons = ({ dateRange, timeperiod, setTimeperiod }) => {
       case "lastYear":
         return (
           <>
-            <StyledFormControlLabel
-              value="W"
-              control={<Radio />}
-              label="Week"
-            />
-            <StyledFormControlLabel
-              value="M"
-              control={<Radio />}
-              label="Month"
-            />
-          </>
-        );
-      case "custom":
-        return (
-          <>
-            <StyledFormControlLabel value="D" control={<Radio />} label="Day" />
             <StyledFormControlLabel
               value="W"
               control={<Radio />}

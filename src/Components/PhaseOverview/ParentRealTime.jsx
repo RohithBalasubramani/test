@@ -10,24 +10,26 @@ const ParentRealtime = () => {
   const amfOptions = OverviewArray.filter((item) => item.id !== "overview");
 
   // State for currently selected API & data
-  const [selectedAPIs, setSelectedAPIs] = useState(amfOptions.map((item) => item.apis[0]));
+  const [selectedAPIs, setSelectedAPIs] = useState(
+    amfOptions.map((item) => item.apis[0])
+  );
   const [rawData, setRawData] = useState(null);
 
   const fetchData = async () => {
     try {
       const [amf1a, amf1b, amf2a, amf2b] = await Promise.all(
-       selectedAPIs.map((api) => {
-        return axios.get(api)
-       })
+        selectedAPIs.map((api) => {
+          return axios.get(api);
+        })
       );
       // const response = await fetch(apiURL);
       // const result = await response.json();
       let rawData = {
-        "amf1a" : amf1a.data["recent data"],
-        "amf1b" : amf1b.data["recent data"],
-        "amf2a" : amf2a.data["recent data"],
-        "amf2b" : amf2b.data["recent data"],
-      }
+        amf1a: amf1a.data["recent data"],
+        amf1b: amf1b.data["recent data"],
+        amf2a: amf2a.data["recent data"],
+        amf2b: amf2b.data["recent data"],
+      };
       setRawData(rawData || {});
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -72,13 +74,13 @@ const ParentRealtime = () => {
         //onRadioChange={handleRadioChange}
         rawData={rawData}
       />
-      <RealTimeCurrentChart
+      <VoltageChart
         amfOptions={amfOptions}
         selectedAPI={selectedAPIs}
         //onRadioChange={handleRadioChange}
         rawData={rawData}
       />
-      <VoltageChart
+      <RealTimeCurrentChart
         amfOptions={amfOptions}
         selectedAPI={selectedAPIs}
         //onRadioChange={handleRadioChange}

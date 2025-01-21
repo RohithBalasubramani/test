@@ -113,7 +113,15 @@ const KPI = ({ data }) => {
           </div>
         </div>
         <div className="kpi-bot">
-          <AccessTime sx={{ fontSize: "14px", marginRight: "5px" }} />
+          <AccessTime
+            sx={{
+              fontSize: "14px",
+              marginRight: "5px",
+              alignItems: "center",
+              marginTop: "auto",
+              marginBottom: "auto",
+            }}
+          />
           <span className="percentage-span">
             Occurred at{" "}
             <strong>{formatTimestamp(kpiData.peakYAppPowerTime)}</strong>
