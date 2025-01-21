@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import {
   LinearProgress,
@@ -21,7 +21,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 19vw;
+  width: 29vw;
   height: 50vh;
   background: #ffffff;
   padding: 4vh;
@@ -69,7 +69,7 @@ const CostChart = ({ startDate, endDate, timeperiod }) => {
 
   // State for unit prices
   const [unitPrices, setUnitPrices] = useState({
-    "Solar": 10,
+    Solar: 10,
     "EB Supply": 10,
     "Diesel Generator": 10,
   });
@@ -124,7 +124,6 @@ const CostChart = ({ startDate, endDate, timeperiod }) => {
         aggregated[source.label] = totalForSource;
       });
 
-      console.log("Aggregated Feeder Data:", aggregated);
       setAggregatedData(aggregated);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -134,18 +133,22 @@ const CostChart = ({ startDate, endDate, timeperiod }) => {
 
   useEffect(() => {
     fetchFeederData();
-    // eslint-disable-next-line
   }, [startDate, endDate, timeperiod]);
 
-  const totalValue = Object.values(aggregatedData).reduce(
-    (sum, value) => sum + value,
-    0
+  // Dynamically calculate total cost and percentages
+  const totalValue = useMemo(
+    () => Object.values(aggregatedData).reduce((sum, value) => sum + value, 0),
+    [aggregatedData]
   );
 
-  const totalCost =
-    (aggregatedData["EB Supply"] || 0) * unitPrices["EB Supply"] +
-    (aggregatedData["Diesel Generator"] || 0) * unitPrices["Diesel Generator"] -
-    (aggregatedData["Solar"] || 0) * unitPrices["Solar"];
+  const totalCost = useMemo(
+    () =>
+      (aggregatedData["EB Supply"] || 0) * unitPrices["EB Supply"] +
+      (aggregatedData["Diesel Generator"] || 0) *
+        unitPrices["Diesel Generator"] -
+      (aggregatedData["Solar"] || 0) * unitPrices["Solar"],
+    [aggregatedData, unitPrices]
+  );
 
   const handleDialogOpen = () => setDialogOpen(true);
   const handleDialogClose = () => setDialogOpen(false);
@@ -164,12 +167,28 @@ const CostChart = ({ startDate, endDate, timeperiod }) => {
 
   return (
     <Container>
-      <div className="stat-title">
+      <div
+        className="stat-title"
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <Typography variant="h6">Cost</Typography>
-        <div className="edit-button">
+        <div
+          className="edit-button"
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            gap: "1vw",
+          }}
+        >
           <Typography variant="body2">
-            1 Unit Prices - {unitPrices.Solar} Rs (Solar), {unitPrices.EB} Rs
-            (EB), {unitPrices.Generator} Rs (DG)
+            1 Unit Prices - {unitPrices.Solar} Rs (Solar),{" "}
+            {unitPrices["EB Supply"]} Rs (EB), {unitPrices["Diesel Generator"]}{" "}
+            Rs (DG)
           </Typography>
           <IconButton size="small" onClick={handleDialogOpen}>
             <BorderColorOutlined />
@@ -219,16 +238,18 @@ const CostChart = ({ startDate, endDate, timeperiod }) => {
             type="number"
             fullWidth
             margin="normal"
-            value={unitPrices.EB}
-            onChange={(e) => handleUnitPriceChange("EB", e.target.value)}
+            value={unitPrices["EB Supply"]}
+            onChange={(e) => handleUnitPriceChange("EB Supply", e.target.value)}
           />
           <TextField
             label="Generator Unit Price"
             type="number"
             fullWidth
             margin="normal"
-            value={unitPrices.Generator}
-            onChange={(e) => handleUnitPriceChange("Generator", e.target.value)}
+            value={unitPrices["Diesel Generator"]}
+            onChange={(e) =>
+              handleUnitPriceChange("Diesel Generator", e.target.value)
+            }
           />
         </DialogContent>
         <DialogActions>

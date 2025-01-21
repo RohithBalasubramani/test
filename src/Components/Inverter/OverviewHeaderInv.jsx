@@ -53,6 +53,7 @@ const OverviewHeader = () => {
   const [reportData, setReportData] = useState({});
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [period, setPeriod] = useState("D");
 
   const handleGenerateReportClick = () => {
     setIsModalOpen(true);
@@ -183,7 +184,7 @@ const OverviewHeader = () => {
             gap: "1vw",
 
             height: "5vh",
-            width: "45vw",
+            width: "70vw",
             marginBottom: "2vh",
           }}
         >
@@ -195,6 +196,7 @@ const OverviewHeader = () => {
             setTimeperiod={setTimeperiod}
             startDate={startDate}
             endDate={endDate}
+            setPeriod={setPeriod}
           />
           <DateRangeSelector
             setStartDate={setStartDate}
@@ -216,7 +218,13 @@ const OverviewHeader = () => {
 
       {/* 📊 Widgets Section */}
       <Container
-        style={{ display: "flex", gap: "2%", maxHeight: "fit-content" }}
+        style={{
+          display: "flex",
+          gap: "2%",
+          maxHeight: "fit-content",
+          width: "98%",
+          overflow: "hidden",
+        }}
       >
         <AMFgaugeStacked
           startDate={startDate}

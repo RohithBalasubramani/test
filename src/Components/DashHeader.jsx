@@ -14,6 +14,7 @@ import ReportModal from "./Reports";
 import "./emstemp.css";
 import DateRangeSelector from "./Dashboard/Daterangeselector";
 import { sideBarTreeArray } from "../sidebarInfo2";
+import OverviewTimeBar from "./Overview/OverviewTimeBar";
 
 const DashboardHeader = styled.div`
   display: flex;
@@ -61,7 +62,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
   const [reportData, setReportData] = useState([]);
   const [data, setData] = useState(null);
   const [label, setLabel] = useState("");
-  const [period, setPeriod] = useState("H");
+  const [period, setPeriod] = useState("D");
 
   const transformData = (tablesData) => {
     return tablesData.map((row) => {
@@ -202,7 +203,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
             alignItems: "right",
           }}
         >
-          {/* <TimeBar
+          <OverviewTimeBar
             setStartDate={setStartDate}
             setEndDate={setEndDate}
             dateRange={dateRange}
@@ -211,7 +212,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
             startDate={startDate} // Pass startDate
             endDate={endDate} // Pass endDate
             setPeriod={setPeriod}
-          /> */}
+          />
           <DateRangeSelector
             startDate={startDate}
             setStartDate={setStartDate}

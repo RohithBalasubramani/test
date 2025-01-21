@@ -2,15 +2,13 @@ import React from "react";
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/system";
 import dayjs from "dayjs";
-import { Height } from "@mui/icons-material";
 
 // Styled components using Material-UI's styled API
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)({
   borderRadius: "8px", // Rounded corners
   overflow: "hidden", // Prevents borders from bleeding
   border: "1px solid #EAECF0", // Custom border color
-  width: "20vw",
-
+  width: "28vw",
   "& .MuiToggleButton-root": {
     color: "#808080", // Custom text color
     fontFamily: "DM Sans", // Custom font family
@@ -18,8 +16,7 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)({
     fontStyle: "normal", // Normal font style
     fontWeight: 400, // Custom font weight
     lineHeight: "16px", // Custom line height
-    width: "10vw",
-
+    width: "14vw",
     textTransform: "none", // Prevents text from being capitalized
     "&.Mui-selected": {
       backgroundColor: "#EAECF0", // Custom selected background color
@@ -40,44 +37,57 @@ const OverviewTimeBar = ({
   setDateRange,
   setEndDate,
   setTimeperiod,
+  setPeriod,
 }) => {
   const updateDateRange = (range) => {
     setDateRange(range);
     const today = dayjs();
 
-    // Default timeperiod mapping based on dateRange
-    let defaultTimePeriod = "H"; // Default to Hour
+    let defaultTimePeriod = "H"; // Default time period
 
     switch (range) {
+      case "lastHour":
+        setStartDate(today.subtract(1, "hour").startOf("minute")); // Last hour start
+        setEndDate(today); // Current timestamp
+        defaultTimePeriod = "M"; // Resampling period in minutes
+        setPeriod("T");
+        break;
       case "today":
-        setStartDate(today.startOf("day"));
-        setEndDate(today);
-        setTimeperiod("D"); // Set default to Hour for today
+        setStartDate(today.startOf("day")); // Start of the day
+        setEndDate(today); // Current timestamp
+        defaultTimePeriod = "H"; // Hourly resampling
+        setPeriod("D");
         break;
       case "lastWeek":
-        setStartDate(today.subtract(7, "day").startOf("day"));
-        setEndDate(today);
-        setTimeperiod("W"); // Set default to Day for last week
+        setStartDate(today.subtract(7, "day").startOf("day")); // 7 days ago
+        setEndDate(today); // Current timestamp
+        defaultTimePeriod = "D"; // Daily resampling
+        setPeriod("W");
         break;
       case "lastMonth":
-        setStartDate(today.subtract(1, "month").startOf("day"));
-        setEndDate(today);
-        setTimeperiod("M"); // Set default to Day for last month
+        setStartDate(today.subtract(1, "month").startOf("day")); // Start of last month
+        setEndDate(today); // Current timestamp
+        defaultTimePeriod = "D"; // Daily resampling
+        setPeriod("M");
         break;
       case "lastYear":
-        setStartDate(today.subtract(1, "year").startOf("day"));
-        setEndDate(today);
-        setTimeperiod("Y"); // Set default to Week for last year
+        setStartDate(today.subtract(1, "year").startOf("day")); // Start of last year
+        setEndDate(today); // Current timestamp
+        defaultTimePeriod = "W"; // Weekly resampling
+        setPeriod("Y");
+
         break;
       default:
-        setStartDate(today.startOf("day"));
-        setEndDate(today);
-        defaultTimePeriod = "D"; // Default to Day for other cases
+        setStartDate(today.startOf("day")); // Start of the day
+        setEndDate(today); // Current timestamp
+        defaultTimePeriod = "D"; // Default to daily resampling
+        setPeriod("D");
+
         break;
     }
 
-    // Set the default time period based on the selected date range
     setTimeperiod(defaultTimePeriod);
+    // setPeriod(defaultTimePeriod);
   };
 
   return (
@@ -92,17 +102,20 @@ const OverviewTimeBar = ({
       aria-label="Date Range"
       size="small"
     >
+      {/* <ToggleButton value="lastHour" aria-label="Last Hour">
+        Last Hour
+      </ToggleButton> */}
       <ToggleButton value="today" aria-label="Today">
-        Day
+        Today
       </ToggleButton>
       <ToggleButton value="lastWeek" aria-label="Last Week">
-        Week
+        Last Week
       </ToggleButton>
       <ToggleButton value="lastMonth" aria-label="Last Month">
-        Month
+        Last Month
       </ToggleButton>
       <ToggleButton value="lastYear" aria-label="Last Year">
-        Year
+        Last Year
       </ToggleButton>
     </StyledToggleButtonGroup>
   );

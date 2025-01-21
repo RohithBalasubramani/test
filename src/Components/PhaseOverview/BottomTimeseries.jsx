@@ -8,6 +8,7 @@ import DataTable from "../TableDGEB";
 import DonutChart from "../Dashboard/DonutDash";
 import SankeyChart from "./Sankee";
 import StackedBarDGEB from "./StackChart";
+import PowerOutageChart from "../Powercuts";
 
 // 📌 Extract Keys and Format Them Properly
 const extractKeys = () => {
@@ -86,6 +87,9 @@ const BottomTimeSeries = () => {
             fields={fields}
             backgroundColors={["#5630BC", "#8963EF", "#C4B1F7"]}
           />
+          <div style={{ width: "97%" }}>
+            <PowerOutageChart />
+          </div>
 
           <div>
             <div style={{ display: "flex", gap: "5%" }}>

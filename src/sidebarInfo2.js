@@ -3,7 +3,10 @@ export const sideBarTreeArray = {
     {
       id: "overview",
       label: "Overview",
-      apis: ["https://neuract.org/api/p1_pepplht_outgoing1/"],
+      apis: [
+        "https://neuract.org/api/p1_amfs_generator1/",
+        "https://neuract.org/api/p1_amfs_transformer1/",
+      ],
       feeder_apis: [
         "https://neuract.org/api/p1_amfs_generator1/",
         "https://neuract.org/api/p1_amfs_transformer1/",
@@ -34,10 +37,7 @@ export const sideBarTreeArray = {
     {
       id: "cell_pcc_panel_1_incomer_overview",
       label: "Cell PCC Panel-1 Incomer Overview",
-      apis: [
-        "https://neuract.org/api/p1_amfs_generator1/",
-        "https://neuract.org/api/p1_amfs_transformer1/",
-      ],
+      apis: ["https://neuract.org/api/p1_amfs_outgoing1/"],
       feeder_apis: [
         "https://neuract.org/api/p1_pcc1_ups1a/",
         "https://neuract.org/api/p1_pcc1_ups1b/",
@@ -273,7 +273,10 @@ export const sideBarTreeArray = {
     {
       id: "overview",
       label: "Overview",
-      apis: ["https://neuract.org/api/p1_pepplht_outgoing2/"],
+      apis: [
+        "https://neuract.org/api/p1_amfs_generator2/",
+        "https://neuract.org/api/p1_amfs_transformer2/",
+      ],
       feeder_apis: [
         "https://neuract.org/api/p1_amfs_generator2/",
         "https://neuract.org/api/p1_amfs_transformer2/",
@@ -306,10 +309,7 @@ export const sideBarTreeArray = {
     {
       id: "cell_pcc_panel_2_incomer_overview",
       label: "Cell PCC Panel-2 Incomer Overview",
-      apis: [
-        "https://neuract.org/api/p1_amfs_generator2/",
-        "https://neuract.org/api/p1_amfs_transformer2/",
-      ],
+      apis: ["https://neuract.org/api/p1_amfs_outgoing2/"],
       feeder_apis: [
         "https://neuract.org/api/p1_pcc2_lighting/",
         "https://neuract.org/api/p1_pcc2_ups2a/",
@@ -509,7 +509,10 @@ export const sideBarTreeArray = {
     {
       id: "overview",
       label: "Overview",
-      apis: ["https://neuract.org/api/p1_pepplht_outgoing2/"],
+      apis: [
+        "https://neuract.org/api/p1_amfs_generator3/",
+        "https://neuract.org/api/p1_amfs_transformer3/",
+      ],
       feeder_apis: [
         "https://neuract.org/api/p1_amfs_generator3/",
         "https://neuract.org/api/p1_amfs_transformer3/",
@@ -540,10 +543,7 @@ export const sideBarTreeArray = {
     {
       id: "cell_pcc_panel_3_incomer_overview",
       label: "Cell PCC Panel-3 Incomer Overview",
-      apis: [
-        "https://neuract.org/api/p1_amfs_generator3/",
-        "https://neuract.org/api/p1_amfs_transformer3",
-      ],
+      apis: ["https://neuract.org/api/p1_amfs_outgoing3/"],
       feeder_apis: [
         "https://neuract.org/api/p1_pcc3_chiller3/",
         "https://neuract.org/api/p1_pcc3_chiller4/",
@@ -689,7 +689,7 @@ export const sideBarTreeArray = {
     {
       id: "overview",
       label: "Overview",
-      apis: ["https://neuract.org/api/p1_pepplht_outgoing4/"],
+      apis: ["https://neuract.org/api/p1_amfs_transformer4/"],
       feeder_apis: [
         "https://neuract.org/api/p1_amfs_generator4/",
         "https://neuract.org/api/p1_amfs_transformer4/",

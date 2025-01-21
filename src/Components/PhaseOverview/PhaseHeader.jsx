@@ -50,6 +50,7 @@ const OverviewHeader = ({ realTimePower }) => {
   const [reportData, setReportData] = useState({});
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [period, setPeriod] = useState("D");
 
   const handleGenerateReportClick = () => {
     setIsModalOpen(true);
@@ -178,6 +179,7 @@ const OverviewHeader = ({ realTimePower }) => {
             marginLeft: "auto",
             display: "flex",
             gap: "1vw",
+            width: "53vw",
           }}
         >
           <OverviewTimeBar
@@ -188,6 +190,7 @@ const OverviewHeader = ({ realTimePower }) => {
             setTimeperiod={setTimeperiod}
             startDate={startDate}
             endDate={endDate}
+            setPeriod={setPeriod}
           />
           <DateRangeSelector
             setStartDate={setStartDate}

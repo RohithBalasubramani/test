@@ -24,6 +24,7 @@ import PowerfactorAndFreqHistorical from "./PowerFactorAndFreqHist";
 import sidbarInfo from "../sidbarInfo";
 import { sideBarTreeArray } from "../sidebarInfo2";
 import HistoricalLoader from "./LoadingScreens/HistoricalLoader";
+import AreaChartPowerEnergy from "./PowerArea";
 
 const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
   // Initialize state with default values
@@ -175,6 +176,18 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
               setDateRange={setDateRange}
               backgroundColors={bgsource}
             />
+            <AreaChartPowerEnergy
+              data={data}
+              startDate={startDate}
+              setStartDate={setStartDate}
+              endDate={endDate}
+              setEndDate={setEndDate}
+              timeperiod={timeperiod}
+              setTimeperiod={setTimeperiod}
+              dateRange={dateRange}
+              setDateRange={setDateRange}
+              backgroundColors={bgsource}
+            />
             <VoltageHistorical
               data={data}
               startDate={startDate}
@@ -235,12 +248,10 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
               />
             )}
           </div>
-        </>)
-        :
-        (
-          <HistoricalLoader />
-        )
-      }
+        </>
+      ) : (
+        <HistoricalLoader />
+      )}
     </div>
   );
 };

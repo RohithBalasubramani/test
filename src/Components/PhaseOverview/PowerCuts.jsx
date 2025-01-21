@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,7 +10,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import "./StackedBarDGEB.css";
+import "../Dashboard/StackedBarDGEB.css";
 
 ChartJS.register(
   CategoryScale,
@@ -22,29 +23,67 @@ ChartJS.register(
 
 const PowerOutageChart = () => {
   const [powerStatusData, setPowerStatusData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [powerCuts, setPowerCuts] = useState(0);
   const [totalPowerCutTime, setTotalPowerCutTime] = useState(0);
 
   useEffect(() => {
-    // Dummy data
-    const dummyData = [
-      { status: "on", duration: 8 },
-      { status: "off", duration: 2 },
-      { status: "on", duration: 6 },
-      { status: "off", duration: 1 },
-      { status: "on", duration: 7 },
-    ];
+    const fetchData = async () => {
+      try {
+        const startDate = new Date();
+        startDate.setHours(0, 0, 0, 0); // Start of the day
+        const endDate = new Date(); // Current time
 
-    const powerCutCount = dummyData.filter(
-      (segment) => segment.status === "off"
-    ).length;
-    const totalPowerCutDuration = dummyData
-      .filter((segment) => segment.status === "off")
-      .reduce((total, segment) => total + segment.duration, 0);
+        const response = await axios.get(
+          "https://www.therion.co.in/api/ebs10reading/",
+          {
+            params: {
+              start_date_time: startDate.toISOString(),
+              end_date_time: endDate.toISOString(),
+              resample_period: "m",
+            },
+          }
+        );
 
-    setPowerCuts(powerCutCount);
-    setTotalPowerCutTime(totalPowerCutDuration);
-    setPowerStatusData(dummyData);
+        const data = response.data.results;
+
+        const powerCutIndexes = data
+          .map((entry, index) => (entry.average_current === 0 ? index : null))
+          .filter((index) => index !== null);
+
+        const segments = [];
+        let previousIndex = 0;
+        let powerCutCount = 0;
+        let totalPowerCutDuration = 0;
+
+        powerCutIndexes.forEach((cutIndex) => {
+          const durationOn = cutIndex - previousIndex;
+          if (durationOn > 0) {
+            segments.push({ status: "on", duration: durationOn });
+          }
+          segments.push({ status: "off", duration: 1 });
+          powerCutCount += 1;
+          totalPowerCutDuration += 1; // Assuming each power cut lasts 1 minute
+          previousIndex = cutIndex + 1;
+        });
+
+        // After the last power cut, add the remaining time until the end of the day
+        const finalDuration = 24 - previousIndex;
+        if (finalDuration > 0) {
+          segments.push({ status: "on", duration: finalDuration });
+        }
+
+        setPowerCuts(powerCutCount);
+        setTotalPowerCutTime(totalPowerCutDuration);
+        setPowerStatusData(segments);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const formatDuration = (minutes) => {
@@ -74,8 +113,8 @@ const PowerOutageChart = () => {
       x: {
         display: true,
         grid: {
-          color: "rgba(0, 0, 0, 0.05)",
-          borderDash: [8, 4],
+          color: "rgba(0, 0, 0, 0.05)", // Light gray color with 5% opacity
+          borderDash: [8, 4], // Dotted line style
         },
         stacked: true,
         ticks: {
@@ -110,8 +149,12 @@ const PowerOutageChart = () => {
     indexAxis: "y",
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="container">
+    <div className="stacked-bar-container">
       <div className="top">
         <div className="title">Power Cuts Today</div>
       </div>

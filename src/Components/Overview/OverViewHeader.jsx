@@ -13,6 +13,7 @@ import { CloudDownload } from "@mui/icons-material";
 import ReportModal from "../Reports";
 import OverviewGaugeLoader from "../LoadingScreens/OverviewGaugeLoader";
 import HorizontalHeatmapChart from "./TopConsuming";
+import BottomHeatMap from "./HeatmapTop";
 
 const DashboardHeader = styled.div`
   display: flex;
@@ -22,7 +23,7 @@ const DashboardHeader = styled.div`
 `;
 
 const ContainerBox = styled.div`
-  height: 62vh;
+  height: 64vh;
   overflow: hidden;
 `;
 
@@ -42,6 +43,18 @@ const Container = styled.div`
   height: 30vh;
 `;
 
+const ContainerWidth = styled.div`
+  width: 70vw;
+`;
+
+const ContainerSuper = styled.div`
+  width: 80vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+`;
+
 const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
   const [startDate, setStartDate] = useState(dayjs().startOf("day"));
   const [endDate, setEndDate] = useState(dayjs());
@@ -51,7 +64,8 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reportData, setReportData] = useState([]);
   const [error, setError] = useState(null);
-  const [kpiKey, setKpiKey] = useState(0);
+  const [kpiKey, setKpiKey] = useState(1);
+  const [period, setPeriod] = useState("D");
 
   const fetchData = async (start, end, period) => {
     try {
@@ -140,78 +154,89 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
   };
 
   return (
-    <ContainerBox>
-      <DashboardHeader>
-        <DashboardTitle>Overview </DashboardTitle>
-        <div
-          style={{
-            display: "flex",
-            gap: "1vw",
-            height: "min-content",
-            width: "45vw",
-            marginRight: "0",
-            marginLeft: "auto",
-            alignItems: "right",
-          }}
+    <ContainerSuper>
+      <ContainerBox>
+        <DashboardHeader>
+          <DashboardTitle>Overview </DashboardTitle>
+          <div
+            style={{
+              display: "flex",
+              gap: "1vw",
+              height: "min-content",
+              width: "70vw",
+              marginRight: "0",
+              marginLeft: "auto",
+              alignItems: "right",
+            }}
+          >
+            <OverviewTimeBar
+              setStartDate={setStartDate}
+              setEndDate={setEndDate}
+              dateRange={dateRange}
+              setDateRange={setDateRange}
+              setTimeperiod={setTimeperiod}
+              startDate={startDate}
+              endDate={endDate}
+              setPeriod={setPeriod}
+            />
+            <DateRangeSelector
+              setStartDate={setStartDate}
+              setEndDate={setEndDate}
+              dateRange={dateRange}
+              setDateRange={setDateRange}
+              setTimeperiod={setTimeperiod}
+              startDate={startDate}
+              endDate={endDate}
+            />
+            <button onClick={handleGenerateReportClick} className="emsbutton">
+              <i className="emsbuttonicon">
+                <CloudDownload />
+              </i>
+              <span>Generate Report</span>
+            </button>
+          </div>
+        </DashboardHeader>
+        <Container
+          style={{ display: "flex", gap: "2%", maxHeight: "fit-content" }}
         >
-          <OverviewTimeBar
-            setStartDate={setStartDate}
-            setEndDate={setEndDate}
-            dateRange={dateRange}
-            setDateRange={setDateRange}
-            setTimeperiod={setTimeperiod}
-            startDate={startDate}
-            endDate={endDate}
-          />
-          <DateRangeSelector
-            setStartDate={setStartDate}
-            setEndDate={setEndDate}
-            dateRange={dateRange}
-            setDateRange={setDateRange}
-            setTimeperiod={setTimeperiod}
-            startDate={startDate}
-            endDate={endDate}
-          />
-          <button onClick={handleGenerateReportClick} className="emsbutton">
-            <i className="emsbuttonicon">
-              <CloudDownload />
-            </i>
-            <span>Generate Report</span>
-          </button>
-        </div>
-      </DashboardHeader>
-      <Container
-        style={{ display: "flex", gap: "2%", maxHeight: "fit-content" }}
-      >
-        {Object.keys(data)?.length > 0 ? (
-          <AMFgaugeStacked feederData={data} setKpiKey={setKpiKey} />
-        ) : error ? (
-          <div style={{ color: "red" }}>{error}</div>
-        ) : (
-          <OverviewGaugeLoader />
-        )}
+          {Object.keys(data)?.length > 0 ? (
+            <AMFgaugeStacked feederData={data} setKpiKey={setKpiKey} />
+          ) : error ? (
+            <div style={{ color: "red" }}>{error}</div>
+          ) : (
+            <OverviewGaugeLoader />
+          )}
 
-        <KPI data={Object.values(data)[kpiKey]} />
+          <KPI data={Object.values(data)[kpiKey]} />
 
-        <Alerts />
-      </Container>
+          <Alerts />
+        </Container>
 
-      <ReportModal
-        open={isModalOpen}
-        onClose={handleModalClose}
-        onSubmit={handleModalSubmit}
-        startDate={startDate}
-        setStartDate={setStartDate}
-        endDate={endDate}
-        setEndDate={setEndDate}
-        timeperiod={timeperiod}
-        setTimeperiod={setTimeperiod}
-        dateRange={dateRange}
-        setDateRange={setDateRange}
-        data={reportData} // Pass the processed reportData directly
-        filename="OverviewReport.xlsx"
-      />
-    </ContainerBox>
+        <ReportModal
+          open={isModalOpen}
+          onClose={handleModalClose}
+          onSubmit={handleModalSubmit}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+          timeperiod={timeperiod}
+          setTimeperiod={setTimeperiod}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
+          data={reportData} // Pass the processed reportData directly
+          filename="OverviewReport.xlsx"
+        />
+      </ContainerBox>
+      <ContainerWidth>
+        <BottomHeatMap
+          apiKey={apiKey}
+          topBar={sectionName}
+          parentName={parentName}
+          parentName2={parentName2}
+        />
+      </ContainerWidth>
+    </ContainerSuper>
   );
 };
 

@@ -3,21 +3,21 @@ import {
   Chart as ChartJS,
   BarElement,
   Tooltip,
-  Legend,
   CategoryScale,
   LinearScale,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import styled from "styled-components";
 
-// Register Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+// Register only the required Chart.js components globally
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
 
 // ----- STYLED COMPONENTS ----- //
 const Container = styled.div`
-  width: 100vw;
-  height: 20vh;
-  padding: 16px;
+  height: 18vh;
+  padding: 2vh;
+  width: fit-content;
   box-sizing: border-box;
   background-color: #ffffff;
   border-radius: 12px;
@@ -37,14 +37,16 @@ const Title = styled.div`
 `;
 
 const ChartWrapper = styled.div`
-  width: 100%;
-  height: 100%;
+  width: 77vw;
+  height: 50%;
   position: relative;
+  margin-bottom: 2vh;
 `;
 
 // ----- MAIN COMPONENT ----- //
 const StackedHeatmapChart = ({
   data,
+  backgroundColors = [],
   fields = [
     { key: "P1_AMFS_Transformer2", label: "Transformer 2" },
     { key: "P1_AMFS_Generator2", label: "Generator 2" },
@@ -57,25 +59,20 @@ const StackedHeatmapChart = ({
 
   useEffect(() => {
     try {
-      // Safely extract "resampled data"
       const resampledData = data?.["resampled data"] ?? [];
 
       if (!Array.isArray(resampledData) || resampledData.length === 0) {
-        // No valid data available
         setChartData(null);
         return;
       }
 
-      // Normalize field keys to lowercase
       const normalizedFields = fields.map((field) => ({
         ...field,
         key: field.key.toLowerCase(),
       }));
 
-      // Sum up consumption for each field
       let consumptionArray = normalizedFields.map((field) => {
         const totalValue = resampledData.reduce((sum, item) => {
-          // Make item keys lowercase to match field.key
           const lowerItem = Object.fromEntries(
             Object.entries(item).map(([k, v]) => [k.toLowerCase(), v])
           );
@@ -89,50 +86,49 @@ const StackedHeatmapChart = ({
         };
       });
 
-      // Filter out zero values
       consumptionArray = consumptionArray.filter((item) => item.value > 0);
 
-      // Sort in descending order
       consumptionArray.sort((a, b) => b.value - a.value);
 
-      // Take top 5 only
       const topFive = consumptionArray.slice(0, 5);
 
       if (topFive.length === 0) {
-        // Means all fields were zero or invalid
         setChartData(null);
         return;
       }
 
-      // Build a single label for the stacked bar
-      const labels = ["Energy Sources"];
+      const totalConsumption = topFive.reduce(
+        (sum, item) => sum + item.value,
+        0
+      );
 
-      // Each source becomes its own dataset segment
       const datasets = topFive.map((item, index) => {
-        // Use a nice color palette or generate dynamic colors
-        const backgroundColor = `hsl(${(index * 60) % 360}, 70%, 60%)`;
-        const hoverColor = `hsl(${(index * 60) % 360}, 70%, 50%)`;
+        const percentage = ((item.value / totalConsumption) * 100).toFixed(1);
+        const backgroundColor =
+          backgroundColors[index] ||
+          `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
+            Math.random() * 255
+          )}, ${Math.floor(Math.random() * 255)}, 0.6)`;
 
         return {
           label: item.label,
-          data: [item.value], // Single label => single data point
+          data: [item.value],
           backgroundColor,
-          hoverBackgroundColor: hoverColor,
+          hoverBackgroundColor: backgroundColor,
+          percentage,
         };
       });
 
-      // Final chart data
       setChartData({
-        labels,
+        labels: [""], // Single category for stacked horizontal bar
         datasets,
       });
     } catch (error) {
       console.error("Error building chart data:", error);
       setChartData(null);
     }
-  }, [data, fields]);
+  }, [data, fields, backgroundColors]);
 
-  // If chartData is null, show a fallback message
   if (!chartData) {
     return (
       <Container>
@@ -144,55 +140,47 @@ const StackedHeatmapChart = ({
     );
   }
 
-  // Chart options for a single stacked horizontal bar
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     indexAxis: "y",
     plugins: {
-      legend: {
-        position: "bottom",
-        labels: {
-          font: {
-            family: "DM Sans",
-          },
+      datalabels: {
+        anchor: "center",
+        align: "center",
+        color: "#ffffff",
+        formatter: (value, context) => {
+          const label = context.dataset.label;
+          const percentage = context.dataset.percentage;
+          return `${label}\n${percentage}%`;
+        },
+        font: {
+          size: 14,
+          family: "DM Sans",
+          weight: "bold",
         },
       },
       tooltip: {
         callbacks: {
           label: function (context) {
             const label = context.dataset.label || "";
-            const value = context.parsed.x || 0;
+            const value = context.raw || 0;
             return `${label}: ${value.toFixed(2)} KWh`;
           },
         },
+      },
+      legend: {
+        display: false,
       },
     },
     scales: {
       x: {
         stacked: true,
-        beginAtZero: true,
-        ticks: {
-          font: {
-            family: "DM Sans",
-            size: 12,
-          },
-        },
-        grid: {
-          color: "rgba(0, 0, 0, 0.05)",
-        },
+        display: false, // Hide x-axis
       },
       y: {
         stacked: true,
-        ticks: {
-          font: {
-            family: "DM Sans",
-            size: 12,
-          },
-        },
-        grid: {
-          display: false,
-        },
+        display: false, // Hide y-axis
       },
     },
   };
@@ -201,7 +189,11 @@ const StackedHeatmapChart = ({
     <Container>
       <Title>Top 5 Energy Sources</Title>
       <ChartWrapper>
-        <Bar data={chartData} options={options} />
+        <Bar
+          data={chartData}
+          options={options}
+          plugins={[ChartDataLabels]} // Attach ChartDataLabels here, specifically for this chart
+        />
       </ChartWrapper>
     </Container>
   );

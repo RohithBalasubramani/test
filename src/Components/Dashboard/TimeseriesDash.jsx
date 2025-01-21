@@ -243,7 +243,7 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
               />
             </div>
           </div>
-          <HorizontalHeatmapChart data={data} fields={fieldsDonut} />
+          {/* <HorizontalHeatmapChart data={data} fields={fieldsDonut} /> */}
           <StackedBarChart
             data={data}
             startDate={startDate}

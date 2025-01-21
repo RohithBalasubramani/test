@@ -7,7 +7,7 @@ import styled from "styled-components";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2%;
+  gap: 1vh;
 `;
 
 const KPI = ({ data }) => {
@@ -19,6 +19,8 @@ const KPI = ({ data }) => {
     peakYAppPower: 0,
     peakYAppPowerTime: "",
   });
+
+  console.log("data", data);
 
   console.log("KPI data", data);
 

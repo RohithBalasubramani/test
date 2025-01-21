@@ -4,6 +4,7 @@ import ParentRealtime from "../Components/PhaseOverview/ParentRealTime";
 import BottomTimeSeries from "../Components/PhaseOverview/BottomTimeseries";
 import OverviewHeader from "../Components/PhaseOverview/PhaseHeader";
 import styled from "styled-components";
+import PowerOutageChart from "../Components/Powercuts";
 
 const Container = styled.div`
   background-color: #ffffff;
@@ -11,18 +12,18 @@ const Container = styled.div`
 `;
 
 const PhaseOverviewPage = () => {
-  const [realTimePower, setRealTimePower] = useState(0)
+  const [realTimePower, setRealTimePower] = useState(0);
   return (
     <Container>
       <div>
         {/* FULLL PHASE OVERVEIW */}
-        <OverviewHeader realTimePower={realTimePower}/>
+        <OverviewHeader realTimePower={realTimePower} />
         <div>
           <div className="emstit">
             <span className="emstitle">Real - Time Consumption</span>
             <span className="emsspan">Status: Running EB power</span>
           </div>
-          <ParentRealtime setRealTimePower={setRealTimePower}/>
+          <ParentRealtime setRealTimePower={setRealTimePower} />
           <br />
           <div className="emstit">
             <span className="emstitle">Energy Consumption History</span>
@@ -31,6 +32,7 @@ const PhaseOverviewPage = () => {
               identify patterns and areas for improvement.
             </span>
           </div>
+          {/* <PowerOutageChart /> */}
           <BottomTimeSeries />
         </div>
       </div>

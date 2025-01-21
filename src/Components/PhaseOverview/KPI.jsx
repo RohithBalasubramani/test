@@ -1,4 +1,4 @@
-import { ArrowUpward } from "@mui/icons-material";
+import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import React, { useState, useEffect } from "react";
 import "../kpi.css";
 import styled from "styled-components";
@@ -11,6 +11,21 @@ const Container = styled.div`
   gap: 2%;
 `;
 
+const PercentageCont = styled.span`
+  color: ${(props) => (props.isIncrease ? " #137a5f" : "#ff0000")};
+  border-radius: 50px;
+  background: ${(props) =>
+    props.isIncrease
+      ? " var(--Success-50, #e8f5f1);"
+      : "var(--Failure-50, #fde1e1);"};
+  font-family: DM Sans;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 12px;
+  text-align: left;
+  padding: 0.5vh;
+`;
+
 const KPI = ({ data, startDate, endDate, timeperiod, realTimePower }) => {
   const [kpiData, setKpiData] = useState({
     peakCurrent: 0,
@@ -18,8 +33,9 @@ const KPI = ({ data, startDate, endDate, timeperiod, realTimePower }) => {
     totalConsumption: 0,
     totalCost: 0,
   });
-
-  console.log("KPI data", data);
+  const [previousPower, setPreviousPower] = useState(0);
+  const [percentageChange, setPercentageChange] = useState(0);
+  const [isIncrease, setIsIncrease] = useState(true);
 
   useEffect(() => {
     if (data && data["resampled data"]) {
@@ -61,7 +77,15 @@ const KPI = ({ data, startDate, endDate, timeperiod, realTimePower }) => {
     }
   }, [data]);
 
-  const iconStyle = { fontSize: "2rem" };
+  useEffect(() => {
+    if (previousPower !== 0) {
+      const difference = realTimePower - previousPower;
+      const percentage = ((difference / previousPower) * 100).toFixed(2);
+      setPercentageChange(Math.abs(percentage));
+      setIsIncrease(difference > 0);
+    }
+    setPreviousPower(realTimePower);
+  }, [realTimePower]);
 
   return (
     <>
@@ -75,53 +99,21 @@ const KPI = ({ data, startDate, endDate, timeperiod, realTimePower }) => {
               <span className="kpi-val">{realTimePower.toFixed(2)}</span>
               <span className="kpi-units"> kW </span>
             </div>
-            {/* <div className="kpi-subtext">Feeder: {kpiData.peakFeeder}</div> */}
           </div>
           <div className="kpi-bot">
-            <span className="percentage-cont">
-              <ArrowUpward sx={{ fontSize: "14px" }} />
-              25%
+            <PercentageCont isIncrease={isIncrease}>
+              {isIncrease ? (
+                <ArrowUpward sx={{ fontSize: "14px" }} />
+              ) : (
+                <ArrowDownward sx={{ fontSize: "14px" }} />
+              )}
+              {percentageChange}%
+            </PercentageCont>
+            <span className="percentage-span">
+              {isIncrease ? "More than last minute" : "Less than last minute"}
             </span>
-            <span className="percentage-span">More than last month</span>
           </div>
         </div>
-
-        {/* 📊 Total Consumption Card */}
-        {/* <div className="kpi-cont3">
-          <div className="kpi-top">
-            <div className="kpi-tit">Total Consumption</div>
-            <div style={{ display: "inline" }}>
-              <span className="kpi-val">
-                {kpiData.totalConsumption.toFixed(2)}
-              </span>
-              <span className="kpi-units"> kWh </span>
-            </div>
-          </div>
-          <div className="kpi-bot">
-            <span className="percentage-cont">
-              <ArrowUpward sx={{ fontSize: "14px" }} />
-              20%
-            </span>
-            <span className="percentage-span">More than yesterday</span>
-          </div>
-        </div> */}
-        {/* 💵 Total Energy Cost Card */}
-        {/* <div className="kpi-cont3">
-          <div className="kpi-top">
-            <div className="kpi-tit">Total Energy Cost</div>
-            <div style={{ display: "inline" }}>
-              <span className="kpi-val">₹{kpiData.totalCost.toFixed(2)}</span>
-              <span className="kpi-units"> INR </span>
-            </div>
-          </div>
-          <div className="kpi-bot">
-            <span className="percentage-cont">
-              <ArrowUpward sx={{ fontSize: "14px" }} />
-              15%
-            </span>
-            <span className="percentage-span">More than last month</span>
-          </div>
-        </div> */}
 
         <AMFgaugeLinear
           startDate={startDate}

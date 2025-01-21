@@ -7,7 +7,7 @@ import {
   FormControl,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import "./realtimestyle.css";
+import "./RealTimeStyle.css";
 import "chartjs-adapter-date-fns";
 import OverviewRealTimeEnergyLoader from "../LoadingScreens/OverviewRealTimeEnergyLoader";
 

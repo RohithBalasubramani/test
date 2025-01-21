@@ -195,7 +195,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
             display: "flex",
             gap: "1vw",
             height: "5vh",
-            width: "45vw",
+            width: "68vw",
             marginBottom: "2vh",
           }}
         >
@@ -225,7 +225,7 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
       <KPIContainer>
         <AMFgauge kpidata={data} />
         <KPI data={data} />
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "2vh" }}>
           <PowerFactorGauge
             apikey={apikey}
             topBar={topBar}
