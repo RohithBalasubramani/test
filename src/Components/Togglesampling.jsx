@@ -53,7 +53,7 @@ const ToggleButtons = ({ dateRange, timeperiod, setTimeperiod }) => {
       case "lastHour": // Last hour case
         return (
           <StyledFormControlLabel
-            value="M"
+            value="T"
             control={<Radio />}
             label="Minute"
           />

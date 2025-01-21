@@ -69,9 +69,9 @@ const CostChart = ({ startDate, endDate, timeperiod }) => {
 
   // State for unit prices
   const [unitPrices, setUnitPrices] = useState({
-    Solar: 10,
-    EB: 10,
-    Generator: 10,
+    "Solar": 10,
+    "EB Supply": 10,
+    "Diesel Generator": 10,
   });
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -143,9 +143,9 @@ const CostChart = ({ startDate, endDate, timeperiod }) => {
   );
 
   const totalCost =
-    (aggregatedData.EB || 0) * unitPrices.EB +
-    (aggregatedData.Generator || 0) * unitPrices.Generator -
-    (aggregatedData.Solar || 0) * unitPrices.Solar;
+    (aggregatedData["EB Supply"] || 0) * unitPrices["EB Supply"] +
+    (aggregatedData["Diesel Generator"] || 0) * unitPrices["Diesel Generator"] -
+    (aggregatedData["Solar"] || 0) * unitPrices["Solar"];
 
   const handleDialogOpen = () => setDialogOpen(true);
   const handleDialogClose = () => setDialogOpen(false);

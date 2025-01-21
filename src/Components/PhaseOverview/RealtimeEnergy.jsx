@@ -126,7 +126,7 @@ const legendItems = [
   },
 ];
 
-const RealTimeChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
+const RealTimeChart = ({ rawData, amfOptions, selectedAPI, onRadioChange, setRealTimePower }) => {
   const [chartDataEntries, setChartDataEntries] = useState([]);
   const [selectedPower, setSelectedPower] = useState("active");
 
@@ -142,6 +142,13 @@ const RealTimeChart = ({ rawData, amfOptions, selectedAPI, onRadioChange }) => {
 
     let amfsAvgAppPowerValues = Object.values(rawData).map((value) => {
       return (value.b_app_power + value.r_app_power + value.y_app_power)/3
+    })
+    setRealTimePower(()=>{
+      let sum = 0
+      amfsAvgAppPowerValues.forEach((item) => {
+        sum = sum + item
+      })
+      return sum
     })
 
     let amfsAvgReactivePowerValues = Object.values(rawData).map((value) => {

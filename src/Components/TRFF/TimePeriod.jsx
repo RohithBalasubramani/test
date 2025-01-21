@@ -45,46 +45,46 @@ const TimeBar = ({
 
     let defaultTimePeriod = "H"; // Default time period
 
-    switch (range) {
-      case "lastHour":
-        setStartDate(today.subtract(1, "hour").startOf("minute")); // Last hour start
-        setEndDate(today); // Current timestamp
-        defaultTimePeriod = "M"; // Resampling period in minutes
-        setPeriod("H");
-        break;
-      case "today":
-        setStartDate(today.startOf("day")); // Start of the day
-        setEndDate(today); // Current timestamp
-        defaultTimePeriod = "H"; // Hourly resampling
-        setPeriod("D");
-        break;
-      case "lastWeek":
-        setStartDate(today.subtract(7, "day").startOf("day")); // 7 days ago
-        setEndDate(today); // Current timestamp
-        defaultTimePeriod = "D"; // Daily resampling
-        setPeriod("W");
-        break;
-      case "lastMonth":
-        setStartDate(today.subtract(1, "month").startOf("day")); // Start of last month
-        setEndDate(today); // Current timestamp
-        defaultTimePeriod = "D"; // Daily resampling
-        setPeriod("M");
-        break;
-      case "lastYear":
-        setStartDate(today.subtract(1, "year").startOf("day")); // Start of last year
-        setEndDate(today); // Current timestamp
-        defaultTimePeriod = "W"; // Weekly resampling
-        setPeriod("Y");
+    // switch (range) {
+    //   case "lastHour":
+    //     setStartDate(today.subtract(1, "hour").startOf("minute")); // Last hour start
+    //     setEndDate(today); // Current timestamp
+    //     defaultTimePeriod = "M"; // Resampling period in minutes
+    //     setPeriod("T");
+    //     break;
+    //   case "today":
+    //     setStartDate(today.startOf("day")); // Start of the day
+    //     setEndDate(today); // Current timestamp
+    //     defaultTimePeriod = "H"; // Hourly resampling
+    //     setPeriod("D");
+    //     break;
+    //   case "lastWeek":
+    //     setStartDate(today.subtract(7, "day").startOf("day")); // 7 days ago
+    //     setEndDate(today); // Current timestamp
+    //     defaultTimePeriod = "D"; // Daily resampling
+    //     setPeriod("W");
+    //     break;
+    //   case "lastMonth":
+    //     setStartDate(today.subtract(1, "month").startOf("day")); // Start of last month
+    //     setEndDate(today); // Current timestamp
+    //     defaultTimePeriod = "D"; // Daily resampling
+    //     setPeriod("M");
+    //     break;
+    //   case "lastYear":
+    //     setStartDate(today.subtract(1, "year").startOf("day")); // Start of last year
+    //     setEndDate(today); // Current timestamp
+    //     defaultTimePeriod = "W"; // Weekly resampling
+    //     setPeriod("Y");
 
-        break;
-      default:
-        setStartDate(today.startOf("day")); // Start of the day
-        setEndDate(today); // Current timestamp
-        defaultTimePeriod = "D"; // Default to daily resampling
-        setPeriod("D");
+    //     break;
+    //   default:
+    //     setStartDate(today.startOf("day")); // Start of the day
+    //     setEndDate(today); // Current timestamp
+    //     defaultTimePeriod = "D"; // Default to daily resampling
+    //     setPeriod("D");
 
-        break;
-    }
+    //     break;
+    // }
 
     setTimeperiod(defaultTimePeriod);
   };

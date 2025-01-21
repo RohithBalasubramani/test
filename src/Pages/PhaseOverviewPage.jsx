@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import TopBar from "../Components/TopBar";
 import ParentRealtime from "../Components/PhaseOverview/ParentRealTime";
 import BottomTimeSeries from "../Components/PhaseOverview/BottomTimeseries";
@@ -11,17 +11,18 @@ const Container = styled.div`
 `;
 
 const PhaseOverviewPage = () => {
+  const [realTimePower, setRealTimePower] = useState(0)
   return (
     <Container>
       <div>
         {/* FULLL PHASE OVERVEIW */}
-        <OverviewHeader />
+        <OverviewHeader realTimePower={realTimePower}/>
         <div>
           <div className="emstit">
             <span className="emstitle">Real - Time Consumption</span>
             <span className="emsspan">Status: Running EB power</span>
           </div>
-          <ParentRealtime />
+          <ParentRealtime setRealTimePower={setRealTimePower}/>
           <br />
           <div className="emstit">
             <span className="emstitle">Energy Consumption History</span>
