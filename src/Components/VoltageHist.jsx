@@ -42,7 +42,7 @@ const VoltageHistorical = ({
         const datasets = [
           {
             label: "Vr Voltage",
-            data: resampledData.map((item) => item["r_phase_voltage"]),
+            data: resampledData.map((item) => item["r_voltage"]),
             borderColor: "#D33030",
             borderWidth: 2,
             pointRadius: 0,
@@ -51,7 +51,7 @@ const VoltageHistorical = ({
           },
           {
             label: "Vy Voltage",
-            data: resampledData.map((item) => item["y_phase_voltage"]),
+            data: resampledData.map((item) => item["y_voltage"]),
             borderColor: "#FFB319",
             borderWidth: 2,
             pointRadius: 0,
@@ -60,7 +60,7 @@ const VoltageHistorical = ({
           },
           {
             label: "Vb Voltage",
-            data: resampledData.map((item) => item["b_phase_voltage"]),
+            data: resampledData.map((item) => item["b_voltage"]),
             borderColor: "#017EF3",
             borderWidth: 2,
             pointRadius: 0,

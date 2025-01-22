@@ -7,6 +7,7 @@ import ToggleButtons from "./Togglesampling"; // Import the ToggleButtons compon
 //import DateRangeSelector from "./Daterangeselector"; // Import the DateRangeSelector component
 import "./StackedBarDGEB.css"; // Import the CSS file
 import DateRangeSelector from "./Dashboard/Daterangeselector";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 const PowerfactorAndFreqHistorical = ({
   data,
@@ -23,12 +24,17 @@ const PowerfactorAndFreqHistorical = ({
   const [chartData, setChartData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [firstAttribute, setFirstAttribute] = useState("avg_power_factor")
+  const [secondAttribute, setSecondAttribute] = useState("frequency")
+  const [selectData, setSelectData] = useState([])
 
   useEffect(() => {
     if (data && data["resampled data"]) {
       try {
         const resampledData = data["resampled data"];
-
+        let tempResampleData = Object.keys(resampledData[0])
+        tempResampleData = tempResampleData.slice(1)
+        setSelectData(tempResampleData)
         // Define the keys to include manually and their custom labels
         const kwKeys = [
           { key: "EBS10Reading_kw", label: "EB Supply" },
@@ -41,8 +47,8 @@ const PowerfactorAndFreqHistorical = ({
 
         const datasets = [
           {
-            label: "Powerfactor",
-            data: resampledData.map((item) => item["avg_power_factor"]),
+            label: firstAttribute.replaceAll("_"," ").toUpperCase(),
+            data: resampledData.map((item) => item[firstAttribute]),
             borderColor: "#D33030",
             borderWidth: 2,
             pointRadius: 0,
@@ -51,8 +57,8 @@ const PowerfactorAndFreqHistorical = ({
             yAxisID: "y",
           },
           {
-            label: "Frequency",
-            data: resampledData.map((item) => item["frequency"]),
+            label: secondAttribute.replaceAll("_"," ").toUpperCase(),
+            data: resampledData.map((item) => item[secondAttribute]),
             borderColor: "#FFB319",
             borderWidth: 2,
             pointRadius: 0,
@@ -76,7 +82,7 @@ const PowerfactorAndFreqHistorical = ({
       setLoading(false);
       setError("No resampled data available");
     }
-  }, [data, timeperiod, backgroundColors]);
+  }, [data, timeperiod, backgroundColors, firstAttribute, secondAttribute]);
 
   // Function to generate x-axis labels based on timeperiod
   const generateXAxisLabels = (resampledData) => {
@@ -137,7 +143,7 @@ const PowerfactorAndFreqHistorical = ({
       y: {
         title: {
           display: true,
-          text: "Powerfactor",
+          text: firstAttribute.replaceAll("_", " ").toUpperCase(),
         },
         grid: {
           color: "rgba(0, 0, 0, 0.05)",
@@ -148,7 +154,7 @@ const PowerfactorAndFreqHistorical = ({
       y1: {
         title: {
           display: true,
-          text: "Frequency (Hz)",
+          text: secondAttribute.replaceAll("_", " ").toUpperCase(),
         },
         grid: {
           color: "rgba(0, 0, 0, 0.05)",
@@ -169,7 +175,33 @@ const PowerfactorAndFreqHistorical = ({
       <div className="card shadow mb-4">
         <div className="card-body">
           <div className="row">
-            <div className="title">Power Factor & Frequency</div>
+          <FormControl style={{ marginLeft: 0 }} variant="standard">
+          <InputLabel>First Attribute</InputLabel>
+          <Select
+            value={firstAttribute}
+            onChange={(e) => setFirstAttribute(e.target.value)}
+          >
+            {selectData.map((feeder) => (
+              <MenuItem key={feeder} value={feeder}>
+                {feeder?.replaceAll("_", " ").toUpperCase()}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl variant="standard">
+          <InputLabel>Second Attribute</InputLabel>
+          <Select
+            value={secondAttribute}
+            onChange={(e) => setSecondAttribute(e.target.value)}
+          >
+            {selectData.map((feeder) => (
+              <MenuItem key={feeder} value={feeder}>
+                {feeder?.replaceAll("_", " ").toUpperCase()}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
             <div className="controls">
               <TimeBar
                 setStartDate={setStartDate}
