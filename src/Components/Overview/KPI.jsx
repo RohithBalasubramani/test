@@ -7,7 +7,7 @@ import styled from "styled-components";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1vh;
+  gap: 2vh;
 `;
 
 const KPI = ({ data }) => {

@@ -221,9 +221,11 @@ const VoltageChart = ({ rawData }) => {
     <div className="containerchart">
       {/* Chart Container */}
       <div className="chart-cont">
-        <div className="title">
-          <div>
-            {" "}
+        <div className="formcontrol">
+          <div
+            className="title"
+            // style={{ display: "flex", justifyContent: "space-between" }}
+          >
             <div> Voltage </div>
             <FormControl component="fieldset">
               <StyledRadioGroup

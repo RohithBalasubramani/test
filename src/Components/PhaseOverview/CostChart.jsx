@@ -222,8 +222,12 @@ const CostChart = ({ startDate, endDate, timeperiod }) => {
         ))}
       </ProgressContainer>
 
-      <Dialog open={dialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>Update Unit Prices</DialogTitle>
+      <Dialog
+        sx={{ width: "25vw", display: "flex", margin: "auto" }}
+        open={dialogOpen}
+        onClose={handleDialogClose}
+      >
+        <DialogTitle>Update Energy Unit Prices</DialogTitle>
         <DialogContent>
           <TextField
             label="Solar Unit Price"
@@ -253,8 +257,21 @@ const CostChart = ({ startDate, endDate, timeperiod }) => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button onClick={handleSave} color="primary">
+          <Button
+            onClick={handleDialogClose}
+            sx={{
+              background: "#ffffff",
+              color: "#1B2533",
+              border: "1px solid #C1C7D1",
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            sx={{ background: "#6036D4", color: "#ffffff" }}
+            onClick={handleSave}
+            color="primary"
+          >
             Save
           </Button>
         </DialogActions>
