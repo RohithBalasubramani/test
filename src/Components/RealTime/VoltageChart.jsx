@@ -15,7 +15,7 @@ import {
   Legend,
   registerables,
 } from "chart.js";
-import "./RealTimeStyle.css";
+import "./realtimestyle.css";
 import "chartjs-adapter-date-fns";
 
 ChartJS.register(
