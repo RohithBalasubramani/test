@@ -14,6 +14,7 @@ import {
 import axios from "axios";
 import "../realtimestyle.css"; // Make sure this includes your .crossed-out and .legend-item-two CSS
 import "chartjs-adapter-date-fns";
+import { httpClient } from "../../Services/HttpClient";
 
 ChartJS.register(
   CategoryScale,
@@ -89,8 +90,8 @@ const RealTimeChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     try {
       if (firstFeederApiKey && secondFeederApiKey) {
         const [firstFeederResponse, secondFeederResponse] = await Promise.all([
-          axios.get(firstFeederApiKey),
-          axios.get(secondFeederApiKey),
+          httpClient.get(firstFeederApiKey),
+          httpClient.get(secondFeederApiKey),
         ]);
 
         const timestamp = firstFeederResponse.data["recent data"]["timestamp"];

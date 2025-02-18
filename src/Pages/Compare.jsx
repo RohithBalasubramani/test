@@ -23,6 +23,7 @@ import StackedPowerFactorGauge from "../Components/CompareScreenComp/StackedPowe
 import DataTable from "../Components/CompareScreenComp/Table";
 import KPI from "../Components/CompareScreenComp/KPI";
 import AMFgaugeStacked from "../Components/CompareScreenComp/AMFGauge";
+import { httpClient } from "../Services/HttpClient";
 
 // =============== Styled Components ===============
 const Container = styled.div`
@@ -209,10 +210,10 @@ const Compare = ({ apikey, key }) => {
           if (firstFeederURL && secondFeederURL) {
             const [firstFeederResponse, secondFeederResponse] =
               await Promise.all([
-                axios.get(
+                httpClient.get(
                   `${firstFeederURL}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
                 ),
-                axios.get(
+                httpClient.get(
                   `${secondFeederURL}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
                 ),
               ]);

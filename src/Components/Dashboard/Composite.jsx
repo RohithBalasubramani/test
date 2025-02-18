@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import axios from "axios";
 import "./realtimestyle.css"; // Import the shared CSS file
+import { httpClient } from "../../Services/HttpClient";
 
 ChartJS.register(
   CategoryScale,
@@ -40,9 +41,9 @@ const RealTimeChart = () => {
     };
     try {
       const [ebResponse, dgResponse, dg1s12Response] = await Promise.all([
-        axios.get("https://www.therion.co.in/api/ebs10reading/", { params }),
-        axios.get("https://www.therion.co.in/api/dg2s3reading/", { params }),
-        axios.get("https://www.therion.co.in/api/dg1s12reading/", { params }),
+        httpClient.get("https://www.therion.co.in/api/ebs10reading/", { params }),
+        httpClient.get("https://www.therion.co.in/api/dg2s3reading/", { params }),
+        httpClient.get("https://www.therion.co.in/api/dg1s12reading/", { params }),
       ]);
 
       const ebRecent = ebResponse.data["recent data"];

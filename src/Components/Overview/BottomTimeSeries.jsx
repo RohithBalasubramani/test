@@ -18,6 +18,7 @@ import VerticalChart from "./BarchartVertical";
 import CostChart from "./CostChart";
 import CombinedChart from "./Combine";
 import DataTable from "../TableDGEB";
+import UserService from "../../Services/UserService";
 
 const BottomTimeSeries = () => {
   // Initialize state with default values
@@ -31,7 +32,12 @@ const BottomTimeSeries = () => {
   const fetchData = async (start, end, period) => {
     try {
       const response = await fetch(
-        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+          headers: {
+            "Authorization": `Bearer ${UserService.getToken()}`,
+            "Content-Type": "application/json"
+          }
+        }
       );
       const result = await response.json();
       setData(result);

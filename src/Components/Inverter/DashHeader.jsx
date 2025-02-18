@@ -14,6 +14,7 @@ import "../emstemp.css";
 import DateRangeSelector from "../Dashboard/Daterangeselector";
 import { sideBarTreeArray } from "../../sidebarInfo2";
 import AMFgauge from "../AmfGauge";
+import UserService from "../../Services/UserService";
 
 const DashboardHeader = styled.div`
   display: flex;
@@ -145,7 +146,12 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
           const apiEndPoint = apiEndpointsArray.apis?.[0];
           if (apiEndPoint) {
             const response = await fetch(
-              `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+              `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+                headers: {
+                  "Authorization": `Bearer ${UserService.getToken()}`,
+                  "Content-Type": "application/json"
+                }
+              }
             );
             const result = await response.json();
             setData(result);

@@ -15,6 +15,7 @@ import {
 import { BorderColorOutlined } from "@mui/icons-material";
 import dayjs from "dayjs";
 import { OverviewSource } from "../../phasedata";
+import UserService from "../../Services/UserService"
 
 // Styled components
 const Container = styled.div`
@@ -86,7 +87,12 @@ const CostChart = ({ startDate, endDate, timeperiod }) => {
         : dayjs().endOf("day").toISOString();
 
       const url = `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${validStartDate}&end_date_time=${validEndDate}&resample_period=${timeperiod}`;
-      const response = await fetch(url);
+      const response = await fetch(url,{
+        headers: {
+          "Authorization": `Bearer ${UserService.getToken()}`,
+          "Content-Type": "application/json"
+        }
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

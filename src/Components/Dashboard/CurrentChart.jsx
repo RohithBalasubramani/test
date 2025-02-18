@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
 import "./realtimestyle.css"; // Import the shared CSS file
+import { httpClient } from "../../Services/HttpClient";
 
 const RealTimeCurrentChart = () => {
   const [data, setData] = useState([]);
@@ -16,9 +17,9 @@ const RealTimeCurrentChart = () => {
     };
     try {
       const [ebResponse, dg1Response, dg2Response] = await Promise.all([
-        axios.get("https://www.therion.co.in/api/ebs10reading/", { params }),
-        axios.get("https://www.therion.co.in/api/dg1s12reading/", { params }),
-        axios.get("https://www.therion.co.in/api/dg2s3reading/", { params }),
+        httpClient.get("https://www.therion.co.in/api/ebs10reading/", { params }),
+        httpClient.get("https://www.therion.co.in/api/dg1s12reading/", { params }),
+        httpClient.get("https://www.therion.co.in/api/dg2s3reading/", { params }),
       ]);
 
       const ebRecent = ebResponse.data["recent data"];

@@ -6,6 +6,7 @@ import { ArrowUpward, Launch } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import PowerFactorGauge from "./PowerFactor";
 import { Link } from "react-router-dom";
+import { httpClient } from "../../Services/HttpClient";
 
 // Styled components for layout and styling
 const Container = styled.div`
@@ -51,9 +52,9 @@ const AMFgauge = () => {
   const fetchData = async () => {
     try {
       const [ebResponse, dgResponse1, dgResponse2] = await Promise.all([
-        axios.get("https://www.therion.co.in/api/ebs10reading/"),
-        axios.get("https://www.therion.co.in/api/dg1s12reading/"),
-        axios.get("https://www.therion.co.in/api/dg2s3reading/"),
+        httpClient.get("https://www.therion.co.in/api/ebs10reading/"),
+        httpClient.get("https://www.therion.co.in/api/dg1s12reading/"),
+        httpClient.get("https://www.therion.co.in/api/dg2s3reading/"),
       ]);
 
       const ebKwh = ebResponse.data["recent data"].kwh;

@@ -11,6 +11,7 @@ import DateRangeSelector from "../Dashboard/Daterangeselector";
 import { CloudDownload } from "@mui/icons-material";
 import ReportModal from "../Reports";
 import AMFgaugeLinear from "./CostChart";
+import UserService from "../../Services/UserService"
 
 // Styled Components
 const DashboardHeader = styled.div`
@@ -118,7 +119,12 @@ const OverviewHeader = ({ realTimePower }) => {
       // Fetch data from all APIs concurrently
       const fetchPromises = apiEndpoints.map(async (api) => {
         const response = await fetch(
-          `${api}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+          `${api}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+            headers: {
+              "Authorization": `Bearer ${UserService.getToken()}`,
+              "Content-Type": "application/json"
+            }
+          }
         );
 
         if (!response.ok) {

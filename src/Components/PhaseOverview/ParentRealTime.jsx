@@ -4,6 +4,7 @@ import RealTimeChart from "./RealtimeEnergy"; // Your chart component
 import RealTimeCurrentChart from "./RealtimeCurrent";
 import VoltageChart from "./RealtimeVoltage";
 import axios from "axios";
+import { httpClient } from "../../Services/HttpClient";
 
 const ParentRealtime = ({ setRealTimePower }) => {
   // Filter out "overview" so we only have AMF1a, AMF1b, AMF2a, AMF2b
@@ -19,7 +20,7 @@ const ParentRealtime = ({ setRealTimePower }) => {
     try {
       const [amf1a, amf1b, amf2a, amf2b] = await Promise.all(
         selectedAPIs.map((api) => {
-          return axios.get(api);
+          return httpClient.get(api);
         })
       );
       // const response = await fetch(apiURL);

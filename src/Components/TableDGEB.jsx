@@ -230,7 +230,7 @@ const roundToTwo = (num) => {
 };
 
 const transformData = (tablesData) => {
-  return tablesData.map((row) => {
+  return tablesData?.map((row) => {
     const transformedRow = {};
 
     // Map the column names to their new names and exclude `_kwh` and `id` columns
@@ -315,7 +315,7 @@ const DataTable = ({
 
   const transformedData = transformData(tablesData);
   const [visibleColumns, setVisibleColumns] = useState(
-    transformedData[0]
+    transformedData && transformedData[0]
       ? Object.keys(transformedData[0]).reduce((acc, column) => {
           acc[column] = true; // Set all columns to visible initially
           return acc;
@@ -341,7 +341,7 @@ const DataTable = ({
     }));
   };
 
-  const filteredRows = transformedData.map((row) => {
+  const filteredRows = transformedData?.map((row) => {
     const roundedRow = {};
     Object.entries(row).forEach(([key, value]) => {
       if (visibleColumns[key]) {
@@ -354,7 +354,7 @@ const DataTable = ({
     return roundedRow;
   });
 
-  const sortedRows = filteredRows.slice().sort((a, b) => {
+  const sortedRows = filteredRows?.slice().sort((a, b) => {
     if (b[sortColumn] < a[sortColumn]) {
       return sortOrder === "asc" ? 1 : -1;
     }
@@ -427,113 +427,120 @@ const DataTable = ({
   return (
     <>
       <div className="stacked-bar-container">
-        <div className="card shadow mb-4">
-          <div className="card-body">
-            <div className="row">
-              <div className="title">Energy Consumption by Source</div>
-              <div className="controls">
-                <TimeBar
-                  setStartDate={setStartDate}
-                  setEndDate={setEndDate}
-                  dateRange={dateRange}
-                  setDateRange={setDateRange}
-                  setTimeperiod={setTimeperiod}
-                  startDate={startDate}
-                  endDate={endDate}
-                />
-                {/* <DateRangeSelector
-                  startDate={startDate}
-                  setStartDate={setStartDate}
-                  endDate={endDate}
-                  setEndDate={setEndDate}
-                /> */}
-                <FilterDropdown>
-                  <FilterButton onClick={toggleFilter}>
-                    <FilterListIcon />
-                    <span>Filter Columns</span>
-                  </FilterButton>
-                  <DropdownContent show={showFilter}>
-                    {Object.keys(transformedData[0]).map((column) => (
-                      <CheckboxContainer key={column}>
-                        <input
-                          type="checkbox"
-                          checked={visibleColumns[column]}
-                          onChange={() => handleColumnVisibilityChange(column)}
-                        />
-                        <CheckboxLabel>{column}</CheckboxLabel>
-                      </CheckboxContainer>
-                    ))}
-                  </DropdownContent>
-                </FilterDropdown>
+        {tablesData && (
+          <div className="card shadow mb-4">
+            <div className="card-body">
+              <div className="row">
+                <div className="title">Energy Consumption by Source</div>
+                <div className="controls">
+                  <TimeBar
+                    setStartDate={setStartDate}
+                    setEndDate={setEndDate}
+                    dateRange={dateRange}
+                    setDateRange={setDateRange}
+                    setTimeperiod={setTimeperiod}
+                    startDate={startDate}
+                    endDate={endDate}
+                  />
+                  {/* <DateRangeSelector
+                startDate={startDate}
+                setStartDate={setStartDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
+              /> */}
+                  <FilterDropdown>
+                    <FilterButton onClick={toggleFilter}>
+                      <FilterListIcon />
+                      <span>Filter Columns</span>
+                    </FilterButton>
+                    <DropdownContent show={showFilter}>
+                      {Object.keys(transformedData[0]).map((column) => (
+                        <CheckboxContainer key={column}>
+                          <input
+                            type="checkbox"
+                            checked={visibleColumns[column]}
+                            onChange={() =>
+                              handleColumnVisibilityChange(column)
+                            }
+                          />
+                          <CheckboxLabel>{column}</CheckboxLabel>
+                        </CheckboxContainer>
+                      ))}
+                    </DropdownContent>
+                  </FilterDropdown>
+                </div>
               </div>
+              <div className="row">
+                <ToggleButtons
+                  dateRange={dateRange}
+                  timeperiod={timeperiod}
+                  setTimeperiod={setTimeperiod}
+                />
+              </div>
+
+              <StyledTableContainer component={Paper}>
+                <StyledTable>
+                  <TableHead>
+                    <TableRow>
+                      {Object.keys(transformedData[0]).map((header) => (
+                        <StyledTableHeader key={header}>
+                          <StyledTableSortLabel
+                            active={sortColumn === header}
+                            direction={sortOrder}
+                            onClick={() => handleSortRequest(header)}
+                          >
+                            {header}
+                          </StyledTableSortLabel>
+                        </StyledTableHeader>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {sortedRows
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((row, rowIndex) => (
+                        <StyledTableRow key={rowIndex}>
+                          {Object.keys(row).map((column) => (
+                            <StyledTableCell key={column}>
+                              {row[column]}
+                            </StyledTableCell>
+                          ))}
+                        </StyledTableRow>
+                      ))}
+                  </TableBody>
+                </StyledTable>
+              </StyledTableContainer>
+
+              <PaginationContainer>
+                <PageButton
+                  onClick={() => setPage(page - 1)}
+                  disabled={page === 0}
+                >
+                  ← Previous
+                </PageButton>
+                <PageIndicator>{renderPageNumbers()}</PageIndicator>
+                <PageButton
+                  onClick={() => setPage(page + 1)}
+                  disabled={page >= totalPages - 1}
+                >
+                  Next →
+                </PageButton>
+              </PaginationContainer>
             </div>
-            <div className="row">
-              <ToggleButtons
-                dateRange={dateRange}
-                timeperiod={timeperiod}
-                setTimeperiod={setTimeperiod}
+            <div className="d-flex justify-content-end mb-4">
+              <ExportToExcelButton
+                data={sortedRows}
+                filename="M2report.xlsx"
+                startDatetime={startDate}
+                endDatetime={endDate}
+                source="Overall report"
               />
             </div>
-
-            <StyledTableContainer component={Paper}>
-              <StyledTable>
-                <TableHead>
-                  <TableRow>
-                    {Object.keys(transformedData[0]).map((header) => (
-                      <StyledTableHeader key={header}>
-                        <StyledTableSortLabel
-                          active={sortColumn === header}
-                          direction={sortOrder}
-                          onClick={() => handleSortRequest(header)}
-                        >
-                          {header}
-                        </StyledTableSortLabel>
-                      </StyledTableHeader>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {sortedRows
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, rowIndex) => (
-                      <StyledTableRow key={rowIndex}>
-                        {Object.keys(row).map((column) => (
-                          <StyledTableCell key={column}>
-                            {row[column]}
-                          </StyledTableCell>
-                        ))}
-                      </StyledTableRow>
-                    ))}
-                </TableBody>
-              </StyledTable>
-            </StyledTableContainer>
-
-            <PaginationContainer>
-              <PageButton
-                onClick={() => setPage(page - 1)}
-                disabled={page === 0}
-              >
-                ← Previous
-              </PageButton>
-              <PageIndicator>{renderPageNumbers()}</PageIndicator>
-              <PageButton
-                onClick={() => setPage(page + 1)}
-                disabled={page >= totalPages - 1}
-              >
-                Next →
-              </PageButton>
-            </PaginationContainer>
           </div>
-          <div className="d-flex justify-content-end mb-4">
-            <ExportToExcelButton
-              data={sortedRows}
-              filename="M2report.xlsx"
-              startDatetime={startDate}
-              endDatetime={endDate}
-              source="Overall report"
-            />
-          </div>
-        </div>
+        )}
       </div>
     </>
   );

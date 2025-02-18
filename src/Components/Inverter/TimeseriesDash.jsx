@@ -23,6 +23,7 @@ import CurrentHistorical from "./CurrentHist";
 import PowerfactorAndFreqHistorical from "./PowerFactorAndFreqHist";
 import sidbarInfo from "../../sidbarInfo";
 import { sideBarTreeArray } from "../../sidebarInfo2";
+import UserService from "../../Services/UserService";
 
 const BottomTimeSeries = ({apiKey, topBar}) => {
   // Initialize state with default values
@@ -44,7 +45,12 @@ const BottomTimeSeries = ({apiKey, topBar}) => {
           const apiEndpoints = apiEndpointsArray.apis[0];
           if (apiEndpoints) {
             const response = await fetch(
-              `${apiEndpoints}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+              `${apiEndpoints}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+                headers: {
+                  "Authorization": `Bearer ${UserService.getToken()}`,
+                  "Content-Type": "application/json"
+                }
+              }
             );
             const result = await response.json();
             setData(result);

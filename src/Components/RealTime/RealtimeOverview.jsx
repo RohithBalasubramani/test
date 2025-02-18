@@ -6,6 +6,7 @@ import RealTimeChart from "./Composite";
 import RealTimeCurrentChart from "./CurrentChart";
 import styled from "styled-components";
 import RealTimeLoader from "../LoadingScreens/RealTimeLoader";
+import { httpClient } from "../../Services/HttpClient";
 
 const Container = styled.div`
   display: flex;
@@ -67,7 +68,7 @@ const ParentOverviewComponent = ({
     try {
       // Fetch data from all feeders
       const feederResponses = await Promise.all(
-        apiEndpoints.map((endpoint) => axios.get(endpoint))
+        apiEndpoints.map((endpoint) => httpClient.get(endpoint))
       );
 
       const feederData = feederResponses.map((response, index) => ({

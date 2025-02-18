@@ -10,7 +10,7 @@ import { styled } from "@mui/system";
 import "./realtimestyle.css";
 import "chartjs-adapter-date-fns";
 import OverviewRealTimeEnergyLoader from "../LoadingScreens/OverviewRealTimeEnergyLoader";
-
+import UserService from "../../Services/UserService"
 // --- Styled Radio Components ---
 const StyledRadioGroup = styled(RadioGroup)({
   display: "flex",
@@ -73,7 +73,12 @@ const RealTimeChart = ({
 
     try {
       const response = await fetch(
-        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${params.start_date_time}&end_date_time=${params.end_date_time}&resample_period=${params.resample_period}`
+        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${params.start_date_time}&end_date_time=${params.end_date_time}&resample_period=${params.resample_period}`,{
+          headers: {
+            "Authorization": `Bearer ${UserService.getToken()}`,
+            "Content-Type": "application/json"
+          }
+        }
       );
 
       if (!response.ok) {

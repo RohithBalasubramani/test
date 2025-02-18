@@ -3,6 +3,7 @@ import { RadialBarChart, RadialBar, PolarAngleAxis, Tooltip } from "recharts";
 import styled from "styled-components";
 import dayjs from "dayjs";
 import { OverviewSource } from "../../phasedata";
+import UserService from "../../Services/UserService";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Styled Components
@@ -134,7 +135,12 @@ const AMFgaugeStacked = ({ startDate, endDate, timeperiod }) => {
 
       // 2. Call the delta consolidated endpoint
       const url = `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${validStartDate}&end_date_time=${validEndDate}&resample_period=${timeperiod}`;
-      const response = await fetch(url);
+      const response = await fetch(url,{
+        headers: {
+          "Authorization": `Bearer ${UserService.getToken()}`,
+          "Content-Type": "application/json"
+        }
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

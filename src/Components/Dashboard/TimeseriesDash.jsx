@@ -10,6 +10,7 @@ import StackedBarChart from "./StackedChart";
 import MySankeyChart from "../Sankee";
 import SankeyChart from "./Sankee";
 import HorizontalHeatmapChart from "../Overview/TopConsuming";
+import UserService from "../../Services/UserService";
 
 const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
   const [startDate, setStartDate] = useState(dayjs().startOf("day"));
@@ -148,7 +149,12 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
   const fetchData = async (start, end, period) => {
     try {
       const response = await fetch(
-        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+          headers: {
+            "Authorization": `Bearer ${UserService.getToken()}`,
+            "Content-Type": "application/json"
+          }
+        }
       );
       const result = await response.json();
       console.log("results raw", result);

@@ -1,5 +1,6 @@
 import Keycloak from "keycloak-js";
 import keycloakCred from "../keycloak.json"
+import { httpClient } from "./HttpClient";
 
 const _kc = new Keycloak(keycloakCred);
 
@@ -18,6 +19,7 @@ const initKeycloak = (onAuthenticatedCallback) => {
       if (!authenticated) {
         console.log("user is not authenticated..!");
       }
+      httpClient.defaults.headers.common['Authorization'] = `Bearer ${_kc.token}`;
       onAuthenticatedCallback();
     })
     .catch(console.error);
