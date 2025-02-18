@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
 import "../realtimestyle.css"; // Shared CSS file
+import { httpClient } from "../../Services/HttpClient";
 
 /**
  * Component to display real-time current data for two feeders with interactive legends.
@@ -45,8 +46,8 @@ const RealTimeCurrentChart = ({ firstFeederApiKey, secondFeederApiKey }) => {
     try {
       if (firstFeederApiKey && secondFeederApiKey) {
         const [firstFeederResponse, secondFeederResponse] = await Promise.all([
-          axios.get(firstFeederApiKey),
-          axios.get(secondFeederApiKey),
+          httpClient.get(firstFeederApiKey),
+          httpClient.get(secondFeederApiKey),
         ]);
 
         const timestamp = firstFeederResponse.data["recent data"]["timestamp"];

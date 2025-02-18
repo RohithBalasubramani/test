@@ -25,6 +25,7 @@ import sidbarInfo from "../sidbarInfo";
 import { sideBarTreeArray } from "../sidebarInfo2";
 import HistoricalLoader from "./LoadingScreens/HistoricalLoader";
 import AreaChartPowerEnergy from "./PowerArea";
+import UserService from "../Services/UserService";
 
 const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
   // Initialize state with default values
@@ -65,7 +66,12 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
           const apiEndPoint = apiEndpointsArray.apis[0];
           if (apiEndPoint) {
             const response = await fetch(
-              `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+              `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+                headers: {
+                  "Authorization": `Bearer ${UserService.getToken()}`,
+                  "Content-Type": "application/json"
+                }
+              }
             );
             const result = await response.json();
             setData(result);

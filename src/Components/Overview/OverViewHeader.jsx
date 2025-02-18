@@ -14,6 +14,7 @@ import ReportModal from "../Reports";
 import OverviewGaugeLoader from "../LoadingScreens/OverviewGaugeLoader";
 import HorizontalHeatmapChart from "./TopConsuming";
 import BottomHeatMap from "./HeatmapTop";
+import UserService from "../../Services/UserService";
 
 const DashboardHeader = styled.div`
   display: flex;
@@ -103,7 +104,12 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
       // Fetch data from all APIs concurrently
       const fetchPromises = apiEndpoints.map(async (api) => {
         const response = await fetch(
-          `${api}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+          `${api}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+            headers: {
+              "Authorization": `Bearer ${UserService.getToken()}`,
+              "Content-Type": "application/json"
+            }
+          }
         );
 
         if (!response.ok) {

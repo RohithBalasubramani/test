@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { httpClient } from "../../Services/HttpClient";
 import { sideBarTreeArray } from "../../sidebarInfo2";
 import RealTimeVoltageChart from "./VoltageChart";
 import RealTimeChart from "./Composite";
@@ -52,7 +53,7 @@ const ParentRealTimeComponent = ({
         if (apiEndpointsArray) {
           const apiEndpoints = apiEndpointsArray.apis[0];
           if (apiEndpoints) {
-            const response = await axios.get(apiEndpoints);
+            const response = await httpClient.get(apiEndpoints);
             setRawData(response.data);
           }
         }

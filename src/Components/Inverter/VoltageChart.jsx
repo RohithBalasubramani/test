@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { sideBarTreeArray } from "../../sidebarInfo2";
+import { httpClient } from "../../Services/HttpClient";
 
 // --- Styled Radio Components ---
 const StyledRadioGroup = styled(RadioGroup)({
@@ -67,7 +68,7 @@ const RealTimeVoltageChart = ({ apiKey, topBar }) => {
         if (apiEndpointsArray) {
           const apiEndpoint = apiEndpointsArray.apis[0];
           if (apiEndpoint) {
-            const response = await axios.get(apiEndpoint);
+            const response = await httpClient.get(apiEndpoint);
 
             const rVol = response.data["recent data"]["r_voltage"];
             const yVol = response.data["recent data"]["y_voltage"];

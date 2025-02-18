@@ -6,6 +6,7 @@ import { IconButton } from "@mui/material";
 import { Launch } from "@mui/icons-material";
 import "../PowerFactorGauge.css"; // Adjust the path as needed
 import { sideBarTreeArray } from "../../sidebarInfo2";
+import { httpClient } from "../../Services/HttpClient";
 
 // Styled Components for Consistent Card Design
 const Container = styled.div`
@@ -70,7 +71,7 @@ const FrequencyComponent = ({ apikey }) => {
   const fetchFrequency = async () => {
     try {
       if (apikey) {
-        const response = await axios.get(apikey);
+        const response = await httpClient.get(apikey);
         const frquencyValue = response.data["recent data"].frequency;
         setFrequency(frquencyValue);
       }

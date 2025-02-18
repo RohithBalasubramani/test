@@ -22,6 +22,7 @@ import axios from "axios";
 import "../realtimestyle.css"; // Import the shared CSS file
 import "chartjs-adapter-date-fns";
 import { sideBarTreeArray } from "../../sidebarInfo2";
+import { httpClient } from "../../Services/HttpClient";
 
 ChartJS.register(
   CategoryScale,
@@ -84,7 +85,7 @@ const RealTimeChart = ({ apiKey, topBar }) => {
         if (apiEndpointsArray) {
           const apiEndpoint = apiEndpointsArray.apis[0];
           if (apiEndpoint) {
-            const response = await axios.get(apiEndpoint);
+            const response = await httpClient.get(apiEndpoint);
             const timestamp = response.data["recent data"]["timestamp"];
             const bActiveRecent = response.data["recent data"]["b_ac_power"];
             const rActiveRecent = response.data["recent data"]["r_ac_power"];

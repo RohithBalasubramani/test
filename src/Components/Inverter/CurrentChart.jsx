@@ -4,6 +4,7 @@ import axios from "axios";
 import "../realtimestyle.css"; // Import the shared CSS file
 import sidbarInfo from "../../sidbarInfo";
 import { sideBarTreeArray } from "../../sidebarInfo2";
+import { httpClient } from "../../Services/HttpClient";
 
 const RealTimeCurrentChart = ({ apiKey, topBar }) => {
   const [data, setData] = useState([]);
@@ -25,7 +26,7 @@ const RealTimeCurrentChart = ({ apiKey, topBar }) => {
         if (apiEndpointsArray) {
           const apiEndpoints = apiEndpointsArray.apis[0];
           if (apiEndpoints) {
-            const response = await axios.get(apiEndpoints);
+            const response = await httpClient.get(apiEndpoints);
 
             const timestamp = response.data["recent data"]["timestamp"];
             const rCurrent = response.data["recent data"]["r_current"];

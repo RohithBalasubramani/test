@@ -11,6 +11,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import "../Dashboard/StackedBarDGEB.css";
+import { httpClient } from "../../Services/HttpClient";
 
 ChartJS.register(
   CategoryScale,
@@ -34,7 +35,7 @@ const PowerOutageChart = () => {
         startDate.setHours(0, 0, 0, 0); // Start of the day
         const endDate = new Date(); // Current time
 
-        const response = await axios.get(
+        const response = await httpClient.get(
           "https://www.therion.co.in/api/ebs10reading/",
           {
             params: {

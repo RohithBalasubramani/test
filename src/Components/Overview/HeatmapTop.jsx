@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import HorizontalHeatmapChart from "./TopConsuming";
 import { sideBarTreeArray } from "../../sidebarInfo2";
 import dayjs from "dayjs";
+import UserService from "../../Services/UserService";
 
 const BottomHeatMap = ({
   apiKey,
@@ -66,7 +67,12 @@ const BottomHeatMap = ({
   const fetchData = async (start, end, period) => {
     try {
       const response = await fetch(
-        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+        `https://neuract.org/analytics/deltaconsolidated/?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+          headers: {
+            "Authorization": `Bearer ${UserService.getToken()}`,
+            "Content-Type": "application/json"
+          }
+        }
       );
       const result = await response.json();
       console.log("Fetched Data:", result);

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { IconButton } from "@mui/material";
 import { Launch } from "@mui/icons-material";
 import "./PowerFactorGauge.css"; // Adjust the path as needed
+import { httpClient } from "../../Services/HttpClient";
 
 // Styled Components for Consistent Card Design
 const Container = styled.div`
@@ -49,7 +50,7 @@ const PowerFactorGauge = () => {
 
   const fetchPowerFactor = async () => {
     try {
-      const response = await axios.get(
+      const response = await httpClient.get(
         "https://www.therion.co.in/api/ebs10reading/"
       );
       const powerFactorValue = response.data["recent data"].power_factor;

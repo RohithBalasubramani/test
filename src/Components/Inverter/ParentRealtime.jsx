@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { OverviewArray } from "../../invdata";
 import RealTimeChart from "./RealtimeEnergy"; // Imported Chart Component
+import UserService from "../../Services/UserService";
 
 const ParentRealtime = () => {
   const [selectedAPI, setSelectedAPI] = useState(OverviewArray[0]?.id || "");
@@ -20,7 +21,12 @@ const ParentRealtime = () => {
         start_date_time=${start.toISOString()}&
         end_date_time=${end.toISOString()}&
         resample_period=${period}`;
-      const response = await fetch(url.replace(/\s/g, "")); // Remove any whitespace
+      const response = await fetch(url.replace(/\s/g, ""),{
+        headers: {
+          "Authorization": `Bearer ${UserService.getToken()}`,
+          "Content-Type": "application/json"
+        }
+      }); // Remove any whitespace
       const result = await response.json();
 
       console.log("Full API Response:", result);

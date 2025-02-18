@@ -13,6 +13,7 @@ import ReportModal from "../Reports";
 import AMFgaugeStacked from "./AMFGaugeOverview";
 import Alerts from "../Dashboard/Alerts";
 import KPI from "./KPIOverview";
+import UserService from "../../Services/UserService";
 // import AMFgaugeStacked from "../PhaseOverview/AMFGauge";
 
 // Styled Components
@@ -121,7 +122,12 @@ const OverviewHeader = () => {
       // Fetch data from all APIs concurrently
       const fetchPromises = apiEndpoints.map(async (api) => {
         const response = await fetch(
-          `${api}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`
+          `${api}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+            headers: {
+              "Authorization": `Bearer ${UserService.getToken()}`,
+              "Content-Type": "application/json"
+            }
+          }
         );
 
         if (!response.ok) {

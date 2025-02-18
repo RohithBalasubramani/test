@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import axios from "axios";
+import { httpClient } from "../../Services/HttpClient";
 
 const StackedBarChart = ({ startDate, endDate, timePeriod }) => {
   const [chartData, setChartData] = useState(null);
@@ -16,9 +17,9 @@ const StackedBarChart = ({ startDate, endDate, timePeriod }) => {
 
     try {
       const [ebResponse, dg1Response, dg2Response] = await Promise.all([
-        axios.get("https://www.therion.co.in/api/ebs10reading/", { params }),
-        axios.get("https://www.therion.co.in/api/dg1s12reading/", { params }),
-        axios.get("https://www.therion.co.in/api/dg2s3reading/", { params }),
+        httpClient.get("https://www.therion.co.in/api/ebs10reading/", { params }),
+        httpClient.get("https://www.therion.co.in/api/dg1s12reading/", { params }),
+        httpClient.get("https://www.therion.co.in/api/dg2s3reading/", { params }),
       ]);
 
       console.log("ebResponse", ebResponse.data);
