@@ -13,6 +13,7 @@ import PhaseOverviewPage from "./Pages/PhaseOverviewPage.jsx";
 import Inverter from "./Pages/Inverter.jsx";
 import IndiLayout from "./Pages/IndiLayout.jsx";
 import ComingSoon from "./Pages/Empty.jsx";
+import AI from "./Pages/AI.jsx";
 
 function App() {
   console.log("sideBarTreeArray:", sideBarTreeArray); // Debugging line
@@ -21,9 +22,11 @@ function App() {
     <div className="App">
       <HashRouter>
         <Header />
+
         <Routes>
           {/* Main Dashboard */}
           <Route path="/" element={<Dashboard />} />
+          <Route path="ai/" element={<AI />} />
           {/* Phase Overview */}
           <Route path="peppl_p1" element={<PhaseOverview />}>
             <Route index element={<PhaseOverviewPage />} />

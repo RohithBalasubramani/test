@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import {
   Avatar,
   Badge,
-  Icon,
   IconButton,
-  Link,
   Tab,
   Tabs,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { NotificationsOutlined, Search } from "@mui/icons-material";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { useLocation, useNavigate } from "react-router-dom";
 import AlertPanel from "./Alert";
+import UserService from "../Services/UserService";
 
 const TopbarContainer = styled.div`
   display: flex;
@@ -37,9 +38,10 @@ const InputContainer = styled.div`
   border-radius: var(--Interactive-border-radius---radius-i-sm, 8px);
   border: 1px solid #e2e2e2;
   background: #f5f6f7;
-
+  width: 20vw;
   margin-top: auto;
   margin-bottom: auto;
+  height: 3vh;
 `;
 
 const SearchInput = styled.input`
@@ -49,15 +51,16 @@ const SearchInput = styled.input`
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
-  line-height: 16px; /* 133.333% */
+  line-height: 16px;
   background-color: #f5f6f7;
+  width: 20vw;
   border: none;
   outline: none;
+  height: 3vh;
 `;
 
 const TopbarMenu = styled.div`
   display: flex;
-
   height: var(--height-h-12, 48px);
   align-items: center;
   gap: 16px;
@@ -114,7 +117,7 @@ const AlertsButton = styled.button`
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
-  line-height: 20px; /* 142.857% */
+  line-height: 20px;
 
   svg {
     margin-right: 5px;
@@ -131,27 +134,26 @@ const UserAvatar = styled(Avatar)`
 
 const Logo = styled.div`
   font-family: "DM sans", sans-serif;
-  font-size: 20px; /* Slightly larger for better visibility */
-  font-weight: 800; /* Bolder for stronger emphasis */
-  letter-spacing: -0.5px; /* Tighter spacing for a sleek look */
-  line-height: 1.2; /* Better readability */
-  color: #1b2533; /* Brand primary color */
-  text-transform: uppercase; /* Adds a professional feel */
-  cursor: pointer; /* Indicates interactivity */
-  user-select: none; /* Prevents accidental text selection */
-  transition: color 0.3s ease-in-out; /* Smooth transition for hover effect */
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  color: #1b2533;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.3s ease-in-out;
 
   &:hover {
-    color: #4f6ef7; /* Highlight color on hover */
+    color: #4f6ef7;
   }
 
-  /* Responsive Design */
   @media (max-width: 768px) {
-    font-size: 20px; /* Adjust size for smaller devices */
+    font-size: 20px;
   }
 
   @media (max-width: 480px) {
-    font-size: 18px; /* Further reduction for mobile */
+    font-size: 18px;
   }
 `;
 
@@ -183,6 +185,7 @@ const NavBarTab = styled(Tab)`
 
 const Header = () => {
   const [isAlertPanelOpen, setAlertPanelOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const [value, setValue] = useState("/");
@@ -200,14 +203,49 @@ const Header = () => {
     navigate(newValue);
   };
 
+  const handleSearchClick = () => {
+    navigate("/ai");
+  };
+
+  // Handlers for the avatar menu
+  const handleAvatarClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    // Add your logout logic here (e.g., clearing tokens, redirecting, etc.)
+    // const keycloakLogoutUrl = `${process.env.REACT_APP_KEYCLOAK_LOGOUT_URL}?redirect_uri=${window.location.origin}`;
+    UserService.doLogout();
+    // Clear any stored authentication tokens if needed
+    // localStorage.removeItem("keycloak-token");
+    // localStorage.removeItem("keycloak-refresh-token");
+
+    // // Redirect to Keycloak logout
+    // window.location.href = keycloakLogoutUrl;
+    handleMenuClose();
+  };
+
+  // const handleLogout = () => {
+
+  // };
+
   return (
     <>
       <TopbarContainer>
         <SearchBarContainer>
           <Logo>NEURACT</Logo>
           <InputContainer>
-            <Search />
-            <SearchInput type="text" placeholder="Search Module, Panel , Etc" />
+            <SearchInput
+              type="text"
+              placeholder="Want to know your Industry better? Ask our AI ..."
+            />
+            <IconButton onClick={handleSearchClick}>
+              <Search />
+            </IconButton>
           </InputContainer>
         </SearchBarContainer>
         <TabsContainer>
@@ -232,8 +270,8 @@ const Header = () => {
               badgeContent={3}
               sx={{
                 "& .MuiBadge-badge": {
-                  backgroundColor: "#5630BC", // Custom secondary color
-                  color: "white", // Color of the text in the badge
+                  backgroundColor: "#5630BC",
+                  color: "white",
                 },
               }}
             >
@@ -244,9 +282,27 @@ const Header = () => {
             </Badge>
           </TopbarItem>
           <TopbarItem>
-            <IconButton>
+            <IconButton onClick={handleAvatarClick}>
               <UserAvatar>DN</UserAvatar>
             </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <MenuItem onClick={handleLogout}>
+                <ExitToAppIcon style={{ marginRight: "8px" }} />
+                Logout
+              </MenuItem>
+            </Menu>
           </TopbarItem>
         </TopbarMenu>
       </TopbarContainer>
