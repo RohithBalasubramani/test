@@ -38,7 +38,7 @@ const InputContainer = styled.div`
   border-radius: var(--Interactive-border-radius---radius-i-sm, 8px);
   border: 1px solid #e2e2e2;
   background: #f5f6f7;
-  width: 20vw;
+  width: 15vw;
   margin-top: auto;
   margin-bottom: auto;
   height: 3vh;
@@ -53,7 +53,7 @@ const SearchInput = styled.input`
   font-weight: 400;
   line-height: 16px;
   background-color: #f5f6f7;
-  width: 20vw;
+  width: 15vw;
   border: none;
   outline: none;
   height: 3vh;
@@ -250,7 +250,7 @@ const Header = () => {
         </SearchBarContainer>
         <TabsContainer>
           <Tabs
-            sx={{ marginTop: "0.7vh" }}
+            sx={{ marginTop: "2vh", verticalAlign: "bottom", gap: "0.5vw" }}
             value={value}
             onChange={handleChange}
           >
@@ -260,7 +260,7 @@ const Header = () => {
             <Tab label="PEPPL(P3)" value={"/peppl_p3"} />
             <Tab label="HT" value={"/ht"} />
             <Tab label="Inverters" value={"/inverter"} />
-            <Tab label="Reports" value={"/report"} />
+            {/* <Tab label="Reports" value={"/report"} /> */}
             <Tab label="Comparisions" value={"/compare"} />
           </Tabs>
         </TabsContainer>

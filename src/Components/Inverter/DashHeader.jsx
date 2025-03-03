@@ -8,7 +8,7 @@ import PowerFactorGauge from "../PowerFactor";
 import FrequencyComponent from "../Frequency";
 import KPI from "./KPI";
 
-import WeatherWidget from "../Weather";
+import WeatherWidget from "../Alerts";
 import ReportModal from "../Reports";
 import "../emstemp.css";
 import DateRangeSelector from "../Dashboard/Daterangeselector";
@@ -146,11 +146,12 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
           const apiEndPoint = apiEndpointsArray.apis?.[0];
           if (apiEndPoint) {
             const response = await fetch(
-              `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+              `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,
+              {
                 headers: {
-                  "Authorization": `Bearer ${UserService.getToken()}`,
-                  "Content-Type": "application/json"
-                }
+                  Authorization: `Bearer ${UserService.getToken()}`,
+                  "Content-Type": "application/json",
+                },
               }
             );
             const result = await response.json();

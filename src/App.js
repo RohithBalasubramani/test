@@ -1,6 +1,6 @@
 // App.js
 import React from "react";
-import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import PhaseOverview from "./Pages/PhaseOverview";
 import Dashboard from "./Pages/Dashboard";
 import TestPage from "./Pages/TestPage";
@@ -14,13 +14,15 @@ import Inverter from "./Pages/Inverter.jsx";
 import IndiLayout from "./Pages/IndiLayout.jsx";
 import ComingSoon from "./Pages/Empty.jsx";
 import AI from "./Pages/AI.jsx";
+import UserService from "./Services/UserService.js";
 
 function App() {
   console.log("sideBarTreeArray:", sideBarTreeArray); // Debugging line
+  console.log("auth token", UserService.getToken());
 
   return (
     <div className="App">
-      <HashRouter>
+      <BrowserRouter basename="/premier">
         <Header />
 
         <Routes>
@@ -57,7 +59,7 @@ function App() {
           {/* Fallback Route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </HashRouter>
+      </BrowserRouter>
     </div>
   );
 }

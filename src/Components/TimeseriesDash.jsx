@@ -12,7 +12,7 @@ import PowerOutageChart from "./Powercuts";
 import StackedBarDGEB from "./StackTest";
 import MySankeyChart from "./Sankee";
 import EnergyComp from "./EnergyPage";
-import WeatherWidget from "./Weather";
+import WeatherWidget from "./Alerts";
 import dayjs from "dayjs";
 import VerticalChart from "./BarchartVertical";
 import CostChart from "./CostChart";
@@ -66,11 +66,12 @@ const BottomTimeSeries = ({ apiKey, topBar, parentName, parentName2 }) => {
           const apiEndPoint = apiEndpointsArray.apis[0];
           if (apiEndPoint) {
             const response = await fetch(
-              `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+              `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,
+              {
                 headers: {
-                  "Authorization": `Bearer ${UserService.getToken()}`,
-                  "Content-Type": "application/json"
-                }
+                  Authorization: `Bearer ${UserService.getToken()}`,
+                  "Content-Type": "application/json",
+                },
               }
             );
             const result = await response.json();

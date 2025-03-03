@@ -9,13 +9,14 @@ import PowerFactorGauge from "./PowerFactor";
 import FrequencyComponent from "./Frequency";
 import KPI from "./KPI";
 import AMFgauge from "./AmfGauge";
-import WeatherWidget from "./Weather";
+import WeatherWidget from "./Alerts";
 import ReportModal from "./Reports";
 import "./emstemp.css";
 import DateRangeSelector from "./Dashboard/Daterangeselector";
 import { sideBarTreeArray } from "../sidebarInfo2";
 import OverviewTimeBar from "./Overview/OverviewTimeBar";
 import UserService from "../Services/UserService";
+import AlertsWidget from "./Alerts";
 
 const DashboardHeader = styled.div`
   display: flex;
@@ -149,11 +150,12 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
           const apiEndPoint = apiEndpointsArray.apis?.[0];
           if (apiEndPoint) {
             const response = await fetch(
-              `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+              `${apiEndPoint}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,
+              {
                 headers: {
-                  "Authorization": `Bearer ${UserService.getToken()}`,
-                  "Content-Type": "application/json"
-                }
+                  Authorization: `Bearer ${UserService.getToken()}`,
+                  "Content-Type": "application/json",
+                },
               }
             );
             const result = await response.json();
@@ -258,7 +260,13 @@ const DashHeader = ({ apikey, topBar, parentName, parentName2 }) => {
             parentName2={parentName2}
           />
         </div>
-        <WeatherWidget />
+        <AlertsWidget
+          apikey={apikey}
+          topBar={topBar}
+          parentName={parentName}
+          parentName2={parentName2}
+          sideBarTreeArray={sideBarTreeArray}
+        />
       </KPIContainer>
       <ReportModal
         open={isModalOpen}

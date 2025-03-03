@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import TimeBar from "../TRFF/TimePeriod";
 import AMFgaugeStacked from "./AmfGaugeStacked";
 import KPI from "./KPI";
-import WeatherWidget from "../Weather";
+import WeatherWidget from "../Alerts";
 import { sideBarTreeArray } from "../../sidebarInfo2"; // Assuming this is your Treeview array
 import OverviewTimeBar from "./OverviewTimeBar";
 import Alerts from "../Dashboard/Alerts";
@@ -104,11 +104,12 @@ const OverviewHeader = ({ apiKey, sectionName, parentName, parentName2 }) => {
       // Fetch data from all APIs concurrently
       const fetchPromises = apiEndpoints.map(async (api) => {
         const response = await fetch(
-          `${api}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,{
+          `${api}?start_date_time=${start.toISOString()}&end_date_time=${end.toISOString()}&resample_period=${period}`,
+          {
             headers: {
-              "Authorization": `Bearer ${UserService.getToken()}`,
-              "Content-Type": "application/json"
-            }
+              Authorization: `Bearer ${UserService.getToken()}`,
+              "Content-Type": "application/json",
+            },
           }
         );
 

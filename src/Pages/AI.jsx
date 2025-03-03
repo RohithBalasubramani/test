@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Line, Bar, Doughnut } from "react-chartjs-2";
 import {
@@ -13,8 +13,11 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import UserService from "../Services/UserService";
+import ToggleButtons from "../Components/Togglesampling";
+// import ToggleButtons from "./ToggleButtons"; // Import Toggle Button Component
 
-// Register chart components with ChartJS
+// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -36,8 +39,8 @@ const Container = styled.div`
   flex-direction: column;
   padding: 2rem;
   max-width: 98vw;
-  margin: 0 auto; /* center the container */
-  background-color: #f9f9fa; /* light background */
+  margin: 0 auto;
+  background-color: #f9f9fa;
   border-radius: 8px;
   margin-top: 3vh;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
@@ -104,28 +107,27 @@ const Pre = styled.pre`
   padding: 1rem;
   border-radius: 4px;
   font-size: 0.875rem;
-  overflow-x: auto; /* scroll horizontally if needed */
+  overflow-x: auto;
 `;
 
-/////////////////////////////////////////////////////
-// DUMMY DATA
-/////////////////////////////////////////////////////
+const Loader = styled.div`
+  margin: 20px auto;
+  width: 50px;
+  height: 50px;
+  border: 5px solid #ccc;
+  border-top: 5px solid #6b3ceb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 
-const dummyData = {
-  question: "responding",
-  rag_sql:
-    "SELECT date, total_energy\nFROM OG1_Consumption\nWHERE date BETWEEN '2021-07-01' AND '2021-07-31'\nORDER BY date ASC;",
-  rag_result:
-    "(psycopg2.errors.UndefinedTable) relation \"og1_consumption\" does not exist\nLINE 2: FROM OG1_Consumption\n             ^\n\n[SQL: SELECT date, total_energy\nFROM OG1_Consumption\nWHERE date BETWEEN '2021-07-01' AND '2021-07-31'\nORDER BY date ASC;]\n(Background on this error at: https://sqlalche.me/e/20/f405)",
-  chart_type: "Line", // Can be "Line", "Bar" or "Donut"/"Doughnut"
-  columns: "Date,Total Energy",
-  json_output: JSON.stringify([
-    ["2021-07-01", 100],
-    ["2021-07-02", 150],
-    ["2021-07-03", 120],
-    ["2021-07-04", 180],
-  ]),
-};
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
 
 /////////////////////////////////////////////////////
 // AI COMPONENT
@@ -134,67 +136,134 @@ const dummyData = {
 const AI = ({ question }) => {
   const [prompt, setPrompt] = useState(question || "");
   const [responseData, setResponseData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [timeperiod, setTimeperiod] = useState("H"); // Default: Hour
+  const [dateRange, setDateRange] = useState("lastWeek"); // Default: Last Week
 
-  // On "Search" click, load the DUMMY data into state
-  const handleSearch = () => {
-    if (!prompt.trim()) {
-      alert("Please enter a question or prompt!");
-      return;
+  // Function to fetch AI response (WITHOUT time period)
+  const handleSearch = async () => {
+    try {
+      if (!prompt.trim()) {
+        alert("Please enter a question!");
+        return;
+      }
+
+      setLoading(true);
+
+      const response = await fetch("https://www.neuract.org/rag_api/query/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${UserService.getToken()}`,
+        },
+        body: JSON.stringify({ question: prompt }), // 🔹 Do NOT send timeperiod
+      });
+
+      const data = await response.json();
+      setResponseData(data);
+    } catch (error) {
+      console.error("Error fetching data from AI:", error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // In a real app, you'd call an API here:
-    // const { data } = await axios.post('/api/ask', { prompt });
-    // setResponseData(data);
+  // 🔹 Function to resample data based on selected time period
+  const resampleData = (data, timeperiod) => {
+    if (!data) return [];
 
-    // For now, we're just using the dummy data:
-    setResponseData(dummyData);
+    let groupedData = {};
+
+    data.forEach(({ timestamp, value }) => {
+      const date = new Date(timestamp);
+      let key;
+
+      switch (timeperiod) {
+        case "T": // Minute
+          key = date.toISOString().substring(0, 16); // YYYY-MM-DDTHH:MM
+          break;
+        case "H": // Hourly
+          key = date.toISOString().substring(0, 13); // YYYY-MM-DDTHH
+          break;
+        case "D": // Daily
+          key = date.toISOString().substring(0, 10); // YYYY-MM-DD
+          break;
+        case "W": // Weekly
+          const week = `${date.getFullYear()}-W${Math.ceil(
+            date.getDate() / 7
+          )}`;
+          key = week;
+          break;
+        case "M": // Monthly
+          key = date.toISOString().substring(0, 7); // YYYY-MM
+          break;
+        case "Y": // Yearly
+          key = date.getFullYear().toString();
+          break;
+        default:
+          key = date.toISOString().substring(0, 10); // Default: Daily
+      }
+
+      if (!groupedData[key]) {
+        groupedData[key] = [];
+      }
+      groupedData[key].push(value);
+    });
+
+    return Object.entries(groupedData).map(([timestamp, values]) => ({
+      timestamp,
+      value: values.reduce((a, b) => a + b, 0) / values.length, // Average for resampling
+    }));
   };
 
   // Chart renderer
   const renderChart = () => {
     if (!responseData) return null;
 
-    const { json_output, chart_type, columns } = responseData;
-    let chartDataArray = [];
-
-    try {
-      chartDataArray =
-        typeof json_output === "string" ? JSON.parse(json_output) : json_output;
-    } catch (error) {
-      console.error("Error parsing json_output:", error);
-      return <div>Error in chart data</div>;
-    }
-
-    if (!Array.isArray(chartDataArray) || chartDataArray.length === 0) {
+    let { data, chart_type, fields } = responseData;
+    if (!Array.isArray(data) || data.length === 0) {
       return <div>No chart data available</div>;
     }
 
-    // Extract labels & data
-    const labels = chartDataArray.map((entry) => entry[0]);
-    const dataPoints = chartDataArray.map((entry) => entry[1]);
+    // 🔹 Resample the data based on selected time period
+    data = resampleData(data, timeperiod);
 
-    // Setup chart.js data object
+    // Normalize chart type
+    chart_type = chart_type.toLowerCase().replace(" chart", "").trim();
+
+    // Build Chart.js dataset
+    const labels = data.map((row) => row.timestamp);
+    const dataPoints = data.map((row) => row.value);
+
     const chartData = {
       labels,
       datasets: [
         {
-          label: columns || "Data",
+          label: fields ? fields.join(", ") : "Data",
           data: dataPoints,
-          backgroundColor: "rgba(107, 60, 235, 0.4)",
-          borderColor: "#6b3ceb",
           borderWidth: 2,
+          borderColor: "#6b3ceb",
+          backgroundColor: "rgba(107, 60, 235, 0.4)",
         },
       ],
     };
 
-    // Return appropriate chart
     switch (chart_type) {
-      case "Line":
-        return <Line data={chartData} />;
-      case "Bar":
+      case "line":
+        return (
+          <div>
+            <ToggleButtons
+              dateRange={dateRange}
+              timeperiod={timeperiod}
+              setTimeperiod={setTimeperiod}
+            />
+            <Line data={chartData} />;
+          </div>
+        );
+      case "bar":
         return <Bar data={chartData} />;
-      case "Donut":
-      case "Doughnut":
+      case "donut":
+      case "doughnut":
         return <Doughnut data={chartData} />;
       default:
         return <div>Unsupported chart type: {chart_type}</div>;
@@ -206,40 +275,34 @@ const AI = ({ question }) => {
       <TitleSty>Chat more with AI</TitleSty>
       <InputSection>
         <PromptInput
-          type="text"
-          placeholder="Enter your question here..."
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
         />
         <SearchButton onClick={handleSearch}>Search</SearchButton>
       </InputSection>
 
-      {responseData && (
-        <ResultContainer>
-          <SubHeading>AI Response</SubHeading>
-          <p>
-            <Label>Question:</Label> {responseData.question}
-          </p>
-
-          <p>
-            <Label>SQL Query:</Label>
-          </p>
-          <Pre>{responseData.rag_sql}</Pre>
-
-          <p>
-            <Label>SQL Error:</Label>
-          </p>
-          <Pre>{responseData.rag_result}</Pre>
-
-          <p>
-            <Label>Chart Type:</Label> {responseData.chart_type}
-          </p>
-          <p>
-            <Label>Columns:</Label> {responseData.columns}
-          </p>
-
-          <div style={{ marginTop: "1.5rem" }}>{renderChart()}</div>
-        </ResultContainer>
+      {loading ? (
+        <Loader />
+      ) : (
+        responseData && (
+          <div>
+            <SubHeading>AI Response</SubHeading>
+            <p>
+              <Label>Question:</Label> {responseData.question}
+            </p>
+            <p>
+              <Label>SQL Query:</Label>
+            </p>
+            <Pre>{responseData.rag_sql}</Pre>
+            <p>
+              <Label>Chart Type:</Label> {responseData.chart_type}
+            </p>
+            <p>
+              <Label>Fields:</Label> {responseData.fields?.join(", ")}
+            </p>
+            <ResultContainer>{renderChart()}</ResultContainer>
+          </div>
+        )
       )}
     </Container>
   );
