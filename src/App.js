@@ -14,14 +14,16 @@ import Inverter from "./Pages/Inverter.jsx";
 import IndiLayout from "./Pages/IndiLayout.jsx";
 import ComingSoon from "./Pages/Empty.jsx";
 import AI from "./Pages/AI.jsx";
+import UserService from "./Services/UserService.js";
 
 function App() {
+  console.log("sideBarTreeArray:", sideBarTreeArray); // Debugging line
+  console.log("auth token", UserService.getToken());
 
   return (
     <div className="App">
-      <HashRouter basename="/premier">
+      <HashRouter>
         <Header />
-
         <Routes>
           {/* Main Dashboard */}
           <Route path="/" element={<Dashboard />} />
@@ -29,7 +31,6 @@ function App() {
           {/* Phase Overview */}
           <Route path="peppl_p1" element={<PhaseOverview />}>
             <Route index element={<PhaseOverviewPage />} />
-
             {/* Nested IndiLayout */}
             <Route path="" element={<IndiLayout />}>
               {Object.keys(sideBarTreeArray).map((section) =>
@@ -45,11 +46,9 @@ function App() {
           {/* Additional Phases */}
           <Route path="peipl_p2/" element={<ComingSoon />} />
           <Route path="peppl_p3/" element={<ComingSoon />} />
-
           <Route path="ht/" element={<ComingSoon />} />
           <Route path="inverter/" element={<ComingSoon />} />
           <Route path="report/" element={<ComingSoon />} />
-
           {/* Compare Page */}
           <Route path="compare" element={<Compare />} />
           <Route path="inverter" element={<Inverter />} />

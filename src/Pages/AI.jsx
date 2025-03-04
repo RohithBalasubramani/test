@@ -136,6 +136,7 @@ const KPIContainer = styled.div`
   align-items: center;
   margin-top: 1rem;
   font-family: "DM Sans", sans-serif;
+  background-color: #ffffff;
 
   .kpi-title {
     font-size: 1.125rem;
@@ -167,6 +168,29 @@ const AI = ({ question }) => {
   // Time-based resampling states
   const [timeperiod, setTimeperiod] = useState("H");
   const [dateRange, setDateRange] = useState("lastWeek");
+
+  const options = {
+    maintainAspectRatio: false,
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: "bottom", // Position legend at the bottom
+        align: "start", // Align legends to the start of the container
+        labels: {
+          boxWidth: 15,
+          boxHeight: 15,
+          padding: 20,
+          font: {
+            size: 14,
+            family: "DM Sans",
+          },
+          usePointStyle: true,
+          color: "#333",
+        },
+      },
+    },
+  };
 
   // 1) Fetch from your AI endpoint
   const handleSearch = async () => {
@@ -253,38 +277,73 @@ const AI = ({ question }) => {
     return finalArr;
   };
 
-  // 3) Extract KPI
-  const extractKPIValue = (ragResult) => {
-    try {
-      if (!ragResult || typeof ragResult !== "string") return null;
-      const match = ragResult.match(/[-+]?[0-9]*\\.?[0-9]+/);
-      return match ? parseFloat(match[0]) : null;
-    } catch (e) {
-      console.error("Error extracting KPI value:", e);
-      return null;
-    }
-  };
-
   // 4) Render Chart or KPI
   const renderChart = () => {
     if (!responseData) return null;
 
-    let { data, chart_type, fields, rag_result } = responseData;
-    if (!Array.isArray(data)) data = [];
+    let { data, chart_type, fields } = responseData;
+    if (!Array.isArray(data) || data.length === 0) {
+      return <div>No data available</div>;
+    }
 
     // Normalize chart type
-    chart_type = chart_type.toLowerCase().replace(" chart", "").trim();
+    chart_type =
+      typeof chart_type === "string"
+        ? chart_type.toLowerCase().replace(" chart", "").trim()
+        : "";
 
+    // --------------------------------------------
+    // STEP A: Decide if we need to resample
+    // (skip resampling if it's a direct KPI that doesn't rely on timestamp)
+    // --------------------------------------------
+    if (chart_type !== "kpi") {
+      data = resampleData(data, timeperiod);
+      if (!data.length) {
+        return <div>No data available after resampling</div>;
+      }
+    }
+
+    // --------------------------------------------
+    // STEP B: Identify API fields & map them
+    // --------------------------------------------
+    const apiFields = Object.keys(data[0]).filter(
+      (key) => key.toLowerCase() !== "timestamp"
+    );
+    const userFriendlyFields = (fields || []).filter(
+      (f) => f.toLowerCase() !== "timestamp"
+    );
+
+    const fieldMapping = {};
+    apiFields.forEach((apiField, idx) => {
+      fieldMapping[apiField] = userFriendlyFields[idx] || apiField;
+    });
+
+    // For chart labels (all except KPI):
+    const labels = data.map((row) => row.timestamp);
+
+    // --------------------------------------------
     // KPI
+    // --------------------------------------------
     if (chart_type === "kpi") {
-      const kpiVal = extractKPIValue(rag_result);
+      // Choose the first API field as the KPI value
+      const firstField = apiFields[0];
+      if (!firstField) {
+        return <div>No KPI data</div>;
+      }
+
+      const kpiVal = data[0][firstField];
+      const kpiLabel = fieldMapping[firstField] || "KPI Value";
+      const isNumber = typeof kpiVal === "number" && !isNaN(kpiVal);
+
       return (
         <KPIContainer>
-          <div className="kpi-title">{fields?.[0] || "KPI Value"}</div>
-          {kpiVal !== null ? (
+          <div className="kpi-title" style={{ textTransform: "capitalize" }}>
+            {kpiLabel}
+          </div>
+          {isNumber ? (
             <>
               <div className="kpi-value">{kpiVal.toFixed(2)}</div>
-              <span className="kpi-units">A</span>
+              {/* <span className="kpi-units">A</span> */}
             </>
           ) : (
             <div>No KPI data</div>
@@ -293,36 +352,14 @@ const AI = ({ question }) => {
       );
     }
 
-    // Multi-Line
+    // --------------------------------------------
+    // MULTI-LINE
+    // --------------------------------------------
     if (chart_type === "multiline line") {
-      if (!data.length) {
-        return <div>No chart data available</div>;
-      }
-
-      // ✅ Resample Data
-      data = resampleData(data, timeperiod);
-      const labels = data.map((row) => row.timestamp);
-
-      // ✅ Extract numeric field names from `data`
-      const apiFields = Object.keys(data[0]).filter(
-        (key) => key !== "timestamp"
-      );
-
-      // ✅ Ensure we have a valid `fields[]` from API response
-      const userFriendlyFields = fields.filter(
-        (f) => f.toLowerCase() !== "timestamp"
-      );
-
-      // ✅ Create a mapping between `apiFields` (e.g. "Value 1", "Value 2") and `userFriendlyFields` (e.g. "Transformer 1 Current")
-      const fieldMapping = {};
-      apiFields.forEach((apiField, idx) => {
-        fieldMapping[apiField] = userFriendlyFields[idx] || apiField; // Fallback to API field name if no mapping found
-      });
-
-      // ✅ Build datasets dynamically
+      // Build multiple datasets, one per field
       const datasets = apiFields.map((apiField, idx) => ({
-        label: fieldMapping[apiField], // Use user-friendly name
-        data: data.map((row) => row[apiField] ?? null), // Extract correct values
+        label: fieldMapping[apiField],
+        data: data.map((row) => row[apiField] ?? null),
         borderWidth: 2,
         borderColor: [
           "#6b3ceb",
@@ -331,38 +368,50 @@ const AI = ({ question }) => {
           "#00bfa5",
           "#2d98da",
           "#eb3b5a",
-        ][idx % 6], // Color palette
+        ][idx % 6],
         backgroundColor: "rgba(107, 60, 235, 0.1)",
-        spanGaps: true, // Prevent broken lines
+        spanGaps: true,
       }));
 
       const chartData = { labels, datasets };
       console.log("Multi-Line Chart Data:", chartData);
 
       return (
-        <div>
-          <ToggleButtons
-            dateRange={dateRange}
-            timeperiod={timeperiod}
-            setTimeperiod={setTimeperiod}
-          />
-          <Line data={chartData} />
+        <div className="stacked-bar-container">
+          <div className="card shadow mb-4">
+            <div className="card-body">
+              <div className="row">
+                <div className="title">Comparison of trends</div>
+                <div className="controls">
+                  <ToggleButtons
+                    dateRange={dateRange}
+                    timeperiod={timeperiod}
+                    setTimeperiod={setTimeperiod}
+                  />
+                </div>
+              </div>
+              {chartData.labels && chartData.labels.length > 0 ? (
+                <div className="chart-size">
+                  <Line data={chartData} options={options} />
+                </div>
+              ) : (
+                <div>No data available for the selected range.</div>
+              )}
+            </div>
+          </div>
         </div>
       );
     }
 
-    // Donut
+    // --------------------------------------------
+    // DONUT
+    // --------------------------------------------
     if (chart_type === "donut") {
-      if (!data.length) {
-        return <div>No chart data available</div>;
-      }
-      // Typically for aggregated data
+      // Use the first data row for aggregated categories
       const donutObj = data[0];
-      const chartLabels = fields;
-      const chartValues = chartLabels.map((label, idx) => {
-        const key = `Value ${idx + 1}`;
-        return donutObj[key] || 0;
-      });
+      // Each API field becomes a slice
+      const chartLabels = apiFields.map((apiField) => fieldMapping[apiField]);
+      const chartValues = apiFields.map((apiField) => donutObj[apiField] || 0);
 
       const chartData = {
         labels: chartLabels,
@@ -375,50 +424,107 @@ const AI = ({ question }) => {
           },
         ],
       };
-      return <Doughnut data={chartData} />;
+
+      return (
+        <div className="stacked-bar-container">
+          <div className="card shadow mb-4">
+            <div className="card-body">
+              <div className="row">
+                <div className="title">Donut Chart Showing Comparison</div>
+                <div className="controls">
+                  <ToggleButtons
+                    dateRange={dateRange}
+                    timeperiod={timeperiod}
+                    setTimeperiod={setTimeperiod}
+                  />
+                </div>
+              </div>
+              {chartData.labels.length > 0 ? (
+                <div className="chart-size">
+                  <Doughnut data={chartData} options={options} />
+                </div>
+              ) : (
+                <div>No data available.</div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
     }
 
-    // Single line / bar
-    if (!data.length) return <div>No chart data available</div>;
-    data = resampleData(data, timeperiod);
-    const labels = data.map((row) => row.timestamp);
-    const numericFields = fields.filter((f) => f.toLowerCase() !== "timestamp");
-    const firstField = numericFields[0] || "Value";
+    // --------------------------------------------
+    // SINGLE LINE / BAR
+    // --------------------------------------------
+    // We'll just use the first mapped field for a single line or bar
+    const firstField = apiFields[0];
+    if (!firstField) {
+      return <div>No chart data available</div>;
+    }
 
-    const chartData = {
-      labels,
-      datasets: [
-        {
-          label: firstField,
-          data: data.map((row) => row[firstField]),
-          borderWidth: 2,
-          borderColor: "#6b3ceb",
-          backgroundColor: "rgba(107, 60, 235, 0.4)",
-        },
-      ],
-    };
+    const singleDataset = [
+      {
+        label: fieldMapping[firstField],
+        data: data.map((row) => row[firstField] ?? null),
+        borderWidth: 2,
+        borderColor: "#6b3ceb",
+        backgroundColor: "rgba(107, 60, 235, 0.4)",
+        spanGaps: true,
+      },
+    ];
+
+    const chartData = { labels, datasets: singleDataset };
 
     switch (chart_type) {
       case "line":
         return (
-          <div>
-            <ToggleButtons
-              dateRange={dateRange}
-              timeperiod={timeperiod}
-              setTimeperiod={setTimeperiod}
-            />
-            <Line data={chartData} />
+          <div className="stacked-bar-container">
+            <div className="card shadow mb-4">
+              <div className="card-body">
+                <div className="row">
+                  <div className="title">Trends Chart</div>
+                  <div className="controls">
+                    <ToggleButtons
+                      dateRange={dateRange}
+                      timeperiod={timeperiod}
+                      setTimeperiod={setTimeperiod}
+                    />
+                  </div>
+                </div>
+                {chartData.labels && chartData.labels.length > 0 ? (
+                  <div className="chart-size">
+                    <Line data={chartData} options={options} />
+                  </div>
+                ) : (
+                  <div>No data available.</div>
+                )}
+              </div>
+            </div>
           </div>
         );
       case "bar":
         return (
-          <div>
-            <ToggleButtons
-              dateRange={dateRange}
-              timeperiod={timeperiod}
-              setTimeperiod={setTimeperiod}
-            />
-            <Bar data={chartData} />
+          <div className="stacked-bar-container">
+            <div className="card shadow mb-4">
+              <div className="card-body">
+                <div className="row">
+                  <div className="title">Bar Chart</div>
+                  <div className="controls">
+                    <ToggleButtons
+                      dateRange={dateRange}
+                      timeperiod={timeperiod}
+                      setTimeperiod={setTimeperiod}
+                    />
+                  </div>
+                </div>
+                {chartData.labels && chartData.labels.length > 0 ? (
+                  <div className="chart-size">
+                    <Bar data={chartData} options={options} />
+                  </div>
+                ) : (
+                  <div>No data available.</div>
+                )}
+              </div>
+            </div>
           </div>
         );
       default:
@@ -460,7 +566,7 @@ const AI = ({ question }) => {
             <p>
               <Label>Fields:</Label> {responseData.fields?.join(", ")}
             </p>
-            <ResultContainer>{renderChart()}</ResultContainer>
+            <div>{renderChart()}</div>
           </>
         )
       )}
