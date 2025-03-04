@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
-import "./RealTimeStyle.css";
+import "./realtimestyle.css";
 
 const RealTimeCurrentChart = ({ rawData }) => {
   const [data, setData] = useState([]);
