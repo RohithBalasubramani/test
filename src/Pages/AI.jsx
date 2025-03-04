@@ -557,15 +557,15 @@ const AI = ({ question }) => {
               <Label>Question:</Label> {responseData.question}
             </p>
             <p>
-              <Label>SQL Query:</Label>
+              <Label>{responseData.output_context}</Label>
             </p>
-            <Pre>{responseData.rag_sql}</Pre>
-            <p>
+            {/* <Pre>{responseData.rag_sql}</Pre> */}
+            {/* <p>
               <Label>Chart Type:</Label> {responseData.chart_type}
             </p>
             <p>
               <Label>Fields:</Label> {responseData.fields?.join(", ")}
-            </p>
+            </p> */}
             <div>{renderChart()}</div>
           </>
         )
