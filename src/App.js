@@ -14,11 +14,8 @@ import Inverter from "./Pages/Inverter.jsx";
 import IndiLayout from "./Pages/IndiLayout.jsx";
 import ComingSoon from "./Pages/Empty.jsx";
 import AI from "./Pages/AI.jsx";
-import UserService from "./Services/UserService.js";
 
 function App() {
-  console.log("sideBarTreeArray:", sideBarTreeArray); // Debugging line
-  console.log("auth token", UserService.getToken());
 
   return (
     <div className="App">
