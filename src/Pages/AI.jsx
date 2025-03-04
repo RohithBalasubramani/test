@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Line, Bar, Doughnut } from "react-chartjs-2";
 import {
@@ -15,7 +15,7 @@ import {
 } from "chart.js";
 import UserService from "../Services/UserService";
 import ToggleButtons from "../Components/Togglesampling";
-// import ToggleButtons from "./ToggleButtons"; // Import Toggle Button Component
+import "../Components/kpi.css";
 
 // Register Chart.js components
 ChartJS.register(
@@ -129,25 +129,52 @@ const Loader = styled.div`
   }
 `;
 
+// KPI Display
+const KPIContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+  font-family: "DM Sans", sans-serif;
+
+  .kpi-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .kpi-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #6b3ceb;
+    margin-bottom: 0.5rem;
+  }
+
+  .kpi-units {
+    font-size: 1.25rem;
+    color: #333;
+  }
+`;
+
 /////////////////////////////////////////////////////
 // AI COMPONENT
 /////////////////////////////////////////////////////
-
 const AI = ({ question }) => {
   const [prompt, setPrompt] = useState(question || "");
   const [responseData, setResponseData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [timeperiod, setTimeperiod] = useState("H"); // Default: Hour
-  const [dateRange, setDateRange] = useState("lastWeek"); // Default: Last Week
 
-  // Function to fetch AI response (WITHOUT time period)
+  // Time-based resampling states
+  const [timeperiod, setTimeperiod] = useState("H");
+  const [dateRange, setDateRange] = useState("lastWeek");
+
+  // 1) Fetch from your AI endpoint
   const handleSearch = async () => {
     try {
       if (!prompt.trim()) {
         alert("Please enter a question!");
         return;
       }
-
       setLoading(true);
 
       const response = await fetch("https://www.neuract.org/rag_api/query/", {
@@ -156,11 +183,11 @@ const AI = ({ question }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${UserService.getToken()}`,
         },
-        body: JSON.stringify({ question: prompt }), // 🔹 Do NOT send timeperiod
+        body: JSON.stringify({ question: prompt }),
       });
-
       const data = await response.json();
       setResponseData(data);
+      console.log("res", data);
     } catch (error) {
       console.error("Error fetching data from AI:", error);
     } finally {
@@ -168,79 +195,202 @@ const AI = ({ question }) => {
     }
   };
 
-  // 🔹 Function to resample data based on selected time period
-  const resampleData = (data, timeperiod) => {
-    if (!data) return [];
+  // 2) Resample function for multi-line or single-line data
+  const resampleData = (dataArr, timeperiod) => {
+    if (!dataArr || dataArr.length === 0) return [];
+    const groupedData = {};
 
-    let groupedData = {};
-
-    data.forEach(({ timestamp, value }) => {
-      const date = new Date(timestamp);
+    dataArr.forEach((entry) => {
+      const date = new Date(entry.timestamp);
       let key;
-
       switch (timeperiod) {
-        case "T": // Minute
-          key = date.toISOString().substring(0, 16); // YYYY-MM-DDTHH:MM
+        case "T":
+          key = date.toISOString().substring(0, 16); // to the minute
           break;
-        case "H": // Hourly
-          key = date.toISOString().substring(0, 13); // YYYY-MM-DDTHH
+        case "H":
+          key = date.toISOString().substring(0, 13); // to the hour
           break;
-        case "D": // Daily
-          key = date.toISOString().substring(0, 10); // YYYY-MM-DD
+        case "D":
+          key = date.toISOString().substring(0, 10); // daily
           break;
-        case "W": // Weekly
-          const week = `${date.getFullYear()}-W${Math.ceil(
-            date.getDate() / 7
-          )}`;
-          key = week;
+        case "W":
+          key = `${date.getFullYear()}-W${Math.ceil(date.getDate() / 7)}`;
           break;
-        case "M": // Monthly
-          key = date.toISOString().substring(0, 7); // YYYY-MM
+        case "M":
+          key = date.toISOString().substring(0, 7); // monthly
           break;
-        case "Y": // Yearly
-          key = date.getFullYear().toString();
+        case "Y":
+          key = date.getFullYear().toString(); // yearly
           break;
         default:
-          key = date.toISOString().substring(0, 10); // Default: Daily
+          key = date.toISOString().substring(0, 10); // fallback daily
       }
 
       if (!groupedData[key]) {
-        groupedData[key] = [];
+        groupedData[key] = {};
       }
-      groupedData[key].push(value);
+      // Accumulate fields
+      Object.entries(entry).forEach(([field, val]) => {
+        if (field !== "timestamp") {
+          if (!groupedData[key][field]) {
+            groupedData[key][field] = [];
+          }
+          groupedData[key][field].push(val);
+        }
+      });
     });
 
-    return Object.entries(groupedData).map(([timestamp, values]) => ({
-      timestamp,
-      value: values.reduce((a, b) => a + b, 0) / values.length, // Average for resampling
-    }));
+    // Compute average for each field
+    const finalArr = [];
+    for (const [timestamp, obj] of Object.entries(groupedData)) {
+      const aggregated = { timestamp };
+      for (const [fieldName, arrVals] of Object.entries(obj)) {
+        const sum = arrVals.reduce((a, b) => a + b, 0);
+        aggregated[fieldName] = sum / arrVals.length;
+      }
+      finalArr.push(aggregated);
+    }
+    return finalArr;
   };
 
-  // Chart renderer
+  // 3) Extract KPI
+  const extractKPIValue = (ragResult) => {
+    try {
+      if (!ragResult || typeof ragResult !== "string") return null;
+      const match = ragResult.match(/[-+]?[0-9]*\\.?[0-9]+/);
+      return match ? parseFloat(match[0]) : null;
+    } catch (e) {
+      console.error("Error extracting KPI value:", e);
+      return null;
+    }
+  };
+
+  // 4) Render Chart or KPI
   const renderChart = () => {
     if (!responseData) return null;
 
-    let { data, chart_type, fields } = responseData;
-    if (!Array.isArray(data) || data.length === 0) {
-      return <div>No chart data available</div>;
-    }
-
-    // 🔹 Resample the data based on selected time period
-    data = resampleData(data, timeperiod);
+    let { data, chart_type, fields, rag_result } = responseData;
+    if (!Array.isArray(data)) data = [];
 
     // Normalize chart type
     chart_type = chart_type.toLowerCase().replace(" chart", "").trim();
 
-    // Build Chart.js dataset
+    // KPI
+    if (chart_type === "kpi") {
+      const kpiVal = extractKPIValue(rag_result);
+      return (
+        <KPIContainer>
+          <div className="kpi-title">{fields?.[0] || "KPI Value"}</div>
+          {kpiVal !== null ? (
+            <>
+              <div className="kpi-value">{kpiVal.toFixed(2)}</div>
+              <span className="kpi-units">A</span>
+            </>
+          ) : (
+            <div>No KPI data</div>
+          )}
+        </KPIContainer>
+      );
+    }
+
+    // Multi-Line
+    if (chart_type === "multiline line") {
+      if (!data.length) {
+        return <div>No chart data available</div>;
+      }
+
+      // ✅ Resample Data
+      data = resampleData(data, timeperiod);
+      const labels = data.map((row) => row.timestamp);
+
+      // ✅ Extract numeric field names from `data`
+      const apiFields = Object.keys(data[0]).filter(
+        (key) => key !== "timestamp"
+      );
+
+      // ✅ Ensure we have a valid `fields[]` from API response
+      const userFriendlyFields = fields.filter(
+        (f) => f.toLowerCase() !== "timestamp"
+      );
+
+      // ✅ Create a mapping between `apiFields` (e.g. "Value 1", "Value 2") and `userFriendlyFields` (e.g. "Transformer 1 Current")
+      const fieldMapping = {};
+      apiFields.forEach((apiField, idx) => {
+        fieldMapping[apiField] = userFriendlyFields[idx] || apiField; // Fallback to API field name if no mapping found
+      });
+
+      // ✅ Build datasets dynamically
+      const datasets = apiFields.map((apiField, idx) => ({
+        label: fieldMapping[apiField], // Use user-friendly name
+        data: data.map((row) => row[apiField] ?? null), // Extract correct values
+        borderWidth: 2,
+        borderColor: [
+          "#6b3ceb",
+          "#e63946",
+          "#ffa600",
+          "#00bfa5",
+          "#2d98da",
+          "#eb3b5a",
+        ][idx % 6], // Color palette
+        backgroundColor: "rgba(107, 60, 235, 0.1)",
+        spanGaps: true, // Prevent broken lines
+      }));
+
+      const chartData = { labels, datasets };
+      console.log("Multi-Line Chart Data:", chartData);
+
+      return (
+        <div>
+          <ToggleButtons
+            dateRange={dateRange}
+            timeperiod={timeperiod}
+            setTimeperiod={setTimeperiod}
+          />
+          <Line data={chartData} />
+        </div>
+      );
+    }
+
+    // Donut
+    if (chart_type === "donut") {
+      if (!data.length) {
+        return <div>No chart data available</div>;
+      }
+      // Typically for aggregated data
+      const donutObj = data[0];
+      const chartLabels = fields;
+      const chartValues = chartLabels.map((label, idx) => {
+        const key = `Value ${idx + 1}`;
+        return donutObj[key] || 0;
+      });
+
+      const chartData = {
+        labels: chartLabels,
+        datasets: [
+          {
+            data: chartValues,
+            backgroundColor: ["#6b3ceb", "#e63946", "#ffa600", "#00bfa5"],
+            borderColor: "#fff",
+            borderWidth: 1,
+          },
+        ],
+      };
+      return <Doughnut data={chartData} />;
+    }
+
+    // Single line / bar
+    if (!data.length) return <div>No chart data available</div>;
+    data = resampleData(data, timeperiod);
     const labels = data.map((row) => row.timestamp);
-    const dataPoints = data.map((row) => row.value);
+    const numericFields = fields.filter((f) => f.toLowerCase() !== "timestamp");
+    const firstField = numericFields[0] || "Value";
 
     const chartData = {
       labels,
       datasets: [
         {
-          label: fields ? fields.join(", ") : "Data",
-          data: dataPoints,
+          label: firstField,
+          data: data.map((row) => row[firstField]),
           borderWidth: 2,
           borderColor: "#6b3ceb",
           backgroundColor: "rgba(107, 60, 235, 0.4)",
@@ -257,24 +407,34 @@ const AI = ({ question }) => {
               timeperiod={timeperiod}
               setTimeperiod={setTimeperiod}
             />
-            <Line data={chartData} />;
+            <Line data={chartData} />
           </div>
         );
       case "bar":
-        return <Bar data={chartData} />;
-      case "donut":
-      case "doughnut":
-        return <Doughnut data={chartData} />;
+        return (
+          <div>
+            <ToggleButtons
+              dateRange={dateRange}
+              timeperiod={timeperiod}
+              setTimeperiod={setTimeperiod}
+            />
+            <Bar data={chartData} />
+          </div>
+        );
       default:
         return <div>Unsupported chart type: {chart_type}</div>;
     }
   };
 
+  // 5) JSX Return
   return (
     <Container>
       <TitleSty>Chat more with AI</TitleSty>
+
       <InputSection>
         <PromptInput
+          type="text"
+          placeholder="Enter your question here..."
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
         />
@@ -285,7 +445,7 @@ const AI = ({ question }) => {
         <Loader />
       ) : (
         responseData && (
-          <div>
+          <>
             <SubHeading>AI Response</SubHeading>
             <p>
               <Label>Question:</Label> {responseData.question}
@@ -301,7 +461,7 @@ const AI = ({ question }) => {
               <Label>Fields:</Label> {responseData.fields?.join(", ")}
             </p>
             <ResultContainer>{renderChart()}</ResultContainer>
-          </div>
+          </>
         )
       )}
     </Container>
