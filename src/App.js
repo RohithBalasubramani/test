@@ -7,8 +7,8 @@ import TestPage from "./Pages/TestPage";
 import Header from "./Components/Header";
 import Overview from "./Pages/Overview";
 import Compare from "./Pages/Compare";
-import { sideBarTreeArray } from "./sidebarInfo2"; // Ensure correct import
-import generateRoutes from "./generateRoutes.js"; // Ensure correct path
+import { sideBarTreeArray } from "./sidebarInfo2";
+import generateRoutes from "./generateRoutes.js";
 import PhaseOverviewPage from "./Pages/PhaseOverviewPage.jsx";
 import Inverter from "./Pages/Inverter.jsx";
 import IndiLayout from "./Pages/IndiLayout.jsx";
@@ -32,34 +32,52 @@ function App() {
       <BrowserRouter basename="/premier">
         <Header />
         <Routes>
-          {/* Main Dashboard */}
-          <Route path="/" element={<Dashboard />} />
-          <Route path="ai/" element={<AI />} />
-          {/* Phase Overview */}
-          <Route path="peppl_p1" element={<PhaseOverview />}>
+          {/* Public Login Page */}
+          <Route path="/login" element={<LoginPage />} />
+
+          {/* Protected Routes */}
+          <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
+          <Route path="/ai" element={<PrivateRoute element={<AI />} />} />
+
+          <Route
+            path="/peppl_p1"
+            element={<PrivateRoute element={<PhaseOverview />} />}
+          >
             <Route index element={<PhaseOverviewPage />} />
-            {/* Nested IndiLayout */}
             <Route path="" element={<IndiLayout />}>
               {Object.keys(sideBarTreeArray).map((section) =>
                 generateRoutes(sideBarTreeArray[section], `peppl_p1/${section}`)
               )}
             </Route>
           </Route>
-          {/* <Route path="test" element={<PhaseOverview />}>
-            <Route path="test1" element={<PhaseOverview />}>
-              <Route path="test3" element={<TestPage />} />
-            </Route>
-          </Route> */}
-          {/* Additional Phases */}
-          <Route path="peipl_p2/" element={<ComingSoon />} />
-          <Route path="peppl_p3/" element={<ComingSoon />} />
-          <Route path="ht/" element={<ComingSoon />} />
-          <Route path="inverter/" element={<ComingSoon />} />
-          <Route path="report/" element={<ComingSoon />} />
-          {/* Compare Page */}
-          <Route path="compare" element={<Compare />} />
-          <Route path="inverter" element={<Inverter />} />
-          {/* Fallback Route */}
+
+          {/* Additional Routes */}
+          <Route
+            path="/peipl_p2"
+            element={<PrivateRoute element={<ComingSoon />} />}
+          />
+          <Route
+            path="/peppl_p3"
+            element={<PrivateRoute element={<ComingSoon />} />}
+          />
+          <Route
+            path="/ht"
+            element={<PrivateRoute element={<ComingSoon />} />}
+          />
+          <Route
+            path="/inverter"
+            element={<PrivateRoute element={<Inverter />} />}
+          />
+          <Route
+            path="/report"
+            element={<PrivateRoute element={<ComingSoon />} />}
+          />
+          <Route
+            path="/compare"
+            element={<PrivateRoute element={<Compare />} />}
+          />
+
+          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
