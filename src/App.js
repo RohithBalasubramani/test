@@ -1,6 +1,6 @@
 // App.js
-import React from "react";
-import { Routes, Route, Navigate, HashRouter } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import PhaseOverview from "./Pages/PhaseOverview";
 import Dashboard from "./Pages/Dashboard";
 import TestPage from "./Pages/TestPage";
@@ -20,9 +20,16 @@ function App() {
   console.log("sideBarTreeArray:", sideBarTreeArray); // Debugging line
   console.log("auth token", UserService.getToken());
 
+  useEffect(() => {
+    // If the URL doesn't start with the expected basename, redirect there.
+    if (!window.location.pathname.startsWith("/premier")) {
+      window.location.replace("/premier/");
+    }
+  }, []);
+
   return (
     <div className="App">
-      <HashRouter>
+      <BrowserRouter basename="/premier">
         <Header />
         <Routes>
           {/* Main Dashboard */}
@@ -55,7 +62,7 @@ function App() {
           {/* Fallback Route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </HashRouter>
+      </BrowserRouter>
     </div>
   );
 }

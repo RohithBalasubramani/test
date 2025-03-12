@@ -1,14 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import {
-  Avatar,
-  Badge,
-  IconButton,
-  Tab,
-  Tabs,
-  Menu,
-  MenuItem,
-} from "@mui/material";
+import { Avatar, Badge, IconButton, Tab, Tabs } from "@mui/material";
 import { NotificationsOutlined, Search } from "@mui/icons-material";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -21,7 +13,8 @@ const TopbarContainer = styled.div`
   padding: var(--py-0, 0px) 24px;
   align-items: flex-end;
   flex-shrink: 0;
-  overflow-y: hidden;
+  /* Make sure the container allows dropdown visibility */
+  overflow-y: visible;
   background-color: #ffffff;
   padding-top: 0.7vh;
   padding-bottom: 0.7vh;
@@ -74,31 +67,6 @@ const TopbarItem = styled.div`
   display: flex;
   align-items: center;
   position: relative;
-
-  .dropdown-menu {
-    position: absolute;
-    top: 40px;
-    right: 0;
-    background-color: #fff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    padding: 10px;
-    display: none;
-
-    a {
-      text-decoration: none;
-      color: #697483;
-      display: block;
-      padding: 10px 20px;
-      &:hover {
-        background-color: #f5f7fa;
-      }
-    }
-  }
-
-  &:hover .dropdown-menu {
-    display: block;
-  }
 `;
 
 const AlertsButton = styled.button`
@@ -173,30 +141,47 @@ const TabsContainer = styled.div`
   flex-shrink: 0;
 `;
 
-const NavBarTab = styled(Tab)`
+/* --- CUSTOM DROPDOWN MENU STYLES (instead of MUI Menu) --- */
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 10px 0;
+  z-index: 3000;
+  min-width: 100px;
+`;
+
+const DropdownItem = styled.div`
   display: flex;
-  padding: var(--py-0, 0px) 8px 16px 8px;
-  justify-content: center;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  text-transform: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  color: #697483;
+  &:hover {
+    background-color: #f5f7fa;
+  }
 `;
 
 const Header = () => {
   const [isAlertPanelOpen, setAlertPanelOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [value, setValue] = useState("/");
   const navigate = useNavigate();
   const location = useLocation();
-  const [value, setValue] = useState("/");
 
-  const handleAlertButtonClick = () => {
-    setAlertPanelOpen(!isAlertPanelOpen);
-  };
+  // Toggle for logout dropdown
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     setValue("/" + location.pathname.split("/")[1]);
   }, [location]);
+
+  const handleAlertButtonClick = () => {
+    setAlertPanelOpen(!isAlertPanelOpen);
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -207,31 +192,32 @@ const Header = () => {
     navigate("/ai");
   };
 
-  // Handlers for the avatar menu
-  const handleAvatarClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  // Toggle the dropdown menu when the avatar is clicked
+  const handleAvatarClick = () => {
+    setIsDropdownOpen((prev) => !prev);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
+  // Logout handler
   const handleLogout = () => {
-    // Add your logout logic here (e.g., clearing tokens, redirecting, etc.)
-    // const keycloakLogoutUrl = `${process.env.REACT_APP_KEYCLOAK_LOGOUT_URL}?redirect_uri=${window.location.origin}`;
-    UserService.doLogout();
-    // Clear any stored authentication tokens if needed
-    // localStorage.removeItem("keycloak-token");
-    // localStorage.removeItem("keycloak-refresh-token");
-
-    // // Redirect to Keycloak logout
-    // window.location.href = keycloakLogoutUrl;
-    handleMenuClose();
+    console.log("Logout clicked");
+    // Close the dropdown first
+    setIsDropdownOpen(false);
+    setTimeout(() => {
+      console.log("Executing UserService.doLogout()");
+      UserService.doLogout();
+    }, 100);
   };
 
-  // const handleLogout = () => {
-
-  // };
+  // Close the dropdown if clicking outside of it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <>
@@ -248,6 +234,7 @@ const Header = () => {
             </IconButton>
           </InputContainer>
         </SearchBarContainer>
+
         <TabsContainer>
           <Tabs
             sx={{ marginTop: "2vh", verticalAlign: "bottom", gap: "0.5vw" }}
@@ -260,10 +247,10 @@ const Header = () => {
             <Tab label="PEPPL(P3)" value={"/peppl_p3"} />
             <Tab label="HT" value={"/ht"} />
             <Tab label="Inverters" value={"/inverter"} />
-            {/* <Tab label="Reports" value={"/report"} /> */}
             <Tab label="Comparisions" value={"/compare"} />
           </Tabs>
         </TabsContainer>
+
         <TopbarMenu>
           <TopbarItem>
             <Badge
@@ -281,31 +268,25 @@ const Header = () => {
               </AlertsButton>
             </Badge>
           </TopbarItem>
-          <TopbarItem>
+
+          {/* Avatar with custom dropdown */}
+          <TopbarItem ref={dropdownRef}>
             <IconButton onClick={handleAvatarClick}>
               <UserAvatar>DN</UserAvatar>
             </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-            >
-              <MenuItem onClick={handleLogout}>
-                <ExitToAppIcon style={{ marginRight: "8px" }} />
-                Logout
-              </MenuItem>
-            </Menu>
+            {isDropdownOpen && (
+              <DropdownMenu>
+                <DropdownItem onClick={handleLogout}>
+                  <ExitToAppIcon style={{ marginRight: "8px" }} />
+                  Logout
+                </DropdownItem>
+              </DropdownMenu>
+            )}
           </TopbarItem>
         </TopbarMenu>
       </TopbarContainer>
+
+      {/* Alert Panel */}
       <AlertPanel isOpen={isAlertPanelOpen} onClose={handleAlertButtonClick} />
     </>
   );
