@@ -1,85 +1,60 @@
-// /src/Services/UserService.js
+import Keycloak from "keycloak-js";
+import keycloakCred from "../keycloak.json";
 import { httpClient } from "./HttpClient";
 
-const KEYCLOAK_BASE_URL = "http://206.189.131.153";
-const REALM = "Premier";
-const CLIENT_ID = "premier-app";
+const _kc = new Keycloak(keycloakCred);
 
 /**
- * Logs the user in with username + password
- * using Keycloak's Direct Access (password) grant.
+ * Initializes Keycloak instance and calls the provided callback function if successfully authenticated.
+ *
+ * @param onAuthenticatedCallback
  */
-const loginWithCredentials = async (username, password) => {
-  try {
-    const response = await fetch(
-      `${KEYCLOAK_BASE_URL}/realms/${REALM}/protocol/openid-connect/token`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          client_id: CLIENT_ID,
-          grant_type: "password",
-          username: username,
-          password: password,
-        }),
+const initKeycloak = (onAuthenticatedCallback) => {
+  _kc
+    .init({
+      onLoad: "login-required",
+      checkLoginIframe: false,
+      pkceMethod: "S256",
+    })
+    .then((authenticated) => {
+      if (!authenticated) {
+        console.log("user is not authenticated..!");
       }
-    );
-
-    if (!response.ok) {
-      throw new Error("Invalid username or password");
-    }
-
-    const data = await response.json();
-    console.log("Login successful! Data:", data);
-
-    // Store tokens in localStorage
-    localStorage.setItem("access_token", data.access_token);
-    localStorage.setItem("refresh_token", data.refresh_token);
-    localStorage.setItem("expires_in", String(data.expires_in));
-
-    // Set Authorization header for subsequent requests
-    httpClient.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${data.access_token}`;
-
-    return { success: true, token: data.access_token };
-  } catch (error) {
-    console.error("Login failed:", error);
-    return { success: false, message: error.message };
-  }
+      httpClient.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${_kc.token}`;
+      onAuthenticatedCallback();
+    })
+    .catch(console.error);
 };
 
-/**
- * Retrieve the current access token from localStorage.
- */
-const getToken = () => localStorage.getItem("access_token");
+const doLogin = _kc.login;
 
-/**
- * Check if user is considered "logged in" (i.e., has an access token).
- */
-const isLoggedIn = () => !!getToken();
+const doLogout = () => _kc.logout;
 
-/**
- * Logs out by removing tokens from storage, clearing auth headers,
- * and redirecting to /login.
- */
-const doLogout = () => {
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
-  localStorage.removeItem("expires_in");
-  delete httpClient.defaults.headers.common["Authorization"];
+const getToken = () => _kc.token;
 
-  // Redirect to login page or some other route
-  window.location.href = "/login";
-};
+const getTokenParsed = () => _kc.tokenParsed;
+
+const isLoggedIn = () => !!_kc.token;
+
+const updateToken = (successCallback) =>
+  _kc.updateToken(5).then(successCallback).catch(doLogin);
+
+const getUsername = () => _kc.tokenParsed?.preferred_username;
+
+const hasRole = (roles) => roles.some((role) => _kc.hasRealmRole(role));
 
 const UserService = {
-  loginWithCredentials,
-  getToken,
-  isLoggedIn,
+  initKeycloak,
+  doLogin,
   doLogout,
+  isLoggedIn,
+  getToken,
+  getTokenParsed,
+  updateToken,
+  getUsername,
+  hasRole,
 };
 
 export default UserService;

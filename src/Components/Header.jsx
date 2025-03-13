@@ -4,10 +4,10 @@ import {
   Avatar,
   Badge,
   IconButton,
+  Tab,
+  Tabs,
   Menu,
   MenuItem,
-  Tabs,
-  Tab,
 } from "@mui/material";
 import { NotificationsOutlined, Search } from "@mui/icons-material";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
@@ -17,9 +17,11 @@ import UserService from "../Services/UserService";
 
 const TopbarContainer = styled.div`
   display: flex;
-  height: 48px;
-  padding: 0 24px;
+  height: var(--height-h-12, 48px);
+  padding: var(--py-0, 0px) 24px;
   align-items: flex-end;
+  flex-shrink: 0;
+  overflow-y: hidden;
   background-color: #ffffff;
   padding-top: 0.7vh;
   padding-bottom: 0.7vh;
@@ -29,30 +31,74 @@ const TopbarContainer = styled.div`
 
 const InputContainer = styled.div`
   display: flex;
-  padding: 4px 8px;
+  padding: var(--py-1, 4px) var(--pr-2, 8px) var(--py-1, 4px) var(--pl-1, 4px);
   align-items: center;
-  gap: 8px;
-  border-radius: 8px;
+  gap: var(--Size-80, 8px);
+  align-self: stretch;
+  border-radius: var(--Interactive-border-radius---radius-i-sm, 8px);
   border: 1px solid #e2e2e2;
   background: #f5f6f7;
   width: 15vw;
+  margin-top: auto;
+  margin-bottom: auto;
   height: 3vh;
 `;
 
 const SearchInput = styled.input`
+  color: var(--Main-trunks, #595d62);
+  font-feature-settings: "liga" off, "clig" off;
   font-family: "DM Sans";
   font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  background-color: #f5f6f7;
+  width: 15vw;
   border: none;
   outline: none;
-  background-color: #f5f6f7;
-  width: 100%;
+  height: 3vh;
 `;
 
 const TopbarMenu = styled.div`
   display: flex;
+  height: var(--height-h-12, 48px);
   align-items: center;
   gap: 16px;
+  flex-shrink: 0;
+  margin-right: 1vw;
   margin-left: auto;
+`;
+
+const TopbarItem = styled.div`
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  .dropdown-menu {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    display: none;
+
+    a {
+      text-decoration: none;
+      color: #697483;
+      display: block;
+      padding: 10px 20px;
+      &:hover {
+        background-color: #f5f7fa;
+      }
+    }
+  }
+
+  &:hover .dropdown-menu {
+    display: block;
+  }
 `;
 
 const AlertsButton = styled.button`
@@ -60,11 +106,26 @@ const AlertsButton = styled.button`
   align-items: center;
   padding: 5px 10px;
   border-radius: 8px;
-  border: 1px solid #6b3ceb;
+  border: 1px solid var(--Bluish-Purple-500, #6b3ceb);
   background-color: transparent;
-  font-size: 14px;
+  font-size: 10px;
   cursor: pointer;
-  color: #6b3ceb;
+  color: var(--Bluish-Purple-500, #6b3ceb);
+  text-align: center;
+  font-feature-settings: "liga" off, "clig" off;
+  font-family: "DM Sans";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+
+  svg {
+    margin-right: 5px;
+  }
+
+  &:hover {
+    background-color: #f5f7fa;
+  }
 `;
 
 const UserAvatar = styled(Avatar)`
@@ -76,12 +137,50 @@ const Logo = styled.div`
   font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.5px;
+  line-height: 1.2;
+  color: #1b2533;
   text-transform: uppercase;
   cursor: pointer;
   user-select: none;
+  transition: color 0.3s ease-in-out;
+
   &:hover {
     color: #4f6ef7;
   }
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+  }
+`;
+
+const SearchBarContainer = styled.div`
+  display: flex;
+  padding: 8px var(--py-0, 0px);
+  align-items: center;
+  gap: 5vw;
+  margin-top: auto;
+  margin-bottom: auto;
+`;
+
+const TabsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+`;
+
+const NavBarTab = styled(Tab)`
+  display: flex;
+  padding: var(--py-0, 0px) 8px 16px 8px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  text-transform: none;
 `;
 
 const Header = () => {
@@ -108,7 +207,7 @@ const Header = () => {
     navigate("/ai");
   };
 
-  // Avatar menu handlers
+  // Handlers for the avatar menu
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -118,40 +217,55 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    UserService.doLogout(); // Clear tokens and redirect to login
+    // Add your logout logic here (e.g., clearing tokens, redirecting, etc.)
+    // const keycloakLogoutUrl = `${process.env.REACT_APP_KEYCLOAK_LOGOUT_URL}?redirect_uri=${window.location.origin}`;
+    UserService.doLogout();
+    // Clear any stored authentication tokens if needed
+    // localStorage.removeItem("keycloak-token");
+    // localStorage.removeItem("keycloak-refresh-token");
+
+    // // Redirect to Keycloak logout
+    // window.location.href = keycloakLogoutUrl;
     handleMenuClose();
   };
+
+  // const handleLogout = () => {
+
+  // };
 
   return (
     <>
       <TopbarContainer>
-        <div style={{ display: "flex", alignItems: "center", gap: "5vw" }}>
+        <SearchBarContainer>
           <Logo>NEURACT</Logo>
           <InputContainer>
             <SearchInput
               type="text"
-              placeholder="Want to know your Industry better? Ask our AI..."
+              placeholder="Want to know your Industry better? Ask our AI ..."
             />
             <IconButton onClick={handleSearchClick}>
               <Search />
             </IconButton>
           </InputContainer>
-        </div>
-        <Tabs
-          sx={{ marginTop: "2vh", verticalAlign: "bottom", gap: "0.5vw" }}
-          value={value}
-          onChange={handleChange}
-        >
-          <Tab label="Dashboard" value={"/"} />
-          <Tab label="PEPPL(P1)" value={"/peppl_p1"} />
-          <Tab label="PEIPL(P2)" value={"/peipl_p2"} />
-          <Tab label="PEPPL(P3)" value={"/peppl_p3"} />
-          <Tab label="HT" value={"/ht"} />
-          <Tab label="Inverters" value={"/inverter"} />
-          <Tab label="Comparisons" value={"/compare"} />
-        </Tabs>
+        </SearchBarContainer>
+        <TabsContainer>
+          <Tabs
+            sx={{ marginTop: "2vh", verticalAlign: "bottom", gap: "0.5vw" }}
+            value={value}
+            onChange={handleChange}
+          >
+            <Tab label="Dashboard" value={"/"} />
+            <Tab label="PEPPL(P1)" value={"/peppl_p1"} />
+            <Tab label="PEIPL(P2)" value={"/peipl_p2"} />
+            <Tab label="PEPPL(P3)" value={"/peppl_p3"} />
+            <Tab label="HT" value={"/ht"} />
+            <Tab label="Inverters" value={"/inverter"} />
+            {/* <Tab label="Reports" value={"/report"} /> */}
+            <Tab label="Comparisions" value={"/compare"} />
+          </Tabs>
+        </TabsContainer>
         <TopbarMenu>
-          <IconButton onClick={handleAlertButtonClick}>
+          <TopbarItem>
             <Badge
               badgeContent={3}
               sx={{
@@ -161,27 +275,35 @@ const Header = () => {
                 },
               }}
             >
-              <AlertsButton>
+              <AlertsButton onClick={handleAlertButtonClick}>
                 <NotificationsOutlined fontSize="small" />
                 Alerts
               </AlertsButton>
             </Badge>
-          </IconButton>
-          <IconButton onClick={handleAvatarClick}>
-            <UserAvatar>DN</UserAvatar>
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            transformOrigin={{ vertical: "top", horizontal: "right" }}
-          >
-            <MenuItem onClick={handleLogout}>
-              <ExitToAppIcon style={{ marginRight: "8px" }} />
-              Logout
-            </MenuItem>
-          </Menu>
+          </TopbarItem>
+          <TopbarItem>
+            <IconButton onClick={handleAvatarClick}>
+              <UserAvatar>DN</UserAvatar>
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <MenuItem onClick={handleLogout}>
+                <ExitToAppIcon style={{ marginRight: "8px" }} />
+                Logout
+              </MenuItem>
+            </Menu>
+          </TopbarItem>
         </TopbarMenu>
       </TopbarContainer>
       <AlertPanel isOpen={isAlertPanelOpen} onClose={handleAlertButtonClick} />
