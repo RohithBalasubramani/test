@@ -1,6 +1,12 @@
 // App.js
 import React from "react";
-import { Routes, Route, Navigate, HashRouter } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  HashRouter,
+  BrowserRouter,
+} from "react-router-dom";
 import PhaseOverview from "./Pages/PhaseOverview";
 import Dashboard from "./Pages/Dashboard";
 import TestPage from "./Pages/TestPage";
