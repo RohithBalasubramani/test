@@ -225,10 +225,7 @@ const Header = () => {
         <SearchBarContainer>
           <Logo>NEURACT</Logo>
           <InputContainer>
-            <SearchInput
-              type="text"
-              placeholder="Want to know your Industry better? Ask our AI ..."
-            />
+            <SearchInput type="text" placeholder="Chat with our AI" />
             <IconButton onClick={handleSearchClick}>
               <Search />
             </IconButton>

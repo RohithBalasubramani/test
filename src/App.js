@@ -1,5 +1,5 @@
 // App.js
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Routes,
   Route,
@@ -25,6 +25,13 @@ import UserService from "./Services/UserService.js";
 function App() {
   console.log("sideBarTreeArray:", sideBarTreeArray); // Debugging line
   console.log("auth token", UserService.getToken());
+
+  useEffect(() => {
+    // If the URL doesn't start with the expected basename, redirect there.
+    if (!window.location.pathname.startsWith("/premier")) {
+      window.location.replace("/premier/");
+    }
+  }, []);
 
   return (
     <div className="App">
