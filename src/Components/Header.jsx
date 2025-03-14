@@ -234,7 +234,6 @@ const Header = () => {
             </IconButton>
           </InputContainer>
         </SearchBarContainer>
-
         <TabsContainer>
           <Tabs
             sx={{ marginTop: "2vh", verticalAlign: "bottom", gap: "0.5vw" }}

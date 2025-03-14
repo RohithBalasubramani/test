@@ -1,10 +1,8 @@
 import Keycloak from "keycloak-js";
+import keycloakCred from "../keycloak.json";
+import { httpClient } from "./HttpClient";
 
-const _kc = new Keycloak({
-  url: "https://auth.neuract.in/",
-  realm: "Premier",
-  clientId: "premier-app",
-});
+const _kc = new Keycloak(keycloakCred);
 
 /**
  * Initializes Keycloak instance and calls the provided callback function if successfully authenticated.
@@ -15,19 +13,24 @@ const initKeycloak = (onAuthenticatedCallback) => {
   _kc
     .init({
       onLoad: "login-required",
+      checkLoginIframe: false,
       pkceMethod: "S256",
     })
     .then((authenticated) => {
       if (!authenticated) {
         console.log("user is not authenticated..!");
       }
+      httpClient.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${_kc.token}`;
+      onAuthenticatedCallback();
     })
     .catch(console.error);
 };
 
 const doLogin = _kc.login;
 
-const doLogout = _kc.logout;
+const doLogout = () => _kc.logout;
 
 const getToken = () => _kc.token;
 

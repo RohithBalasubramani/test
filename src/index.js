@@ -1,16 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-/* import './index.css'; */
-import Dashboard from "./Pages/Dashboard";
-import reportWebVitals from "./reportWebVitals";
+import "./index.css";
 import App from "./App";
+import reportWebVitals from "./reportWebVitals";
 import UserService from "./Services/UserService";
 
-const root = ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const root = () =>
+  ReactDOM.createRoot(document.getElementById("root")).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
 
 UserService.initKeycloak(root);
 
