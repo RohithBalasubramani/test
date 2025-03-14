@@ -9,8 +9,8 @@ import UserService from "../Services/UserService";
 
 const TopbarContainer = styled.div`
   display: flex;
-  height: 48px;
-  padding: 0 24px;
+  height: var(--height-h-12, 48px);
+  padding: var(--py-0, 0px) 24px;
   align-items: flex-end;
   flex-shrink: 0;
   /* Make sure the container allows dropdown visibility */
@@ -24,29 +24,41 @@ const TopbarContainer = styled.div`
 
 const InputContainer = styled.div`
   display: flex;
-  padding: 4px 8px;
+  padding: var(--py-1, 4px) var(--pr-2, 8px) var(--py-1, 4px) var(--pl-1, 4px);
   align-items: center;
-  gap: 8px;
-  border-radius: 8px;
+  gap: var(--Size-80, 8px);
+  align-self: stretch;
+  border-radius: var(--Interactive-border-radius---radius-i-sm, 8px);
   border: 1px solid #e2e2e2;
   background: #f5f6f7;
   width: 15vw;
+  margin-top: auto;
+  margin-bottom: auto;
   height: 3vh;
 `;
 
 const SearchInput = styled.input`
+  color: var(--Main-trunks, #595d62);
+  font-feature-settings: "liga" off, "clig" off;
   font-family: "DM Sans";
   font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  background-color: #f5f6f7;
+  width: 15vw;
   border: none;
   outline: none;
-  background-color: #f5f6f7;
-  width: 100%;
+  height: 3vh;
 `;
 
 const TopbarMenu = styled.div`
   display: flex;
+  height: var(--height-h-12, 48px);
   align-items: center;
   gap: 16px;
+  flex-shrink: 0;
+  margin-right: 1vw;
   margin-left: auto;
 `;
 
@@ -62,11 +74,26 @@ const AlertsButton = styled.button`
   align-items: center;
   padding: 5px 10px;
   border-radius: 8px;
-  border: 1px solid #6b3ceb;
+  border: 1px solid var(--Bluish-Purple-500, #6b3ceb);
   background-color: transparent;
-  font-size: 14px;
+  font-size: 10px;
   cursor: pointer;
-  color: #6b3ceb;
+  color: var(--Bluish-Purple-500, #6b3ceb);
+  text-align: center;
+  font-feature-settings: "liga" off, "clig" off;
+  font-family: "DM Sans";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+
+  svg {
+    margin-right: 5px;
+  }
+
+  &:hover {
+    background-color: #f5f7fa;
+  }
 `;
 
 const UserAvatar = styled(Avatar)`
@@ -78,9 +105,13 @@ const Logo = styled.div`
   font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.5px;
+  line-height: 1.2;
+  color: #1b2533;
   text-transform: uppercase;
   cursor: pointer;
   user-select: none;
+  transition: color 0.3s ease-in-out;
+
   &:hover {
     color: #4f6ef7;
   }
@@ -191,12 +222,12 @@ const Header = () => {
   return (
     <>
       <TopbarContainer>
-        <div style={{ display: "flex", alignItems: "center", gap: "5vw" }}>
+        <SearchBarContainer>
           <Logo>NEURACT</Logo>
           <InputContainer>
             <SearchInput
               type="text"
-              placeholder="Want to know your Industry better? Ask our AI..."
+              placeholder="Want to know your Industry better? Ask our AI ..."
             />
             <IconButton onClick={handleSearchClick}>
               <Search />
@@ -221,7 +252,7 @@ const Header = () => {
         </TabsContainer>
 
         <TopbarMenu>
-          <IconButton onClick={handleAlertButtonClick}>
+          <TopbarItem>
             <Badge
               badgeContent={3}
               sx={{
@@ -231,7 +262,7 @@ const Header = () => {
                 },
               }}
             >
-              <AlertsButton>
+              <AlertsButton onClick={handleAlertButtonClick}>
                 <NotificationsOutlined fontSize="small" />
                 Alerts
               </AlertsButton>

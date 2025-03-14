@@ -15,17 +15,22 @@ import IndiLayout from "./Pages/IndiLayout.jsx";
 import ComingSoon from "./Pages/Empty.jsx";
 import AI from "./Pages/AI.jsx";
 import UserService from "./Services/UserService.js";
+// import LoginPage from "./Pages/LoginPage"; // Ensure this component exists
 
 function App() {
-  console.log("sideBarTreeArray:", sideBarTreeArray); // Debugging line
-  console.log("auth token", UserService.getToken());
-
+  // Ensure the URL starts with the correct basename.
   useEffect(() => {
-    // If the URL doesn't start with the expected basename, redirect there.
     if (!window.location.pathname.startsWith("/premier")) {
       window.location.replace("/premier/");
     }
   }, []);
+
+  // Check if the user is logged in. If not, redirect to login.
+  // useEffect(() => {
+  //   if (!UserService.isLoggedIn()) {
+  //     window.location.replace("/premier/login");
+  //   }
+  // }, []);
 
   return (
     <div className="App">
@@ -33,16 +38,13 @@ function App() {
         <Header />
         <Routes>
           {/* Public Login Page */}
-          <Route path="/login" element={<LoginPage />} />
+          {/* <Route path="/login" element={<LoginPage />} /> */}
 
           {/* Protected Routes */}
-          <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
-          <Route path="/ai" element={<PrivateRoute element={<AI />} />} />
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/ai" element={<AI />} />
 
-          <Route
-            path="/peppl_p1"
-            element={<PrivateRoute element={<PhaseOverview />} />}
-          >
+          <Route path="/peppl_p1" element={<PhaseOverview />}>
             <Route index element={<PhaseOverviewPage />} />
             <Route path="" element={<IndiLayout />}>
               {Object.keys(sideBarTreeArray).map((section) =>
@@ -52,30 +54,12 @@ function App() {
           </Route>
 
           {/* Additional Routes */}
-          <Route
-            path="/peipl_p2"
-            element={<PrivateRoute element={<ComingSoon />} />}
-          />
-          <Route
-            path="/peppl_p3"
-            element={<PrivateRoute element={<ComingSoon />} />}
-          />
-          <Route
-            path="/ht"
-            element={<PrivateRoute element={<ComingSoon />} />}
-          />
-          <Route
-            path="/inverter"
-            element={<PrivateRoute element={<Inverter />} />}
-          />
-          <Route
-            path="/report"
-            element={<PrivateRoute element={<ComingSoon />} />}
-          />
-          <Route
-            path="/compare"
-            element={<PrivateRoute element={<Compare />} />}
-          />
+          <Route path="/peipl_p2" element={<ComingSoon />} />
+          <Route path="/peppl_p3" element={<ComingSoon />} />
+          <Route path="/ht" element={<ComingSoon />} />
+          <Route path="/inverter" element={<Inverter />} />
+          <Route path="/report" element={<ComingSoon />} />
+          <Route path="/compare" element={<Compare />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
