@@ -30,7 +30,7 @@ const initKeycloak = (onAuthenticatedCallback) => {
 
 const doLogin = _kc.login;
 
-const doLogout = () => _kc.logout;
+const doLogout = (options) => _kc.logout(options);
 
 const getToken = () => _kc.token;
 

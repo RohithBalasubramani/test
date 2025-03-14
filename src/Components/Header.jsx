@@ -202,9 +202,11 @@ const Header = () => {
     console.log("Logout clicked");
     // Close the dropdown first
     setIsDropdownOpen(false);
-    setTimeout(() => {
+    setTimeout(async () => {
       console.log("Executing UserService.doLogout()");
-      UserService.doLogout();
+      UserService.doLogout({
+        redirectUri: "https://neuract.in/"
+      });
     }, 100);
   };
 
